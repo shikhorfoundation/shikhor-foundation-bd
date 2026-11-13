@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="t7EDaNskJyKALDnrdUL8qp5zsv_YMXHK95xQHiOZQIw" />
     <title>Shikhor Foundation | Together for a Better Tomorrow</title>
+    <meta name="description" content="Shikhor Foundation is a community-driven humanitarian initiative built on the power of people helping people. Together for a Better Tomorrow.">
+    <meta property="og:site_name" content="Shikhor Foundation">
+    <meta property="og:title" content="Shikhor Foundation | Together for a Better Tomorrow">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="logo.png">
     <!-- Google Fonts: Outfit for body, Playfair Display for headings -->
@@ -141,15 +144,15 @@
                 <!-- LIVE IMPACT COUNTER -->
                 <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="bg-white p-6 rounded-2xl border border-[#E2DBD0] shadow-sm hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">500+</h3>
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">150+</h3>
                         <p class="text-xs text-gray-600 mt-1 uppercase font-semibold">Families Supported</p>
                     </div>
                     <div class="bg-white p-6 rounded-2xl border border-[#E2DBD0] shadow-sm hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">120+</h3>
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">60+</h3>
                         <p class="text-xs text-gray-600 mt-1 uppercase font-semibold">Active Volunteers</p>
                     </div>
                     <div class="bg-white p-6 rounded-2xl border border-[#E2DBD0] shadow-sm hover-lift col-span-2 md:col-span-1">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">15+</h3>
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">30+</h3>
                         <p class="text-xs text-gray-600 mt-1 uppercase font-semibold">Successful Events</p>
                     </div>
                 </div>
@@ -524,7 +527,8 @@
 
     <!-- SCRIPT FOR LOGIN, LOGOUT & WEBHOOK -->
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxi7krJrqCZA-6xeNpSVmyktCvsWr9NxUhjL-d47ohywFyYWYBZ8nOTDXANXJ9mlfKC/exec"; 
+        // Google Apps Script URL (Leave empty if not using backend sheet sync, or keep your active script URL)
+        const GOOGLE_SCRIPT_URL = ""; 
 
         const loginGate = document.getElementById('loginGate');
         const mainWebsite = document.getElementById('mainWebsite');
@@ -554,7 +558,7 @@
             mainWebsite.classList.remove('hidden');
             userGreeting.innerHTML = `<i class="fa-solid fa-user text-[#8C6D53]"></i> ${name}`;
 
-            if (GOOGLE_SCRIPT_URL) {
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -568,7 +572,7 @@
             const name = localStorage.getItem('shikhor_visitor_name');
             const email = localStorage.getItem('shikhor_visitor_email');
 
-            if (GOOGLE_SCRIPT_URL && name && email) {
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "" && name && email) {
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
