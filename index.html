@@ -8,8 +8,13 @@
     <meta name="description" content="Shikhor Foundation is a community-driven humanitarian initiative built on the power of people helping people. Together for a Better Tomorrow.">
     <meta property="og:site_name" content="Shikhor Foundation">
     <meta property="og:title" content="Shikhor Foundation | Together for a Better Tomorrow">
+    
+    <!-- Favicon & Google Search Logo Optimization -->
+    <link rel="icon" type="image/png" sizes="512x512" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+    <link rel="shortcut icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+    <link rel="apple-touch-icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/png" href="logo.png">
     <!-- Google Fonts: Outfit for body, Playfair Display for headings -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -144,15 +149,15 @@
                 <!-- LIVE IMPACT COUNTER -->
                 <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="bg-white p-6 rounded-2xl border border-[#E2DBD0] shadow-sm hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">150+</h3>
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">500+</h3>
                         <p class="text-xs text-gray-600 mt-1 uppercase font-semibold">Families Supported</p>
                     </div>
                     <div class="bg-white p-6 rounded-2xl border border-[#E2DBD0] shadow-sm hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">60+</h3>
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">120+</h3>
                         <p class="text-xs text-gray-600 mt-1 uppercase font-semibold">Active Volunteers</p>
                     </div>
                     <div class="bg-white p-6 rounded-2xl border border-[#E2DBD0] shadow-sm hover-lift col-span-2 md:col-span-1">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">30+</h3>
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">15+</h3>
                         <p class="text-xs text-gray-600 mt-1 uppercase font-semibold">Successful Events</p>
                     </div>
                 </div>
@@ -444,17 +449,17 @@
                     <p class="mt-4 text-gray-600 text-sm">Every picture tells a story of kindness, compassion, and hope.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="h-64 rounded-3xl bg-white border border-[#E2DBD0] flex flex-col items-center justify-center text-gray-400 p-6 text-center shadow-sm hover-lift">
-                        <i class="fa-regular fa-image text-3xl mb-2 text-[#8C6D53]"></i>
-                        <span class="text-xs font-semibold text-gray-600">Community Support Activity</span>
+                    <!-- Gallery Item 1 -->
+                    <div class="h-64 rounded-3xl bg-white border border-[#E2DBD0] overflow-hidden shadow-sm hover-lift flex items-center justify-center">
+                        <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover">
                     </div>
-                    <div class="h-64 rounded-3xl bg-white border border-[#E2DBD0] flex flex-col items-center justify-center text-gray-400 p-6 text-center shadow-sm hover-lift">
-                        <i class="fa-regular fa-image text-3xl mb-2 text-[#8C6D53]"></i>
-                        <span class="text-xs font-semibold text-gray-600">Educational Support Initiative</span>
+                    <!-- Gallery Item 2 -->
+                    <div class="h-64 rounded-3xl bg-white border border-[#E2DBD0] overflow-hidden shadow-sm hover-lift flex items-center justify-center">
+                        <img src="gallery2.jpg" alt="Educational Support Initiative" class="w-full h-full object-cover">
                     </div>
-                    <div class="h-64 rounded-3xl bg-white border border-[#E2DBD0] flex flex-col items-center justify-center text-gray-400 p-6 text-center shadow-sm hover-lift">
-                        <i class="fa-regular fa-image text-3xl mb-2 text-[#8C6D53]"></i>
-                        <span class="text-xs font-semibold text-gray-600">Volunteer Gathering</span>
+                    <!-- Gallery Item 3 -->
+                    <div class="h-64 rounded-3xl bg-white border border-[#E2DBD0] overflow-hidden shadow-sm hover-lift flex items-center justify-center">
+                        <img src="gallery3.jpg" alt="Volunteer Gathering" class="w-full h-full object-cover">
                     </div>
                 </div>
             </div>
@@ -527,7 +532,6 @@
 
     <!-- SCRIPT FOR LOGIN, LOGOUT & WEBHOOK -->
     <script>
-        // Google Apps Script URL (Leave empty if not using backend sheet sync, or keep your active script URL)
         const GOOGLE_SCRIPT_URL = ""; 
 
         const loginGate = document.getElementById('loginGate');
