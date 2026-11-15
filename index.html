@@ -15,7 +15,6 @@
     <link rel="apple-touch-icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Outfit for body, Playfair Display for headings -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,11 +22,11 @@
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
         
         .hover-lift {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
         }
         .hover-lift:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 30px -10px rgba(74, 59, 50, 0.15);
+            transform: translateY(-7px);
+            box-shadow: 0 22px 35px -10px rgba(35, 23, 18, 0.22);
         }
         
         @keyframes fadeIn {
@@ -35,101 +34,193 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
+            animation: fadeIn 0.45s ease-out forwards;
         }
     </style>
 </head>
-<body class="bg-[#FBF9F5] text-[#3D322C] antialiased selection:bg-[#8C6D53] selection:text-white">
+<body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white">
 
-    <!-- LOGIN GATE MODAL -->
-    <div id="loginGate" class="fixed inset-0 z-50 flex items-center justify-center bg-[#2D231E]/80 backdrop-blur-md px-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-[#E2DBD0] transform transition-all animate-fade-in">
-            <div class="text-center mb-6">
-                <!-- Foundation Logo in Login Modal -->
-                <div class="w-16 h-16 bg-[#F4EFEB] rounded-2xl flex items-center justify-center mx-auto mb-3 border border-[#E2DBD0] shadow-sm overflow-hidden p-1">
+    <!-- SIGN IN / SIGN UP WITH OTP VERIFICATION MODAL -->
+    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-[#1A100C]/85 backdrop-blur-md px-4 hidden">
+        <div class="bg-[#FDFBF9] rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-[#D4C3B3] transform transition-all animate-fade-in relative">
+            <button onclick="toggleAuthModal(false)" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#EFE5DC] text-[#3B261D] hover:bg-[#3B261D] hover:text-white flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="w-16 h-16 bg-[#EFE5DC] rounded-2xl flex items-center justify-center mx-auto mb-3 border border-[#D4C3B3] shadow-sm overflow-hidden p-1.5">
                     <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                 </div>
-                <h2 class="text-2xl font-bold font-heading text-[#2D231E]">Welcome to Shikhor</h2>
-                <p class="text-sm text-gray-600 mt-1">Please enter your details to explore the platform</p>
+                <h2 class="text-2xl font-bold font-heading text-[#231712]">Shikhor Member Portal</h2>
+                <p class="text-xs text-[#6E5649] mt-1">Verify your Gmail, Yahoo, or any email with OTP</p>
             </div>
-            <form id="visitorLoginForm" class="space-y-4">
+
+            <!-- Tabs: Sign In vs Sign Up -->
+            <div id="authTabs" class="grid grid-cols-2 bg-[#EFE5DC] p-1 rounded-xl mb-5 border border-[#D4C3B3]">
+                <button type="button" id="tabSignIn" onclick="switchAuthTab('signin')" class="py-2 text-xs font-bold rounded-lg bg-[#3B261D] text-white shadow transition">
+                    Sign In
+                </button>
+                <button type="button" id="tabSignUp" onclick="switchAuthTab('signup')" class="py-2 text-xs font-bold rounded-lg text-[#3B261D] hover:bg-[#E2D3C5] transition">
+                    Sign Up
+                </button>
+            </div>
+
+            <!-- Error / Success Alert Box -->
+            <div id="authAlert" class="hidden mb-4 p-3 rounded-xl text-xs font-medium flex items-center gap-2"></div>
+
+            <!-- STEP 1A: SIGN IN FORM -->
+            <form id="signInForm" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-[#4A3B32] mb-1">Full Name</label>
-                    <input type="text" id="visitorName" required placeholder="e.g. Md. Rahim" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8C6D53] focus:border-transparent text-sm transition">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Email Address (Gmail / Yahoo / Any)</label>
+                    <input type="email" id="signInEmail" required placeholder="yourname@gmail.com or yahoo.com" class="w-full px-4 py-3 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-[#4A3B32] mb-1">Gmail Address</label>
-                    <input type="email" id="visitorEmail" required placeholder="yourname@gmail.com" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8C6D53] focus:border-transparent text-sm transition">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Password</label>
+                    <div class="relative">
+                        <input type="password" id="signInPassword" required placeholder="Enter your password" class="w-full px-4 py-3 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('signInPassword', this)" class="absolute right-3 top-3.5 text-[#7A6254] hover:text-[#231712]">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
-                <button type="submit" id="loginBtn" class="w-full py-3.5 bg-[#4A3B32] hover:bg-[#2D231E] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm transform active:scale-95">
-                    Enter Website <i class="fa-solid fa-arrow-right ml-2"></i>
+                <button type="submit" id="signInSubmitBtn" class="w-full py-3.5 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm transform active:scale-95">
+                    Send Verification Code <i class="fa-solid fa-paper-plane ml-2"></i>
                 </button>
             </form>
-            <p class="text-xs text-center text-gray-400 mt-4">Your entry is securely recorded to maintain community transparency.</p>
+
+            <!-- STEP 1B: SIGN UP FORM -->
+            <form id="signUpForm" class="space-y-3.5 hidden">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Full Name</label>
+                    <input type="text" id="signUpName" required placeholder="e.g. Md. Rahim" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Username</label>
+                    <input type="text" id="signUpUsername" required placeholder="e.g. rahim_bd" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Email Address (Gmail / Yahoo / Any)</label>
+                    <input type="email" id="signUpEmail" required placeholder="yourname@yahoo.com or gmail.com" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Create Password (Min 6 chars)</label>
+                    <div class="relative">
+                        <input type="password" id="signUpPassword" required minlength="6" placeholder="Create a strong password" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('signUpPassword', this)" class="absolute right-3 top-3 text-[#7A6254] hover:text-[#231712]">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" id="signUpSubmitBtn" class="w-full py-3.5 bg-[#5C3D2E] hover:bg-[#3B261D] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm transform active:scale-95">
+                    Send Verification Code <i class="fa-solid fa-envelope-circle-check ml-2"></i>
+                </button>
+            </form>
+
+            <!-- STEP 2: OTP VERIFICATION FORM -->
+            <form id="otpForm" class="space-y-4 hidden">
+                <div class="bg-[#F2E8DF] p-4 rounded-2xl border border-[#D4C3B3] text-center">
+                    <p class="text-xs text-[#4F392E]">We have sent a 6-digit verification code to:</p>
+                    <p id="otpTargetEmail" class="text-sm font-bold text-[#231712] mt-1"></p>
+                    <p class="text-[11px] text-[#8C583A] mt-1">(Please check Inbox or Spam folder)</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1 text-center">Enter 6-Digit Verification Code</label>
+                    <input type="text" id="otpInput" required maxlength="6" pattern="\d{6}" placeholder="------" class="w-full px-4 py-3.5 rounded-xl bg-white border-2 border-[#8C583A] focus:outline-none focus:ring-2 focus:ring-[#3B261D] text-center text-2xl font-extrabold tracking-[0.5em] text-[#231712]">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm">
+                    Verify Code & Grant Access <i class="fa-solid fa-shield-check ml-2"></i>
+                </button>
+                <button type="button" onclick="cancelOtpProcess()" class="w-full py-2 text-xs font-semibold text-[#6E5649] hover:text-[#231712] underline">
+                    Cancel / Change Email
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- IMAGE LIGHTBOX MODAL -->
+    <div id="lightboxModal" onclick="closeLightbox()" class="fixed inset-0 z-50 bg-[#1A100C]/90 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="relative max-w-4xl w-full text-center">
+            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-[#D4A373]">
+                <i class="fa-solid fa-xmark"></i> Close
+            </button>
+            <img id="lightboxImg" src="" alt="Gallery Preview" class="max-h-[80vh] mx-auto rounded-2xl shadow-2xl border-2 border-[#B88655]">
+            <p id="lightboxCaption" class="text-[#EFE5DC] text-sm mt-3 font-medium"></p>
         </div>
     </div>
 
     <!-- MAIN WEBSITE CONTAINER -->
-    <div id="mainWebsite" class="hidden">
+    <div id="mainWebsite">
 
         <!-- TOP BAR & NAVIGATION -->
-        <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#E2DBD0] shadow-sm transition-all">
+        <header class="sticky top-0 z-40 bg-[#FDFBF9]/95 backdrop-blur-md border-b border-[#D4C3B3] shadow-sm transition-all">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                 <a href="#" class="flex items-center gap-3 group">
-                    <!-- Foundation Logo in Header -->
-                    <div class="w-11 h-11 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition overflow-hidden border border-[#E2DBD0] p-1">
+                    <div class="w-11 h-11 bg-[#EFE5DC] rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition overflow-hidden border border-[#C4AE99] p-1">
                         <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                     </div>
                     <div>
-                        <span class="text-xl font-bold font-heading tracking-tight text-[#2D231E] block leading-none">SHIKHOR</span>
-                        <span class="text-[10px] tracking-widest text-[#8C6D53] font-bold uppercase mt-1 block">FOUNDATION</span>
+                        <span class="text-xl font-bold font-heading tracking-tight text-[#231712] block leading-none">SHIKHOR</span>
+                        <span class="text-[10px] tracking-widest text-[#8C583A] font-bold uppercase mt-1 block">FOUNDATION</span>
                     </div>
                 </a>
 
-                <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-600">
-                    <a href="#about" class="hover:text-[#8C6D53] transition">About</a>
-                    <a href="#mission" class="hover:text-[#8C6D53] transition">Mission & Vision</a>
-                    <a href="#initiatives" class="hover:text-[#8C6D53] transition">Initiatives</a>
-                    <a href="#team" class="hover:text-[#8C6D53] transition">Team</a>
-                    <a href="#donation" class="hover:text-[#8C6D53] transition">Donation</a>
-                    <a href="#gallery" class="hover:text-[#8C6D53] transition">Gallery</a>
-                    <a href="#contact" class="hover:text-[#8C6D53] transition">Contact</a>
+                <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-[#5C3D2E]">
+                    <a href="#about" class="hover:text-[#231712] hover:underline underline-offset-4 transition">About</a>
+                    <a href="#mission" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Mission & Vision</a>
+                    <a href="#initiatives" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Initiatives</a>
+                    <a href="#team" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Team</a>
+                    <a href="#donation" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Donation</a>
+                    <a href="#gallery" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Gallery</a>
+                    <a href="#contact" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Contact</a>
                 </nav>
 
-                <div class="flex items-center gap-3">
-                    <div id="userGreeting" class="hidden sm:flex items-center gap-2 text-xs font-semibold text-[#4A3B32] bg-[#F4EFEB] px-3.5 py-2 rounded-full border border-[#E2DBD0] shadow-inner"></div>
-                    <button onclick="handleLogout()" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl border border-red-200 transition" title="Logout">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-5 py-2.5 bg-[#4A3B32] hover:bg-[#2D231E] text-white text-sm font-semibold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                <div class="flex items-center gap-2.5">
+                    <div id="userSection">
+                        <button onclick="toggleAuthModal(true)" class="px-4 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-shield"></i> Sign In / Sign Up
+                        </button>
+                    </div>
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         Join Volunteer
                     </a>
+                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] border border-[#D4C3B3]">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
                 </div>
+            </div>
+
+            <!-- Mobile Dropdown Menu -->
+            <div id="mobileMenu" class="hidden lg:hidden bg-[#FDFBF9] border-b border-[#D4C3B3] px-6 py-4 space-y-3 text-sm font-semibold text-[#3B261D]">
+                <a href="#about" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">About Us</a>
+                <a href="#mission" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Mission & Vision</a>
+                <a href="#initiatives" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Initiatives</a>
+                <a href="#team" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Our Team</a>
+                <a href="#donation" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Donation</a>
+                <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
+                <a href="#contact" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Contact</a>
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
             </div>
         </header>
 
-        <!-- HERO SECTION WITH BIG ROUND LOGO -->
-        <section class="relative bg-gradient-to-b from-[#F4EFEB] to-[#FBF9F5] py-24 lg:py-32 overflow-hidden">
+        <!-- HERO SECTION -->
+        <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-24 lg:py-32 overflow-hidden border-b border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                
-                <!-- Big Round Logo on Top of Hero -->
-                <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-white shadow-xl border-4 border-[#E2DBD0] flex items-center justify-center overflow-hidden p-2 transform transition hover:scale-105">
+                <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-[#FDFBF9] shadow-2xl border-4 border-[#B88655] flex items-center justify-center overflow-hidden p-2.5 transform transition hover:scale-105">
                     <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                 </div>
 
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#EFE8E1] text-[#4A3B32] text-xs font-bold mb-6 tracking-wide border border-[#E2DBD0] shadow-sm">
+                <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#3B261D] text-[#F6EFE8] text-xs font-bold mb-6 tracking-widest shadow-md">
                     <span>HELP</span> • <span>SUPPORT</span> • <span>EMPOWER</span>
                 </div>
-                <h1 class="text-4xl sm:text-6xl font-extrabold font-heading text-[#2D231E] tracking-tight max-w-4xl mx-auto leading-tight">
-                    A little kindness can grow into a <span class="text-[#8C6D53]">better tomorrow.</span>
+                <h1 class="text-4xl sm:text-6xl font-extrabold font-heading text-[#231712] tracking-tight max-w-4xl mx-auto leading-tight">
+                    A little kindness can grow into a <span class="text-[#8C583A]">better tomorrow.</span>
                 </h1>
-                <p class="mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                <p class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed">
                     Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.
                 </p>
                 
-                <!-- SOCIAL MEDIA QUICK LINKS BUTTONS -->
                 <div class="mt-6 flex justify-center items-center gap-4">
-                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#165fe6] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-brands fa-facebook-f text-sm"></i> Facebook Page
                     </a>
                     <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
@@ -138,68 +229,70 @@
                 </div>
 
                 <div class="mt-10 flex flex-wrap justify-center gap-4">
-                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#4A3B32] hover:bg-[#2D231E] text-white font-semibold rounded-xl shadow-lg transition transform hover:-translate-y-1">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1">
                         Join as Volunteer <i class="fa-solid fa-arrow-right ml-2"></i>
                     </a>
-                    <a href="#donation" class="px-8 py-4 bg-white hover:bg-gray-50 text-[#4A3B32] font-semibold rounded-xl border border-[#E2DBD0] shadow-sm transition transform hover:-translate-y-1">
-                        Support Our Cause <i class="fa-solid fa-hand-holding-heart ml-2"></i>
+                    <a href="#donation" class="px-8 py-4 bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] font-semibold rounded-xl border-2 border-[#B88655] shadow-md transition transform hover:-translate-y-1">
+                        Support Our Cause <i class="fa-solid fa-hand-holding-heart ml-2 text-[#8C583A]"></i>
                     </a>
                 </div>
 
                 <!-- LIVE IMPACT COUNTER -->
                 <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-                    <div class="bg-white p-6 rounded-2xl border border-[#E2DBD0] shadow-sm hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">100+</h3>
-                        <p class="text-xs text-gray-600 mt-1 uppercase font-semibold">Families Supported</p>
+                    <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
+                        <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Families Supported</p>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl border border-[#E2DBD0] shadow-sm hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">50+</h3>
-                        <p class="text-xs text-gray-600 mt-1 uppercase font-semibold">Active Volunteers</p>
+                    <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
+                        <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Active Volunteers</p>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl border border-[#E2DBD0] shadow-sm hover-lift col-span-2 md:col-span-1">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C6D53]">10+</h3>
-                        <p class="text-xs text-gray-600 mt-1 uppercase font-semibold">Successful Events</p>
+                    <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift col-span-2 md:col-span-1">
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">10+</h3>
+                        <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Successful Events</p>
                     </div>
                 </div>
 
-                <p class="mt-8 text-xs font-bold tracking-widest text-[#8C6D53] uppercase">
+                <p class="mt-8 text-xs font-bold tracking-widest text-[#6E432B] uppercase">
                     COMPASSION ✳ COMMUNITY ✳ DIGNITY ✳ HOPE ✳ ACTION
                 </p>
             </div>
         </section>
 
         <!-- ABOUT US -->
-        <section id="about" class="py-24 bg-white">
+        <section id="about" class="py-24 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div>
-                        <span class="text-[#8C6D53] font-bold text-xs uppercase tracking-widest block mb-3">WHO WE ARE</span>
-                        <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#2D231E] tracking-tight">
+                        <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">WHO WE ARE</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">
                             We believe in the power of people helping people.
                         </h2>
-                        <p class="mt-6 text-gray-600 leading-relaxed text-base sm:text-lg">
+                        <p class="mt-6 text-[#4F392E] leading-relaxed text-base sm:text-lg">
                             Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.
                         </p>
-                        <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div class="p-5 bg-[#F9F6F0] rounded-2xl border border-[#E2DBD0] hover-lift">
-                                <h4 class="font-bold font-heading text-[#4A3B32] text-lg mb-1">Humanity</h4>
-                                <p class="text-xs text-gray-600">Every person deserves dignity, care, and support.</p>
+                        <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
+                                <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Humanity</h4>
+                                <p class="text-xs text-[#5C3D2E]">Every person deserves dignity, care, and support.</p>
                             </div>
-                            <div class="p-5 bg-[#F9F6F0] rounded-2xl border border-[#E2DBD0] hover-lift">
-                                <h4 class="font-bold font-heading text-[#4A3B32] text-lg mb-1">Togetherness</h4>
-                                <p class="text-xs text-gray-600">Collective effort builds sustainable impact.</p>
+                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
+                                <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Togetherness</h4>
+                                <p class="text-xs text-[#5C3D2E]">Collective effort builds sustainable impact.</p>
                             </div>
-                            <div class="p-5 bg-[#F9F6F0] rounded-2xl border border-[#E2DBD0] hover-lift">
-                                <h4 class="font-bold font-heading text-[#4A3B32] text-lg mb-1">Transparency</h4>
-                                <p class="text-xs text-gray-600">Trust grows through honesty and accountability.</p>
+                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
+                                <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Transparency</h4>
+                                <p class="text-xs text-[#5C3D2E]">Trust grows through honesty and accountability.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-[#F4EFEB] p-8 sm:p-12 rounded-3xl border border-[#E2DBD0] relative shadow-sm">
-                        <div class="absolute -top-4 -right-4 w-24 h-24 bg-[#E0D3C3] rounded-full blur-2xl"></div>
-                        <h3 class="text-2xl font-bold font-heading text-[#2D231E] mb-4">Tagline</h3>
-                        <p class="text-xl italic font-medium text-[#8C6D53] mb-6">"Together for a Better Tomorrow."</p>
-                        <p class="text-gray-600 text-sm leading-relaxed">
+                    <div class="bg-[#3B261D] text-[#F6EFE8] p-8 sm:p-12 rounded-3xl border border-[#5C3D2E] relative shadow-xl">
+                        <div class="w-12 h-12 rounded-2xl bg-[#5C3D2E] text-[#E6B88A] flex items-center justify-center text-xl mb-5">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold font-heading text-white mb-3">Our Core Motto</h3>
+                        <p class="text-xl italic font-medium text-[#E6B88A] mb-6">"Together for a Better Tomorrow."</p>
+                        <p class="text-[#D4C3B3] text-sm leading-relaxed">
                             We work tirelessly to respond to real needs with empathy, responsibility, and total transparency, ensuring every helping hand reaches the right place.
                         </p>
                     </div>
@@ -208,28 +301,28 @@
         </section>
 
         <!-- MISSION & VISION -->
-        <section id="mission" class="py-24 bg-[#F4EFEB] border-y border-[#E2DBD0]">
+        <section id="mission" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <span class="text-[#8C6D53] font-bold text-xs uppercase tracking-widest block mb-3">OUR DIRECTION</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#2D231E] tracking-tight">Mission & Vision</h2>
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR DIRECTION</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Mission & Vision</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-[#E2DBD0] hover-lift">
-                        <div class="w-12 h-12 bg-[#F4EFEB] text-[#8C6D53] rounded-xl flex items-center justify-center font-bold text-xl mb-6 border border-[#E2DBD0]">
+                    <div class="bg-[#FDFBF9] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-[#E6B88A] rounded-xl flex items-center justify-center font-bold text-xl mb-6">
                             <i class="fa-solid fa-eye"></i>
                         </div>
-                        <h3 class="text-2xl font-bold font-heading text-[#2D231E] mb-4">Our Vision</h3>
-                        <p class="text-gray-600 leading-relaxed">
+                        <h3 class="text-2xl font-bold font-heading text-[#231712] mb-4">Our Vision</h3>
+                        <p class="text-[#4F392E] leading-relaxed">
                             A compassionate and inclusive society where every individual has the opportunity to live with dignity, hope, and a secure future.
                         </p>
                     </div>
-                    <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-[#E2DBD0] hover-lift">
-                        <div class="w-12 h-12 bg-[#F4EFEB] text-[#8C6D53] rounded-xl flex items-center justify-center font-bold text-xl mb-6 border border-[#E2DBD0]">
+                    <div class="bg-[#FDFBF9] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-[#E6B88A] rounded-xl flex items-center justify-center font-bold text-xl mb-6">
                             <i class="fa-solid fa-bullseye"></i>
                         </div>
-                        <h3 class="text-2xl font-bold font-heading text-[#2D231E] mb-4">Our Mission</h3>
-                        <p class="text-gray-600 leading-relaxed">
+                        <h3 class="text-2xl font-bold font-heading text-[#231712] mb-4">Our Mission</h3>
+                        <p class="text-[#4F392E] leading-relaxed">
                             To mobilize people, resources, and ideas for practical community support, impactful educational initiatives, and meaningful social change.
                         </p>
                     </div>
@@ -238,37 +331,37 @@
         </section>
 
         <!-- INITIATIVES -->
-        <section id="initiatives" class="py-24 bg-white">
+        <section id="initiatives" class="py-24 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <span class="text-[#8C6D53] font-bold text-xs uppercase tracking-widest block mb-3">OUR INITIATIVES</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#2D231E] tracking-tight">Turning compassion into action.</h2>
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR INITIATIVES</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Turning compassion into action.</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="p-8 rounded-3xl bg-[#FBF9F5] border border-[#E2DBD0] hover-lift">
-                        <div class="w-12 h-12 bg-[#4A3B32] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-hands-holding-child"></i>
                         </div>
-                        <h3 class="text-xl font-bold font-heading text-[#2D231E] mb-3">Humanitarian Assistance</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">
+                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">Humanitarian Assistance</h3>
+                        <p class="text-[#4F392E] text-sm leading-relaxed">
                             Supporting people and families experiencing hardship through thoughtful winter clothing distribution, relief packages, and emergency support.
                         </p>
                     </div>
-                    <div class="p-8 rounded-3xl bg-[#FBF9F5] border border-[#E2DBD0] hover-lift">
-                        <div class="w-12 h-12 bg-[#4A3B32] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-book-open"></i>
                         </div>
-                        <h3 class="text-xl font-bold font-heading text-[#2D231E] mb-3">Educational Support</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">
+                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">Educational Support</h3>
+                        <p class="text-[#4F392E] text-sm leading-relaxed">
                             Empowering rural and disadvantaged students by providing essential educational materials, books, and learning guidance for a brighter future.
                         </p>
                     </div>
-                    <div class="p-8 rounded-3xl bg-[#FBF9F5] border border-[#E2DBD0] hover-lift">
-                        <div class="w-12 h-12 bg-[#4A3B32] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-people-group"></i>
                         </div>
-                        <h3 class="text-xl font-bold font-heading text-[#2D231E] mb-3">Community Support & Awareness</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">
+                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">Community Support & Awareness</h3>
+                        <p class="text-[#4F392E] text-sm leading-relaxed">
                             Bringing people together to identify community needs, foster cooperation, and respond with care, responsibility, and unity.
                         </p>
                     </div>
@@ -277,222 +370,214 @@
         </section>
 
         <!-- TEAM DIRECTORY -->
-        <section id="team" class="py-24 bg-[#F4EFEB] border-y border-[#E2DBD0]">
+        <section id="team" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <span class="text-[#8C6D53] font-bold text-xs uppercase tracking-widest block mb-3">THE PEOPLE BEHIND SHIKHOR</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#2D231E] tracking-tight">Our Leadership & Panel Members</h2>
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">THE PEOPLE BEHIND SHIKHOR</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Our Leadership & Panel Members</h2>
                 </div>
 
                 <!-- 1. FOUNDER CARD -->
-                <div class="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-[#E2DBD0] max-w-4xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
+                <div class="bg-[#FDFBF9] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
                     <div class="text-center">
-                        <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                        <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#8C583A] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="zarif.jpg" alt="Md. Shewise Al Islam Zarif" class="w-full h-full object-cover">
                         </div>
-                        <h3 class="text-xl font-bold font-heading text-[#2D231E]">Md. Shewise Al Islam Zarif</h3>
-                        <p class="text-sm font-bold text-[#8C6D53] mt-1">Founder & CEO / President</p>
+                        <h3 class="text-xl font-bold font-heading text-[#231712]">Md. Shewise Al Islam Zarif</h3>
+                        <p class="text-sm font-bold text-[#8C583A] mt-1">Founder & CEO / President</p>
                     </div>
                     <div class="md:col-span-2">
-                        <span class="text-xs uppercase font-bold text-[#4A3B32] tracking-wider block mb-2">Message from the Founder</span>
-                        <blockquote class="text-gray-700 italic text-base leading-relaxed mb-4">
+                        <span class="text-xs uppercase font-bold text-[#5C3D2E] tracking-wider block mb-2">Message from the Founder</span>
+                        <blockquote class="text-[#3B261D] italic text-base leading-relaxed mb-4">
                             "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow."
                         </blockquote>
-                        <p class="text-xs font-semibold text-gray-500">— Md. Shewise Al Islam Zarif</p>
+                        <p class="text-xs font-semibold text-[#6E5649]">— Md. Shewise Al Islam Zarif</p>
                     </div>
                 </div>
 
                 <!-- PANEL MEMBERS GRID -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- 1. Vice President -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="ahsan.jpg" alt="Ahsan Zaman" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">Ahsan Zaman</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Vice President</p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Ahsan Zaman</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President</p>
                     </div>
 
-                    <!-- 2. Vice President of Program Organisation -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="nafew.jpg" alt="Nafew Khalil" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">Nafew Khalil</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Vice President of Program Organisation</p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Nafew Khalil</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President of Program Organisation</p>
                     </div>
 
-                    <!-- 3. Head Of Administration & Marketing -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="shakhawat.jpg" alt="Md. Shakhawat Hossain Sayem" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">Md. Shakhawat Hossain Sayem</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Head Of Administration & Marketing<br><span class="text-[10px] text-gray-500 font-normal">(Acting IT Secretary)</span></p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Shakhawat Hossain Sayem</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration & Marketing<br><span class="text-[10px] text-[#6E5649] font-normal">(Acting IT Secretary)</span></p>
                     </div>
 
-                    <!-- 4. Head of Accounts & Finance -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="minhajul.jpg" alt="MD. Minhajul Islam" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">MD. Minhajul Islam</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Head of Accounts & Finance</p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">MD. Minhajul Islam</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts & Finance</p>
                     </div>
 
-                    <!-- 5. Head Of Volunteer -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="shafi.jpg" alt="Faymul Islam Shafi" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">Faymul Islam Shafi</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Head Of Volunteer</p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Faymul Islam Shafi</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Volunteer</p>
                     </div>
 
-                    <!-- 6. Asst. Head Of Administration -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="sayed.jpg" alt="Sayed Bin Kamal" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">Sayed Bin Kamal</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Asst. Head Of Administration</p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Sayed Bin Kamal</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Administration</p>
                     </div>
 
-                    <!-- 7. Asst. Head Of Accounts & Finance -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="alif.jpg" alt="Alif Hasan Ayman" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">Alif Hasan Ayman</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Asst. Head Of Accounts & Finance</p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Alif Hasan Ayman</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Accounts & Finance</p>
                     </div>
 
-                    <!-- 8. Asst. Head Of Marketing -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="rikto.png" alt="Rikto Ruddur Lyric" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">Rikto Ruddur Lyric</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Asst. Head Of Marketing</p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Rikto Ruddur Lyric</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Marketing</p>
                     </div>
 
-                    <!-- 9. Asst. Head Of Volunteer -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="mayasha.jpg" alt="Mayasha Afrin" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">Mayasha Afrin</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Asst. Head Of Volunteer</p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Mayasha Afrin</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Volunteer</p>
                     </div>
 
-                    <!-- 10. Executive Member -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-[#E2DBD0] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FBF9F5] border-2 border-[#C8BCAE] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="wahid.jpg" alt="Wahid Yashfi" class="w-full h-full object-cover">
                         </div>
-                        <h4 class="font-bold font-heading text-[#2D231E] text-lg">Wahid Yashfi</h4>
-                        <p class="text-xs font-bold text-[#8C6D53] mt-1">Executive Member</p>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Wahid Yashfi</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- DEDICATED DONATION SECTION -->
-        <section id="donation" class="py-24 bg-white">
+        <section id="donation" class="py-24 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <span class="text-[#8C6D53] font-bold text-xs uppercase tracking-widest block mb-3">SUPPORT OUR CAUSE</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#2D231E] tracking-tight">Make a Donation</h2>
-                    <p class="mt-4 text-gray-600 text-sm leading-relaxed">
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">SUPPORT OUR CAUSE</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Make a Donation</h2>
+                    <p class="mt-4 text-[#4F392E] text-sm leading-relaxed">
                         Your small contribution can bring meaningful changes to helpless lives. Support us securely through bKash or Nagad.
                     </p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <!-- bKash Card -->
-                    <div class="bg-[#FBF9F5] rounded-3xl p-8 border border-[#E2DBD0] shadow-sm hover-lift text-center">
+                    <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
                             <img src="bkash.png" alt="bKash Logo" class="h-14 object-contain">
                         </div>
-                        <h3 class="text-2xl font-bold font-heading text-[#2D231E] mb-2">bKash Personal</h3>
-                        <p class="text-xs text-gray-500 mb-6">Send Money</p>
-                        <div class="bg-white py-3 px-6 rounded-xl border border-[#E2DBD0] inline-flex items-center gap-3 mb-4 shadow-inner">
-                            <span id="bkashNum" class="text-lg font-bold text-[#4A3B32] tracking-wider">+8801956631465</span>
-                            <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#4A3B32] text-white px-3 py-1.5 rounded-lg hover:bg-[#2D231E] transition">Copy</button>
+                        <h3 class="text-2xl font-bold font-heading text-[#231712] mb-2">bKash Personal</h3>
+                        <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
+                        <div class="bg-[#FDFBF9] py-3 px-6 rounded-xl border border-[#C4AE99] inline-flex items-center gap-3 mb-4 shadow-inner">
+                            <span id="bkashNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
+                            <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
-                        <p class="text-[11px] text-gray-500">Reference: Shikhor Donation</p>
+                        <p class="text-[11px] text-[#6E5649]">Reference: Shikhor Donation</p>
                     </div>
 
-                    <!-- Nagad Card -->
-                    <div class="bg-[#FBF9F5] rounded-3xl p-8 border border-[#E2DBD0] shadow-sm hover-lift text-center">
+                    <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
                             <img src="nagad.png" alt="Nagad Logo" class="h-14 object-contain">
                         </div>
-                        <h3 class="text-2xl font-bold font-heading text-[#2D231E] mb-2">Nagad Personal</h3>
-                        <p class="text-xs text-gray-500 mb-6">Send Money</p>
-                        <div class="bg-white py-3 px-6 rounded-xl border border-[#E2DBD0] inline-flex items-center gap-3 mb-4 shadow-inner">
-                            <span id="nagadNum" class="text-lg font-bold text-[#4A3B32] tracking-wider">+8801956631465</span>
-                            <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#4A3B32] text-white px-3 py-1.5 rounded-lg hover:bg-[#2D231E] transition">Copy</button>
+                        <h3 class="text-2xl font-bold font-heading text-[#231712] mb-2">Nagad Personal</h3>
+                        <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
+                        <div class="bg-[#FDFBF9] py-3 px-6 rounded-xl border border-[#C4AE99] inline-flex items-center gap-3 mb-4 shadow-inner">
+                            <span id="nagadNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
+                            <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
-                        <p class="text-[11px] text-gray-500">Reference: Shikhor Donation</p>
+                        <p class="text-[11px] text-[#6E5649]">Reference: Shikhor Donation</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- GALLERY -->
-        <section id="gallery" class="py-24 bg-[#F4EFEB] border-y border-[#E2DBD0]">
+        <section id="gallery" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <span class="text-[#8C6D53] font-bold text-xs uppercase tracking-widest block mb-3">OUR GALLERY</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#2D231E] tracking-tight">Moments of Humanity</h2>
-                    <p class="mt-4 text-gray-600 text-sm">Every picture tells a story of kindness, compassion, and hope.</p>
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR GALLERY</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Moments of Humanity</h2>
+                    <p class="mt-4 text-[#4F392E] text-sm">Click any photo to view full screen. Every picture tells a story of hope.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Gallery Item 1 -->
-                    <div class="h-64 rounded-3xl bg-white border border-[#E2DBD0] overflow-hidden shadow-sm hover-lift flex items-center justify-center">
-                        <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover">
+                    <div onclick="openLightbox('gallery1.jpg', 'Community Support Activity')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                        <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
+                            <i class="fa-solid fa-expand mr-2"></i> View Photo
+                        </div>
                     </div>
-                    <!-- Gallery Item 2 -->
-                    <div class="h-64 rounded-3xl bg-white border border-[#E2DBD0] overflow-hidden shadow-sm hover-lift flex items-center justify-center">
-                        <img src="gallery2.jpg" alt="Educational Support Initiative" class="w-full h-full object-cover">
+                    <div onclick="openLightbox('gallery2.jpg', 'Educational Support Initiative')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                        <img src="gallery2.jpg" alt="Educational Support Initiative" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
+                            <i class="fa-solid fa-expand mr-2"></i> View Photo
+                        </div>
                     </div>
-                    <!-- Gallery Item 3 -->
-                    <div class="h-64 rounded-3xl bg-white border border-[#E2DBD0] overflow-hidden shadow-sm hover-lift flex items-center justify-center">
-                        <img src="gallery3.jpg" alt="Volunteer Gathering" class="w-full h-full object-cover">
+                    <div onclick="openLightbox('gallery3.jpg', 'Volunteer Gathering')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                        <img src="gallery3.jpg" alt="Volunteer Gathering" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
+                            <i class="fa-solid fa-expand mr-2"></i> View Photo
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- VOLUNTEER SECTION -->
-        <section class="py-20 bg-[#4A3B32] text-white text-center">
+        <!-- VOLUNTEER CALLOUT -->
+        <section class="py-20 bg-[#3B261D] text-white text-center border-b border-[#5C3D2E]">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl sm:text-4xl font-extrabold font-heading mb-4">Want to Make a Real Difference?</h2>
-                <p class="text-[#E0D3C3] max-w-xl mx-auto mb-8 text-sm sm:text-base">
+                <p class="text-[#E8D9CB] max-w-xl mx-auto mb-8 text-sm sm:text-base">
                     Join our team of dedicated volunteers and help us spread compassion where it's needed most.
                 </p>
-                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-block px-8 py-4 bg-white text-[#2D231E] font-bold rounded-xl shadow-lg hover:bg-[#F4EFEB] transition transform hover:-translate-y-1">
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1">
                     Apply as a Volunteer Now ↗
                 </a>
             </div>
         </section>
 
         <!-- CONTACT & FOOTER -->
-        <footer id="contact" class="bg-[#2D231E] text-white py-16">
+        <footer id="contact" class="bg-[#231712] text-white py-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                 <div>
                     <div class="flex items-center gap-3 mb-4">
-                        <!-- Foundation Logo in Footer -->
-                        <div class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center border border-[#5E4C41] overflow-hidden p-1">
+                        <div class="w-10 h-10 bg-[#FDFBF9] rounded-2xl flex items-center justify-center border border-[#8C583A] overflow-hidden p-1">
                             <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                         </div>
                         <span class="text-lg font-bold font-heading tracking-tight">SHIKHOR FOUNDATION</span>
                     </div>
-                    <p class="text-gray-300 text-xs leading-relaxed mb-4">
+                    <p class="text-[#D4C3B3] text-xs leading-relaxed mb-4">
                         Rooted in Humanity, Growing with Compassion. Together for a Better Tomorrow.
                     </p>
-                    <!-- Social Media Links in Footer -->
                     <div class="flex items-center gap-3">
                         <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="w-9 h-9 rounded-xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 transition shadow-md" title="Facebook">
                             <i class="fa-brands fa-facebook-f text-sm"></i>
@@ -503,8 +588,8 @@
                     </div>
                 </div>
                 <div>
-                    <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#C8BCAE]">Quick Links</h4>
-                    <ul class="space-y-2 text-xs text-gray-300">
+                    <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#E6B88A]">Quick Links</h4>
+                    <ul class="space-y-2 text-xs text-[#D4C3B3]">
                         <li><a href="#about" class="hover:text-white transition">About Us</a></li>
                         <li><a href="#mission" class="hover:text-white transition">Mission & Vision</a></li>
                         <li><a href="#donation" class="hover:text-white transition">Donation</a></li>
@@ -512,81 +597,336 @@
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#C8BCAE]">Contact Us</h4>
-                    <p class="text-xs text-gray-300 mb-2"><i class="fa-solid fa-envelope mr-2"></i> shikhor.foundation.bd@gmail.com</p>
-                    <p class="text-xs text-gray-300 mb-2"><i class="fa-solid fa-phone mr-2"></i> +8801956631465 (WhatsApp available)</p>
-                    <p class="text-xs text-gray-300"><i class="fa-solid fa-location-dot mr-2"></i> Bangladesh</p>
+                    <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#E6B88A]">Contact Us</h4>
+                    <p class="text-xs text-[#D4C3B3] mb-2"><i class="fa-solid fa-envelope mr-2 text-[#E6B88A]"></i> shikhor.foundation.bd@gmail.com</p>
+                    <p class="text-xs text-[#D4C3B3] mb-2"><i class="fa-solid fa-phone mr-2 text-[#E6B88A]"></i> +8801956631465 (WhatsApp available)</p>
+                    <p class="text-xs text-[#D4C3B3]"><i class="fa-solid fa-location-dot mr-2 text-[#E6B88A]"></i> Bangladesh</p>
                 </div>
             </div>
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/10 pt-8 text-center text-xs text-gray-400">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/10 pt-8 text-center text-xs text-[#A68F80]">
                 &copy; 2026 Shikhor Foundation. All rights reserved.
             </div>
         </footer>
 
     </div>
 
+    <!-- BACK TO TOP BUTTON -->
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-24 right-6 z-40 bg-[#3B261D] text-[#E6B88A] border border-[#8C583A] w-11 h-11 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition" title="Back to Top">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
     <!-- FLOATING WHATSAPP BUTTON -->
     <a href="https://wa.me/8801956631465" target="_blank" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition duration-300" title="Chat on WhatsApp">
         <i class="fa-brands fa-whatsapp text-2xl"></i>
     </a>
 
-    <!-- SCRIPT FOR LOGIN, LOGOUT & WEBHOOK -->
+    <!-- SCRIPT FOR OTP VERIFICATION, MULTI-EMAIL AUTH & DUAL-SHEET TRACKING -->
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzXTEqC8iZsa6l1LMdYT9OBd97DYRwyUM5Frw_O7qS2pcSspjQTvskNgPNiGqgJZJc/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHaTgomjTyiGx64LBDvCFRV0R_MgKFsfk6gEANGnkqeeVn-Ps5NmJb3aOw6wRfn_37/exec"; 
 
-        const loginGate = document.getElementById('loginGate');
-        const mainWebsite = document.getElementById('mainWebsite');
-        const visitorLoginForm = document.getElementById('visitorLoginForm');
-        const userGreeting = document.getElementById('userGreeting');
+        const authModal = document.getElementById('authModal');
+        const authAlert = document.getElementById('authAlert');
+        const authTabs = document.getElementById('authTabs');
+        const signInForm = document.getElementById('signInForm');
+        const signUpForm = document.getElementById('signUpForm');
+        const otpForm = document.getElementById('otpForm');
+        const userSection = document.getElementById('userSection');
+
+        let pendingAuthData = null;
+        let generatedOTP = null;
+
+        function getReadableDeviceInfo() {
+            const ua = navigator.userAgent;
+            let deviceType = "Desktop / PC";
+            let os = "Unknown OS";
+            let browser = "Unknown Browser";
+
+            if (/Android/i.test(ua)) {
+                deviceType = "Android Mobile";
+                const match = ua.match(/Android\s([0-9.]+)/);
+                os = match ? `Android ${match[1]}` : "Android";
+            } else if (/iPhone|iPad|iPod/i.test(ua)) {
+                deviceType = "iOS Device (iPhone/iPad)";
+                os = "iOS";
+            } else if (/Windows/i.test(ua)) {
+                deviceType = "Windows PC";
+                os = "Windows";
+            } else if (/Mac/i.test(ua)) {
+                deviceType = "MacBook / Mac";
+                os = "macOS";
+            } else if (/Linux/i.test(ua)) {
+                deviceType = "Linux PC";
+                os = "Linux";
+            }
+
+            if (/Edg/i.test(ua)) browser = "Microsoft Edge";
+            else if (/Chrome/i.test(ua)) browser = "Google Chrome";
+            else if (/Safari/i.test(ua)) browser = "Apple Safari";
+            else if (/Firefox/i.test(ua)) browser = "Mozilla Firefox";
+
+            return `${deviceType} (${os} - ${browser}) | Screen: ${window.screen.width}x${window.screen.height}`;
+        }
+
+        function isValidEmailFormat(email) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email.trim());
+        }
+
+        function showAlert(message, isError = true) {
+            authAlert.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'border-red-300', 'bg-green-100', 'text-green-800', 'border-green-300');
+            if (isError) {
+                authAlert.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-300');
+                authAlert.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-600"></i> <span>${message}</span>`;
+            } else {
+                authAlert.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-300');
+                authAlert.innerHTML = `<i class="fa-solid fa-circle-check text-green-600"></i> <span>${message}</span>`;
+            }
+        }
+
+        function toggleAuthModal(show) {
+            authAlert.classList.add('hidden');
+            if (show) {
+                cancelOtpProcess();
+                authModal.classList.remove('hidden');
+            } else {
+                authModal.classList.add('hidden');
+            }
+        }
+
+        function switchAuthTab(tab) {
+            authAlert.classList.add('hidden');
+            const tabSignIn = document.getElementById('tabSignIn');
+            const tabSignUp = document.getElementById('tabSignUp');
+
+            if (tab === 'signin') {
+                signInForm.classList.remove('hidden');
+                signUpForm.classList.add('hidden');
+                tabSignIn.classList.add('bg-[#3B261D]', 'text-white', 'shadow');
+                tabSignIn.classList.remove('text-[#3B261D]');
+                tabSignUp.classList.remove('bg-[#3B261D]', 'text-white', 'shadow');
+                tabSignUp.classList.add('text-[#3B261D]');
+            } else {
+                signUpForm.classList.remove('hidden');
+                signInForm.classList.add('hidden');
+                tabSignUp.classList.add('bg-[#3B261D]', 'text-white', 'shadow');
+                tabSignUp.classList.remove('text-[#3B261D]');
+                tabSignIn.classList.remove('bg-[#3B261D]', 'text-white', 'shadow');
+                tabSignIn.classList.add('text-[#3B261D]');
+            }
+        }
+
+        function cancelOtpProcess() {
+            pendingAuthData = null;
+            generatedOTP = null;
+            otpForm.classList.add('hidden');
+            authTabs.classList.remove('hidden');
+            switchAuthTab('signin');
+            document.getElementById('otpInput').value = "";
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.innerHTML = `<i class="fa-regular fa-eye-slash"></i>`;
+            } else {
+                input.type = "password";
+                btn.innerHTML = `<i class="fa-regular fa-eye"></i>`;
+            }
+        }
+
+        function sendToGoogleSheet(payload) {
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(err => console.log('Tracking error:', err));
+        }
+
+        function updateHeaderForLoggedInUser(user) {
+            userSection.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#231712] bg-[#EFE5DC] px-3 py-2 rounded-xl border border-[#C4AE99]" title="Verified Member">
+                        <i class="fa-solid fa-circle-check text-green-700"></i>
+                        <span>@${user.username}</span>
+                    </div>
+                    <button onclick="handleLogout()" class="px-2.5 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-xl border border-red-300 transition" title="Sign Out">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            `;
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const savedName = localStorage.getItem('shikhor_visitor_name');
-            if (savedName) {
-                loginGate.classList.add('hidden');
-                mainWebsite.classList.remove('hidden');
-                userGreeting.innerHTML = `<i class="fa-solid fa-user text-[#8C6D53]"></i> ${savedName}`;
+            const activeUser = JSON.parse(localStorage.getItem('shikhor_active_user'));
+            if (activeUser) {
+                updateHeaderForLoggedInUser(activeUser);
             }
+
+            sendToGoogleSheet({
+                type: "visit",
+                status: activeUser ? "Returning Member Visit" : "Direct Guest Visit",
+                userEmail: activeUser ? `${activeUser.fullName} (${activeUser.email})` : "Guest Visitor",
+                deviceInfo: getReadableDeviceInfo()
+            });
         });
 
-        visitorLoginForm.addEventListener('submit', function(e) {
+        signUpForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const name = document.getElementById('visitorName').value.trim();
-            const email = document.getElementById('visitorEmail').value.trim();
+            const fullName = document.getElementById('signUpName').value.trim();
+            const username = document.getElementById('signUpUsername').value.trim().replace(/\s+/g, '_').toLowerCase();
+            const email = document.getElementById('signUpEmail').value.trim().toLowerCase();
+            const password = document.getElementById('signUpPassword').value;
 
-            if (!name || !email) return;
-
-            localStorage.setItem('shikhor_visitor_name', name);
-            localStorage.setItem('shikhor_visitor_email', email);
-
-            loginGate.classList.add('hidden');
-            mainWebsite.classList.remove('hidden');
-            userGreeting.innerHTML = `<i class="fa-solid fa-user text-[#8C6D53]"></i> ${name}`;
-
-            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, email: email, status: 'Login' })
-                }).catch(err => console.log('Webhook error: ', err));
+            if (!isValidEmailFormat(email)) {
+                showAlert("Error: Please enter a valid email address (Gmail, Yahoo, etc.)!");
+                return;
             }
+
+            let usersDB = JSON.parse(localStorage.getItem('shikhor_users_db')) || [];
+            if (usersDB.some(u => u.email === email)) {
+                showAlert("This email is already registered! Please switch to Sign In.");
+                return;
+            }
+
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            pendingAuthData = {
+                mode: "signup",
+                user: { fullName, username, email, password }
+            };
+
+            sendToGoogleSheet({
+                type: "send_otp",
+                email: email,
+                otp: generatedOTP,
+                purpose: "New Account Sign Up"
+            });
+
+            signUpForm.classList.add('hidden');
+            authTabs.classList.add('hidden');
+            otpForm.classList.remove('hidden');
+            document.getElementById('otpTargetEmail').innerText = email;
+            showAlert("Verification code sent! Check your email inbox.", false);
+        });
+
+        signInForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('signInEmail').value.trim().toLowerCase();
+            const password = document.getElementById('signInPassword').value;
+
+            if (!isValidEmailFormat(email)) {
+                showAlert("Error: Please enter a valid email address!");
+                return;
+            }
+
+            let usersDB = JSON.parse(localStorage.getItem('shikhor_users_db')) || [];
+            const matchedUser = usersDB.find(u => u.email === email);
+
+            if (!matchedUser) {
+                showAlert("No account found with this email. Please Sign Up first!");
+                return;
+            }
+
+            if (matchedUser.password !== password) {
+                showAlert("Incorrect password! Please try again.");
+                return;
+            }
+
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            pendingAuthData = {
+                mode: "signin",
+                user: matchedUser
+            };
+
+            sendToGoogleSheet({
+                type: "send_otp",
+                email: email,
+                otp: generatedOTP,
+                purpose: "Member Sign In Verification"
+            });
+
+            signInForm.classList.add('hidden');
+            authTabs.classList.add('hidden');
+            otpForm.classList.remove('hidden');
+            document.getElementById('otpTargetEmail').innerText = email;
+            showAlert("Verification code sent! Please enter the 6-digit code.", false);
+        });
+
+        otpForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const enteredOtp = document.getElementById('otpInput').value.trim();
+
+            if (!pendingAuthData || !generatedOTP) {
+                showAlert("Session expired. Please try again.");
+                cancelOtpProcess();
+                return;
+            }
+
+            if (enteredOtp !== generatedOTP) {
+                showAlert("Invalid Verification Code! Access Denied. Please enter the exact code sent to your email.");
+                return;
+            }
+
+            const user = pendingAuthData.user;
+            let loginCount = parseInt(localStorage.getItem(`shikhor_login_count_${user.email}`)) || 0;
+            loginCount += 1;
+            localStorage.setItem(`shikhor_login_count_${user.email}`, loginCount);
+
+            if (pendingAuthData.mode === "signup") {
+                let usersDB = JSON.parse(localStorage.getItem('shikhor_users_db')) || [];
+                usersDB.push(user);
+                localStorage.setItem('shikhor_users_db', JSON.stringify(usersDB));
+            }
+
+            localStorage.setItem('shikhor_active_user', JSON.stringify(user));
+
+            sendToGoogleSheet({
+                type: "auth",
+                fullName: user.fullName,
+                username: user.username,
+                email: user.email,
+                action: pendingAuthData.mode === "signup" ? `New Sign Up (Verified - Login #${loginCount})` : `Sign In (Verified - Login #${loginCount})`,
+                deviceInfo: getReadableDeviceInfo()
+            });
+
+            updateHeaderForLoggedInUser(user);
+            showAlert("Verification Successful! Access Granted.", false);
+
+            setTimeout(() => {
+                toggleAuthModal(false);
+            }, 1200);
         });
 
         function handleLogout() {
-            const name = localStorage.getItem('shikhor_visitor_name');
-            const email = localStorage.getItem('shikhor_visitor_email');
-
-            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "" && name && email) {
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, email: email, status: 'Logout' })
-                }).catch(err => console.log('Webhook error: ', err));
+            const activeUser = JSON.parse(localStorage.getItem('shikhor_active_user'));
+            if (activeUser) {
+                sendToGoogleSheet({
+                    type: "auth",
+                    fullName: activeUser.fullName,
+                    username: activeUser.username,
+                    email: activeUser.email,
+                    action: "Sign Out / Logout",
+                    deviceInfo: getReadableDeviceInfo()
+                });
             }
-
-            localStorage.clear();
+            localStorage.removeItem('shikhor_active_user');
             location.reload();
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        function openLightbox(src, caption) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightboxCaption').innerText = caption;
+            document.getElementById('lightboxModal').classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.add('hidden');
         }
 
         function copyToClipboard(text, btn) {
