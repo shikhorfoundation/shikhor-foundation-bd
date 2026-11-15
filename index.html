@@ -508,6 +508,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <!-- bKash Card -->
                     <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
                             <img src="bkash.png" alt="bKash Logo" class="h-14 object-contain">
@@ -518,9 +519,15 @@
                             <span id="bkashNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
                             <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
-                        <p class="text-[11px] text-[#6E5649]">Reference: Shikhor Donation</p>
+                        <div class="mt-2">
+                            <a href="tel:*247*#*8801956631465#" class="inline-block px-4 py-2 bg-[#E2136F] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
+                                <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*247#)
+                            </a>
+                        </div>
+                        <p class="text-[11px] text-[#6E5649] mt-3">Reference: Shikhor Donation</p>
                     </div>
 
+                    <!-- Nagad Card -->
                     <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
                             <img src="nagad.png" alt="Nagad Logo" class="h-14 object-contain">
@@ -531,7 +538,12 @@
                             <span id="nagadNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
                             <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
-                        <p class="text-[11px] text-[#6E5649]">Reference: Shikhor Donation</p>
+                        <div class="mt-2">
+                            <a href="tel:*167*#*8801956631465#" class="inline-block px-4 py-2 bg-[#F7941D] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
+                                <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*167#)
+                            </a>
+                        </div>
+                        <p class="text-[11px] text-[#6E5649] mt-3">Reference: Shikhor Donation</p>
                     </div>
                 </div>
             </div>
@@ -626,6 +638,57 @@
 
     </div>
 
+    <!-- 24/7 FAQ CHATBOT WIDGET -->
+    <div class="fixed bottom-6 left-6 z-50">
+        <!-- Chat Toggle Button -->
+        <button onclick="toggleChatbot()" id="chatToggleBtn" class="w-14 h-14 bg-[#3B261D] text-[#E6B88A] border-2 border-[#8C583A] rounded-full shadow-2xl flex items-center justify-center text-xl hover:scale-110 transition duration-300 relative" title="Chat with Us">
+            <i class="fa-solid fa-comments"></i>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-green-600 rounded-full border-2 border-white animate-pulse"></span>
+        </button>
+
+        <!-- Chat Window Box -->
+        <div id="chatWindow" class="hidden absolute bottom-16 left-0 w-80 sm:w-96 bg-[#FDFBF9] rounded-3xl shadow-2xl border border-[#D4C3B3] overflow-hidden flex flex-col animate-fade-in">
+            <!-- Chat Header -->
+            <div class="bg-[#3B261D] text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-[#5C3D2E] flex items-center justify-center border border-[#8C583A] overflow-hidden p-1">
+                        <img src="logo.png" alt="Logo" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold font-heading">Shikhor Assistant</h4>
+                        <p class="text-[10px] text-green-300 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span> Online 24/7</p>
+                    </div>
+                </div>
+                <button onclick="toggleChatbot()" class="text-white hover:text-[#E6B88A] text-lg px-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div id="chatMessages" class="p-4 h-72 overflow-y-auto space-y-3 text-xs bg-[#F6EFE8]/50 flex flex-col">
+                <div class="bg-[#EFE5DC] text-[#3B261D] p-3 rounded-2xl rounded-tl-none max-w-[85%] border border-[#D4C3B3] shadow-sm">
+                    Hello! Welcome to <strong>Shikhor Foundation</strong>. How can I help you today? Please choose a common question below or message us directly.
+                </div>
+            </div>
+
+            <!-- FAQ Quick Options -->
+            <div class="p-2.5 bg-[#FDFBF9] border-t border-[#D4C3B3] grid grid-cols-1 gap-1.5">
+                <button onclick="handleFAQClick('volunteer')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
+                    <span><i class="fa-solid fa-user-plus text-[#8C583A] mr-1.5"></i> How to join as a volunteer?</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-[#6E5649]"></i>
+                </button>
+                <button onclick="handleFAQClick('donation')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
+                    <span><i class="fa-solid fa-hand-holding-heart text-[#8C583A] mr-1.5"></i> How to make a donation?</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-[#6E5649]"></i>
+                </button>
+                <button onclick="handleFAQClick('contact')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
+                    <span><i class="fa-solid fa-headset text-[#8C583A] mr-1.5"></i> Need custom help? (Social Links)</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-[#6E5649]"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- BACK TO TOP BUTTON -->
     <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-24 right-6 z-40 bg-[#3B261D] text-[#E6B88A] border border-[#8C583A] w-11 h-11 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition" title="Back to Top">
         <i class="fa-solid fa-arrow-up"></i>
@@ -636,7 +699,7 @@
         <i class="fa-brands fa-whatsapp text-2xl"></i>
     </a>
 
-    <!-- SCRIPT FOR OTP VERIFICATION, MULTI-EMAIL AUTH & DUAL-SHEET TRACKING -->
+    <!-- SCRIPTS -->
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDWKD3Po8WfArkbvAUzPMCaOzpjo96zoJU7dVrMjY7NjN-s9P0N56qNV8HnaQnvf1L/exec"; 
 
@@ -955,6 +1018,42 @@
                     btn.classList.remove('bg-green-700');
                 }, 2000);
             });
+        }
+
+        // CHATBOT LOGIC
+        function toggleChatbot() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('hidden');
+        }
+
+        function handleFAQClick(type) {
+            const chatMessages = document.getElementById('chatMessages');
+            let userQ = "";
+            let botA = "";
+
+            if (type === 'volunteer') {
+                userQ = "How to join as a volunteer?";
+                botA = `To join Shikhor Foundation as a volunteer, you can click the <strong>"Join Volunteer"</strong> button in the menu or <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="text-blue-600 underline font-bold">Click Here to Fill Form</a>.`;
+            } else if (type === 'donation') {
+                userQ = "How to make a donation?";
+                botA = `You can donate securely via bKash or Nagad Personal number: <strong>+8801956631465</strong> (Send Money). Check our Donation section for direct dial links!`;
+            } else if (type === 'contact') {
+                userQ = "Need custom help? (Social Links)";
+                botA = `For any other queries, feel free to message us directly on our official platforms:<br>
+                • <a href="https://wa.me/8801956631465" target="_blank" class="text-green-700 font-bold underline">WhatsApp Chat</a><br>
+                • <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="text-blue-600 font-bold underline">Facebook Page</a><br>
+                • <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="text-pink-600 font-bold underline">Instagram</a>`;
+            }
+
+            chatMessages.innerHTML += `
+                <div class="bg-[#3B261D] text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] self-end shadow-sm mb-2">
+                    ${userQ}
+                </div>
+                <div class="bg-[#EFE5DC] text-[#3B261D] p-3 rounded-2xl rounded-tl-none max-w-[85%] border border-[#D4C3B3] shadow-sm mb-2">
+                    ${botA}
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
     </script>
 </body>
