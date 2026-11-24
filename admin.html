@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <style>
-        body { font-family: 'Outfit', sans-serif; }
+        body { font-family: 'Outfit', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
         .font-heading { font-family: 'Playfair Display', serif; }
         .hover-lift {
             transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -19,9 +19,73 @@
             transform: translateY(-4px);
             box-shadow: 0 14px 25px -8px rgba(35, 23, 18, 0.18);
         }
+
+        /* DARK THEME OVERRIDES */
+        body.dark-theme {
+            background-color: #140E0B;
+            color: #F3EAE2;
+        }
+        body.dark-theme header {
+            background-color: rgba(29, 20, 16, 0.96);
+            border-color: #3D2A20;
+        }
+        body.dark-theme section.bg-gradient-to-b {
+            background-image: linear-gradient(to bottom, #241812, #140E0B);
+            border-color: #3D2A20;
+        }
+        body.dark-theme section.bg-\[\#FDFBF9\] {
+            background-color: #18100C;
+            border-color: #3D2A20;
+        }
+        body.dark-theme section.bg-\[\#EFE5DC\] {
+            background-color: #201510;
+            border-color: #3D2A20;
+        }
+        body.dark-theme .bg-\[\#FDFBF9\] {
+            background-color: #241812;
+            border-color: #463024;
+            color: #F3EAE2;
+        }
+        body.dark-theme .bg-\[\#F2E8DF\] {
+            background-color: #2C1E17;
+            border-color: #463024;
+            color: #F3EAE2;
+        }
+        body.dark-theme .bg-\[\#EFE5DC\] {
+            background-color: #2A1C15;
+            border-color: #463024;
+            color: #E6D5C5;
+        }
+        body.dark-theme input,
+        body.dark-theme textarea,
+        body.dark-theme select {
+            background-color: #1A110D;
+            border-color: #4A3327;
+            color: #F3EAE2;
+        }
+        body.dark-theme h1,
+        body.dark-theme h2,
+        body.dark-theme h3,
+        body.dark-theme h4 {
+            color: #FBF4EE;
+        }
+        body.dark-theme p,
+        body.dark-theme .text-\[\#4F392E\],
+        body.dark-theme .text-\[\#6E5649\] {
+            color: #CBB6A4;
+        }
+        body.dark-theme .text-\[\#8C583A\] {
+            color: #E6A972;
+        }
     </style>
 </head>
 <body class="bg-[#F6EFE8] text-[#231712] min-h-screen antialiased">
+
+    <!-- INSTANT TOAST NOTIFICATION -->
+    <div id="toastBox" class="fixed bottom-6 right-6 z-50 hidden bg-[#231712] text-[#E6B88A] border border-[#8C583A] px-5 py-3.5 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2.5">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-green-400 text-base"></i>
+        <span id="toastMsg">Saved!</span>
+    </div>
 
     <!-- TOP BAR -->
     <header class="sticky top-0 z-40 bg-[#FDFBF9]/95 backdrop-blur-md border-b border-[#D4C3B3] shadow-sm">
@@ -32,13 +96,17 @@
                 </div>
                 <div>
                     <span class="text-xl font-bold font-heading tracking-tight text-[#231712] block leading-none">SHIKHOR</span>
-                    <span class="text-[10px] tracking-widest text-[#8C583A] font-bold uppercase mt-1 block">WEBSITE EDITOR</span>
+                    <span class="text-[10px] tracking-widest text-[#8C583A] font-bold uppercase mt-1 block">FAST LIVE EDITOR</span>
                 </div>
             </a>
 
-            <div class="flex items-center gap-3">
-                <a href="index.html" class="px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-globe"></i> Live Web
+            <div class="flex items-center gap-2.5">
+                <button onclick="cycleThemeMode()" id="themeCycleBtn" title="Switch Theme (Device / Light / Dark)" class="px-3 py-2.5 bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs font-bold rounded-xl border border-[#C4AE99] transition flex items-center gap-1.5">
+                    <i id="themeIcon" class="fa-solid fa-desktop"></i>
+                    <span id="themeLabel">Device</span>
+                </button>
+                <a href="index.html" target="_blank" class="px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-globe"></i> View Live Web
                 </a>
                 <button id="headerLogoutBtn" onclick="logoutAdmin()" class="hidden px-3.5 py-2.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-xl border border-red-300 transition">
                     <i class="fa-solid fa-right-from-bracket"></i> Logout
@@ -93,13 +161,6 @@
         </div>
     </div>
 
-    <!-- LOADER -->
-    <div id="globalLoader" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-        <div class="bg-[#FDFBF9] px-6 py-4 rounded-2xl shadow-xl border border-[#D4C3B3] flex items-center gap-3 text-sm font-bold text-[#3B261D]">
-            <i class="fa-solid fa-spinner fa-spin text-xl text-[#8C583A]"></i> Syncing with Website...
-        </div>
-    </div>
-
     <!-- FULL WEBSITE EDITOR -->
     <div id="editorWorkspace" class="hidden">
 
@@ -107,16 +168,17 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <span class="inline-block px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-widest mb-2">
-                        ALL-IN-ONE LIVE EDITOR
+                        INSTANT SYNC ENABLED
                     </span>
                     <h1 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712]">
                         Shikhor Foundation — Full Site Control
                     </h1>
                     <p class="text-sm text-[#4F392E] mt-1">
-                        Every section is open below. Add new, edit existing, or delete anything—changes update the live site automatically.
+                        Changes update immediately without waiting. Add multiple live notices, events, funding, team, and gallery items below.
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2 text-xs font-bold">
+                    <a href="#sec-notices" class="px-3 py-2 rounded-xl bg-[#3B261D] text-white">Live Notices</a>
                     <a href="#sec-counters" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Counters</a>
                     <a href="#sec-events" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Events</a>
                     <a href="#sec-funding" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Funding</a>
@@ -126,11 +188,40 @@
             </div>
         </section>
 
-        <!-- 1. COUNTERS & NOTICE -->
+        <!-- 0. LIVE NOTICEBOARD MANAGER (MULTIPLE NOTICES) -->
+        <section id="sec-notices" class="py-14 bg-[#EFE5DC] border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-1">AUTO-SCROLLING TICKER & BOX</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mb-6">Live Noticeboard Manager</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm h-fit">
+                        <h3 class="text-lg font-bold font-heading mb-3">+ Add / Edit Live Notice</h3>
+                        <form id="noticeForm" class="space-y-3.5">
+                            <input type="hidden" id="editNoticeIndex" value="-1">
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Notice Message *</label>
+                                <textarea id="noticeInputText" rows="3" required placeholder="e.g. Winter Cloth Distribution 2026 starts Friday!" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white"></textarea>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" class="flex-1 py-3 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow">Save Notice</button>
+                                <button type="button" onclick="resetNoticeForm()" class="px-4 py-3 bg-[#EFE5DC] text-[#3B261D] text-xs font-bold rounded-xl">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <div id="noticesListContainer" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. COUNTERS -->
         <section id="sec-counters" class="py-14 bg-[#FDFBF9] border-b border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-1">HOMEPAGE STATS & BANNER</span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mb-6">Impact Counters & Notice</h2>
+                <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-1">HOMEPAGE STATS</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mb-6">Impact Counters</h2>
 
                 <form id="statsForm" class="bg-[#F2E8DF] p-6 sm:p-8 rounded-3xl border border-[#D4C3B3] shadow-sm space-y-5">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -147,12 +238,8 @@
                             <input type="text" id="statEvents" required class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xl font-extrabold text-[#8C583A] bg-white">
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-[#3B261D] mb-1">Top Announcement Ticker Text</label>
-                        <input type="text" id="statNotice" placeholder="e.g. Winter Cloth Distribution 2026 registration open!" class="w-full px-4 py-3 rounded-xl border border-[#D4C3B3] text-sm bg-white">
-                    </div>
                     <button type="submit" class="px-6 py-3 bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold rounded-xl shadow-md transition">
-                        <i class="fa-solid fa-check mr-1.5"></i> Save Counters & Notice
+                        <i class="fa-solid fa-check mr-1.5"></i> Save Impact Counters
                     </button>
                 </form>
             </div>
@@ -184,7 +271,7 @@
                             <div>
                                 <label class="block text-xs font-bold mb-1">Photo (Auto Crop & Upload)</label>
                                 <input type="file" accept="image/*" onchange="initCropper(event, 'eventImgUrl', 16/9)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-[#EFE5DC] file:text-[#3B261D] file:font-bold">
-                                <input type="text" id="eventImgUrl" required placeholder="Photo URL auto-fills after crop" class="mt-2 w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xs bg-[#F6EFE8]" readonly>
+                                <input type="text" id="eventImgUrl" required placeholder="Photo URL auto-fills or paste URL" class="mt-2 w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xs bg-white">
                             </div>
                             <div class="flex gap-2 pt-2">
                                 <button type="submit" class="flex-1 py-3 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow">Save Event</button>
@@ -301,7 +388,7 @@
                             <div>
                                 <label class="block text-xs font-bold mb-1">Photo (4:3 Crop)</label>
                                 <input type="file" accept="image/*" onchange="initCropper(event, 'galImgUrl', 4/3)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-[#FDFBF9] file:text-[#3B261D] file:font-bold">
-                                <input type="text" id="galImgUrl" required placeholder="Photo URL auto-fills after crop" class="mt-2 w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xs bg-white" readonly>
+                                <input type="text" id="galImgUrl" required placeholder="Photo URL auto-fills or paste URL" class="mt-2 w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xs bg-white">
                             </div>
                             <button type="submit" class="w-full py-3 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow">Add to Gallery</button>
                         </form>
@@ -317,7 +404,46 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDWKD3Po8WfArkbvAUzPMCaOzpjo96zoJU7dVrMjY7NjN-s9P0N56qNV8HnaQnvf1L/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCpnGTzewYB0uuyPhxFUK4G60A9B0T3iPaP0CpAl6crnV6ZzLlaA0lCl1fW3vFc9ys/exec";
+        const THEME_MODES = ["device", "light", "dark"];
+        const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function getSavedThemeMode() {
+            return localStorage.getItem('shikhor_theme_mode') || 'device';
+        }
+
+        function applyThemeMode(mode) {
+            const shouldUseDark = mode === 'dark' || (mode === 'device' && mediaQueryDark.matches);
+            document.body.classList.toggle('dark-theme', shouldUseDark);
+
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            if (icon && label) {
+                if (mode === 'dark') {
+                    icon.className = 'fa-solid fa-moon';
+                    label.innerText = 'Dark';
+                } else if (mode === 'light') {
+                    icon.className = 'fa-solid fa-sun';
+                    label.innerText = 'Light';
+                } else {
+                    icon.className = 'fa-solid fa-desktop';
+                    label.innerText = 'Device';
+                }
+            }
+        }
+
+        function cycleThemeMode() {
+            const current = getSavedThemeMode();
+            const next = THEME_MODES[(THEME_MODES.indexOf(current) + 1) % THEME_MODES.length];
+            localStorage.setItem('shikhor_theme_mode', next);
+            applyThemeMode(next);
+        }
+
+        mediaQueryDark.addEventListener('change', () => {
+            if (getSavedThemeMode() === 'device') applyThemeMode('device');
+        });
+
+        applyThemeMode(getSavedThemeMode());
 
         const DEFAULT_TEAM = [
             { ID: "DEF_1", Name: "Md. Shewise Al Islam Zarif", Role: "Founder & CEO / President", ImageURL: "zarif.jpg" },
@@ -342,50 +468,56 @@
         ];
 
         let siteData = { events: [], funding: [], team: [], gallery: [], stats: {} };
+        let noticesArray = [];
         let cropper = null;
         let currentTargetInputId = "";
 
+        function showToast(msg, isSyncing = false) {
+            const box = document.getElementById('toastBox');
+            const icon = document.getElementById('toastIcon');
+            document.getElementById('toastMsg').innerText = msg;
+            icon.className = isSyncing
+                ? "fa-solid fa-spinner fa-spin text-[#E6B88A] text-base"
+                : "fa-solid fa-circle-check text-green-400 text-base";
+            box.classList.remove('hidden');
+            if (!isSyncing) {
+                setTimeout(() => box.classList.add('hidden'), 2600);
+            }
+        }
+
+        function postBg(payload) {
+            showToast("Syncing with Google Sheet...", true);
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => showToast("Updated & Live on Website!"))
+            .catch(() => showToast("Saved locally (check network)"));
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
+            applyThemeMode(getSavedThemeMode());
             const session = JSON.parse(sessionStorage.getItem('shikhor_admin_auth'));
             if (session && session.loggedIn) {
                 openEditorWorkspace();
             }
         });
 
-        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('adminUser').value.trim();
             const password = document.getElementById('adminPass').value.trim();
-            const btn = document.getElementById('loginBtn');
             const alertBox = document.getElementById('loginAlert');
 
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Verifying...`;
-            alertBox.classList.add('hidden');
-
-            let authorized = (username === "shikhor@bd" && password === "Shikhor_foundation_bd");
-
-            try {
-                const res = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ type: "admin_login", username, password })
-                });
-                const result = await res.json();
-                if (result.success) authorized = true;
-            } catch (err) {
-                console.log("Login check fallback:", err);
-            }
-
-            if (authorized) {
+            if (username === "shikhor@bd" && password === "Shikhor_foundation_bd") {
                 sessionStorage.setItem('shikhor_admin_auth', JSON.stringify({ loggedIn: true, username }));
                 openEditorWorkspace();
             } else {
                 alertBox.innerText = "Invalid username or password!";
                 alertBox.classList.remove('hidden');
             }
-
-            btn.disabled = false;
-            btn.innerHTML = `Enter Full Editor <i class="fa-solid fa-arrow-right ml-2"></i>`;
         });
 
         function openEditorWorkspace() {
@@ -400,14 +532,10 @@
             location.reload();
         }
 
-        function toggleLoader(show) {
-            document.getElementById('globalLoader').classList.toggle('hidden', !show);
-        }
-
         async function fetchAllAdminData() {
-            toggleLoader(true);
+            showToast("Loading live data...", true);
             try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData`);
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&t=${Date.now()}`);
                 const data = await res.json();
                 siteData = {
                     events: data.events || [],
@@ -416,6 +544,7 @@
                     gallery: (data.gallery && data.gallery.length > 0) ? data.gallery : DEFAULT_GALLERY,
                     stats: data.stats || { Families: "100+", Volunteers: "50+", EventsCount: "10+", NoticeText: "" }
                 };
+                showToast("Live data loaded!");
             } catch (err) {
                 siteData = {
                     events: [],
@@ -424,16 +553,31 @@
                     gallery: DEFAULT_GALLERY,
                     stats: { Families: "100+", Volunteers: "50+", EventsCount: "10+", NoticeText: "" }
                 };
+                showToast("Loaded default layout");
             }
+            noticesArray = siteData.stats.NoticeText
+                ? String(siteData.stats.NoticeText).split('||').map(s => s.trim()).filter(Boolean)
+                : ["Welcome to Shikhor Foundation! Together for a Better Tomorrow."];
             renderEverything();
-            toggleLoader(false);
         }
 
         function renderEverything() {
             document.getElementById('statFamilies').value = siteData.stats.Families || "100+";
             document.getElementById('statVolunteers').value = siteData.stats.Volunteers || "50+";
             document.getElementById('statEvents').value = siteData.stats.EventsCount || "10+";
-            document.getElementById('statNotice').value = siteData.stats.NoticeText || "";
+
+            document.getElementById('noticesListContainer').innerHTML = noticesArray.map((n, idx) => `
+                <div class="bg-[#FDFBF9] p-4 rounded-2xl border border-[#D4C3B3] flex items-center justify-between gap-4 shadow-sm">
+                    <div class="flex items-center gap-3 text-sm font-medium text-[#231712]">
+                        <span class="w-6 h-6 rounded-full bg-[#3B261D] text-white text-xs font-bold flex items-center justify-center shrink-0">${idx + 1}</span>
+                        <span>${n}</span>
+                    </div>
+                    <div class="flex gap-1.5 shrink-0">
+                        <button onclick="editNotice(${idx})" class="px-3 py-1.5 bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] rounded-lg text-xs font-bold">Edit</button>
+                        <button onclick="deleteNotice(${idx})" class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-bold">Delete</button>
+                    </div>
+                </div>
+            `).join('') || `<div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] text-xs text-[#6E5649]">No active notices. Add one on the left.</div>`;
 
             document.getElementById('eventsList').innerHTML = siteData.events.map(ev => `
                 <div class="bg-[#FDFBF9] rounded-3xl border border-[#D4C3B3] overflow-hidden shadow-sm hover-lift flex flex-col">
@@ -450,7 +594,7 @@
                         </div>
                     </div>
                 </div>
-            `).join('') || `<div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] text-xs text-[#6E5649] col-span-2">No events added yet. Use the form on the left to add one.</div>`;
+            `).join('') || `<div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] text-xs text-[#6E5649] col-span-2">No events added yet.</div>`;
 
             document.getElementById('fundingList').innerHTML = siteData.funding.map(f => {
                 const pct = Math.min(100, Math.round((Number(f.RaisedAmount) / Number(f.TargetAmount)) * 100)) || 0;
@@ -497,6 +641,48 @@
             `).join('');
         }
 
+        // NOTICEBOARD CRUD
+        document.getElementById('noticeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const text = document.getElementById('noticeInputText').value.trim();
+            const idx = parseInt(document.getElementById('editNoticeIndex').value);
+            if (!text) return;
+            if (idx >= 0) noticesArray[idx] = text;
+            else noticesArray.unshift(text);
+            siteData.stats.NoticeText = noticesArray.join(' || ');
+            resetNoticeForm();
+            renderEverything();
+            syncStatsToSheet();
+        });
+
+        function editNotice(idx) {
+            document.getElementById('editNoticeIndex').value = idx;
+            document.getElementById('noticeInputText').value = noticesArray[idx];
+        }
+
+        function deleteNotice(idx) {
+            noticesArray.splice(idx, 1);
+            siteData.stats.NoticeText = noticesArray.join(' || ');
+            renderEverything();
+            syncStatsToSheet();
+        }
+
+        function resetNoticeForm() {
+            document.getElementById('noticeForm').reset();
+            document.getElementById('editNoticeIndex').value = "-1";
+        }
+
+        function syncStatsToSheet() {
+            postBg({
+                type: "update_stats",
+                Families: siteData.stats.Families || "100+",
+                Volunteers: siteData.stats.Volunteers || "50+",
+                EventsCount: siteData.stats.EventsCount || "10+",
+                NoticeText: siteData.stats.NoticeText || ""
+            });
+        }
+
+        // CROPPER & UPLOAD
         function initCropper(event, targetInputId, aspectRatio) {
             const file = event.target.files[0];
             if (!file) return;
@@ -522,11 +708,12 @@
             const btn = document.getElementById('confirmCropBtn');
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading...`;
-            const canvas = cropper.getCroppedCanvas({ maxWidth: 1000, maxHeight: 1000 });
-            const base64Data = canvas.toDataURL('image/jpeg', 0.85);
+            const canvas = cropper.getCroppedCanvas({ maxWidth: 900, maxHeight: 900 });
+            const base64Data = canvas.toDataURL('image/jpeg', 0.82);
             try {
                 const res = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({
                         type: "upload_image",
                         base64: base64Data,
@@ -537,6 +724,7 @@
                 if (result.success) {
                     document.getElementById(currentTargetInputId).value = result.url;
                     closeCropModal();
+                    showToast("Photo uploaded!");
                 } else {
                     alert("Upload failed!");
                 }
@@ -547,29 +735,32 @@
             btn.innerHTML = `<i class="fa-solid fa-crop-simple mr-1"></i> Crop & Upload`;
         }
 
-        async function saveToSheet(sheetName, item, mode = "add") {
-            toggleLoader(true);
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ type: "save_item", sheetName, item, mode, id: item.ID })
-            });
-            await fetchAllAdminData();
+        // INSTANT OPTIMISTIC SAVE / DELETE
+        function saveItemInstant(sheetName, keyName, item, mode = "add") {
+            if (mode === "edit") {
+                const idx = siteData[keyName].findIndex(x => String(x.ID) === String(item.ID));
+                if (idx !== -1) siteData[keyName][idx] = item;
+            } else {
+                siteData[keyName].push(item);
+            }
+            renderEverything();
+            postBg({ type: "save_item", sheetName, item, mode, id: item.ID });
         }
 
-        async function deleteItem(sheetName, id) {
+        function deleteItem(sheetName, id) {
             if (!confirm("Delete this item from the website?")) return;
-            toggleLoader(true);
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ type: "save_item", sheetName, mode: "delete", id })
-            });
-            await fetchAllAdminData();
+            const map = { Events: "events", Funding: "funding", Team: "team", Gallery: "gallery" };
+            const keyName = map[sheetName];
+            siteData[keyName] = siteData[keyName].filter(x => String(x.ID) !== String(id));
+            renderEverything();
+            postBg({ type: "save_item", sheetName, mode: "delete", id });
         }
 
-        document.getElementById('eventForm').addEventListener('submit', async function(e) {
+        // EVENTS
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const existingId = document.getElementById('eventId').value;
-            await saveToSheet("Events", {
+            saveItemInstant("Events", "events", {
                 ID: existingId || "EV_" + Date.now(),
                 Title: document.getElementById('eventTitle').value,
                 Date: document.getElementById('eventDate').value,
@@ -596,10 +787,11 @@
             document.getElementById('eventFormTitle').innerText = "+ Add New Event";
         }
 
-        document.getElementById('fundingForm').addEventListener('submit', async function(e) {
+        // FUNDING
+        document.getElementById('fundingForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const existingId = document.getElementById('fundId').value;
-            await saveToSheet("Funding", {
+            saveItemInstant("Funding", "funding", {
                 ID: existingId || "FN_" + Date.now(),
                 CampaignName: document.getElementById('fundName').value,
                 TargetAmount: document.getElementById('fundTarget').value,
@@ -624,10 +816,11 @@
             document.getElementById('fundId').value = "";
         }
 
-        document.getElementById('teamForm').addEventListener('submit', async function(e) {
+        // TEAM
+        document.getElementById('teamForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const existingId = document.getElementById('teamId').value;
-            await saveToSheet("Team", {
+            saveItemInstant("Team", "team", {
                 ID: existingId || "TM_" + Date.now(),
                 Name: document.getElementById('teamName').value,
                 Role: document.getElementById('teamRole').value,
@@ -650,9 +843,10 @@
             document.getElementById('teamId').value = "";
         }
 
-        document.getElementById('galleryForm').addEventListener('submit', async function(e) {
+        // GALLERY
+        document.getElementById('galleryForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            await saveToSheet("Gallery", {
+            saveItemInstant("Gallery", "gallery", {
                 ID: "GL_" + Date.now(),
                 Caption: document.getElementById('galCaption').value,
                 ImageURL: document.getElementById('galImgUrl').value
@@ -660,20 +854,13 @@
             document.getElementById('galleryForm').reset();
         });
 
-        document.getElementById('statsForm').addEventListener('submit', async function(e) {
+        // STATS
+        document.getElementById('statsForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            toggleLoader(true);
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    type: "update_stats",
-                    Families: document.getElementById('statFamilies').value,
-                    Volunteers: document.getElementById('statVolunteers').value,
-                    EventsCount: document.getElementById('statEvents').value,
-                    NoticeText: document.getElementById('statNotice').value
-                })
-            });
-            await fetchAllAdminData();
+            siteData.stats.Families = document.getElementById('statFamilies').value;
+            siteData.stats.Volunteers = document.getElementById('statVolunteers').value;
+            siteData.stats.EventsCount = document.getElementById('statEvents').value;
+            syncStatsToSheet();
         });
     </script>
 </body>
