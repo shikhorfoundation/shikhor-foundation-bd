@@ -18,11 +18,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Outfit', sans-serif; }
+        body { font-family: 'Outfit', sans-serif; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
 
         .hover-lift {
-            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.3s ease;
         }
         .hover-lift:hover {
             transform: translateY(-7px);
@@ -36,9 +36,142 @@
         .animate-fade-in {
             animation: fadeIn 0.45s ease-out forwards;
         }
+
+        /* Floating Logo Animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        /* Button Shimmer Effect */
+        .btn-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-shimmer::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+            transition: left 0.6s ease;
+        }
+        .btn-shimmer:hover::after {
+            left: 130%;
+        }
+
+        /* Scroll Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Live Notice Marquee Animation */
+        @keyframes noticeMarquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .notice-marquee-track {
+            display: inline-flex;
+            white-space: nowrap;
+            animation: noticeMarquee 26s linear infinite;
+        }
+        .notice-marquee-wrapper:hover .notice-marquee-track {
+            animation-play-state: paused;
+        }
+
+        /* DARK THEME OVERRIDES */
+        body.dark-theme {
+            background-color: #140E0B;
+            color: #F3EAE2;
+        }
+        body.dark-theme header,
+        body.dark-theme #mobileMenu,
+        body.dark-theme #chatWindow {
+            background-color: rgba(29, 20, 16, 0.96);
+            border-color: #3D2A20;
+            color: #F3EAE2;
+        }
+        body.dark-theme nav a,
+        body.dark-theme #mobileMenu a {
+            color: #DECBB8;
+        }
+        body.dark-theme nav a:hover,
+        body.dark-theme #mobileMenu a:hover {
+            color: #FFFFFF;
+        }
+        body.dark-theme section.bg-gradient-to-b {
+            background-image: linear-gradient(to bottom, #241812, #1A110D, #140E0B);
+            border-color: #3D2A20;
+        }
+        body.dark-theme section.bg-\[\#FDFBF9\],
+        body.dark-theme #programs {
+            background-color: #18100C;
+            border-color: #3D2A20;
+        }
+        body.dark-theme section.bg-\[\#EFE5DC\] {
+            background-color: #201510;
+            border-color: #3D2A20;
+        }
+        body.dark-theme .bg-\[\#FDFBF9\] {
+            background-color: #241812;
+            border-color: #463024;
+            color: #F3EAE2;
+        }
+        body.dark-theme .bg-\[\#F2E8DF\] {
+            background-color: #2C1E17;
+            border-color: #463024;
+            color: #F3EAE2;
+        }
+        body.dark-theme .bg-\[\#EFE5DC\] {
+            background-color: #2A1C15;
+            border-color: #463024;
+            color: #E6D5C5;
+        }
+        body.dark-theme h1,
+        body.dark-theme h2,
+        body.dark-theme h3,
+        body.dark-theme h4,
+        body.dark-theme blockquote {
+            color: #FBF4EE;
+        }
+        body.dark-theme p,
+        body.dark-theme .text-\[\#4F392E\],
+        body.dark-theme .text-\[\#5C3D2E\],
+        body.dark-theme .text-\[\#6E5649\] {
+            color: #CBB6A4;
+        }
+        body.dark-theme .text-\[\#8C583A\] {
+            color: #E6A972;
+        }
     </style>
 </head>
 <body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white">
+
+    <!-- TOP LIVE NOTICE TICKER BAR -->
+    <div id="topNoticeBar" class="bg-[#231712] text-[#F6EFE8] border-b border-[#8C583A]/60 py-2 px-3 overflow-hidden relative z-50">
+        <div class="max-w-7xl mx-auto flex items-center gap-3">
+            <span class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#8C583A] text-white text-[10px] font-bold uppercase tracking-wider shadow">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span> LIVE NOTICE
+            </span>
+            <div class="notice-marquee-wrapper overflow-hidden flex-1 text-xs font-medium text-[#E6B88A]">
+                <div id="liveNoticeMarquee" class="notice-marquee-track gap-12">
+                    <span><i class="fa-solid fa-bullhorn mr-1.5 text-white"></i> Welcome to Shikhor Foundation — Together for a Better Tomorrow!</span>
+                    <span><i class="fa-solid fa-hand-holding-heart mr-1.5 text-white"></i> Join our humanitarian drives or support via bKash & Nagad (+8801956631465).</span>
+                    <span><i class="fa-solid fa-bullhorn mr-1.5 text-white"></i> Welcome to Shikhor Foundation — Together for a Better Tomorrow!</span>
+                    <span><i class="fa-solid fa-hand-holding-heart mr-1.5 text-white"></i> Join our humanitarian drives or support via bKash & Nagad (+8801956631465).</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- IMAGE LIGHTBOX MODAL -->
     <div id="lightboxModal" onclick="closeLightbox()" class="fixed inset-0 z-50 bg-[#1A100C]/90 backdrop-blur-sm flex items-center justify-center p-4 hidden">
@@ -77,11 +210,15 @@
                     <a href="#contact" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Contact</a>
                 </nav>
 
-                <div class="flex items-center gap-2.5">
-                    <a href="admin.html" class="px-4 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                <div class="flex items-center gap-2">
+                    <button onclick="cycleThemeMode()" id="themeCycleBtn" title="Switch Theme (Device / Light / Dark)" class="px-3 py-2.5 bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs font-bold rounded-xl border border-[#C4AE99] transition flex items-center gap-1.5">
+                        <i id="themeIcon" class="fa-solid fa-desktop"></i>
+                        <span id="themeLabel">Device</span>
+                    </button>
+                    <a href="admin.html" class="px-4 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 btn-shimmer">
                         <i class="fa-solid fa-sliders"></i> Admin Panel
                     </a>
-                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 btn-shimmer">
                         Join Volunteer
                     </a>
                     <button onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] border border-[#D4C3B3]">
@@ -105,33 +242,50 @@
         </header>
 
         <!-- HERO SECTION -->
-        <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-24 lg:py-32 overflow-hidden border-b border-[#D4C3B3]">
+        <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-20 lg:py-28 overflow-hidden border-b border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-[#FDFBF9] shadow-2xl border-4 border-[#B88655] flex items-center justify-center overflow-hidden p-2.5 transform transition hover:scale-105">
+                <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-[#FDFBF9] shadow-2xl border-4 border-[#B88655] flex items-center justify-center overflow-hidden p-2.5 animate-float">
                     <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                 </div>
 
-                <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#3B261D] text-[#F6EFE8] text-xs font-bold mb-6 tracking-widest shadow-md">
+                <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#3B261D] text-[#F6EFE8] text-xs font-bold mb-6 tracking-widest shadow-md animate-fade-in">
                     <span>HELP</span> • <span>SUPPORT</span> • <span>EMPOWER</span>
                 </div>
-                <h1 class="text-4xl sm:text-6xl font-extrabold font-heading text-[#231712] tracking-tight max-w-4xl mx-auto leading-tight">
+                <h1 class="text-4xl sm:text-6xl font-extrabold font-heading text-[#231712] tracking-tight max-w-4xl mx-auto leading-tight animate-fade-in">
                     A little kindness can grow into a <span class="text-[#8C583A]">better tomorrow.</span>
                 </h1>
-                <p class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed">
+                <p class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed animate-fade-in">
                     Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.
                 </p>
 
+                <!-- INTERACTIVE LIVE NOTICEBOARD BOX -->
+                <div class="mt-8 max-w-2xl mx-auto bg-[#FDFBF9] rounded-2xl border-2 border-[#B88655] shadow-lg p-4 text-left animate-fade-in">
+                    <div class="flex items-center justify-between border-b border-[#EFE5DC] pb-2 mb-2.5">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-[#3B261D] flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></span> Live Noticeboard
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="prevNotice()" class="w-6 h-6 rounded-lg bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs flex items-center justify-center" title="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="nextNotice()" class="w-6 h-6 rounded-lg bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs flex items-center justify-center" title="Next"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div id="noticeBoxDisplay" class="min-h-[44px] flex items-center text-sm font-medium text-[#3B261D] transition-all duration-500">
+                        <i class="fa-solid fa-circle-info text-[#8C583A] mr-2.5 text-base"></i>
+                        <span>Welcome to Shikhor Foundation! Check our upcoming humanitarian initiatives below.</span>
+                    </div>
+                </div>
+
                 <div class="mt-6 flex justify-center items-center gap-4">
-                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 btn-shimmer">
                         <i class="fa-brands fa-facebook-f text-sm"></i> Facebook Page
                     </a>
-                    <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 btn-shimmer">
                         <i class="fa-brands fa-instagram text-sm"></i> Instagram
                     </a>
                 </div>
 
                 <div class="mt-10 flex flex-wrap justify-center gap-4">
-                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1 btn-shimmer">
                         Join as Volunteer <i class="fa-solid fa-arrow-right ml-2"></i>
                     </a>
                     <a href="#donation" class="px-8 py-4 bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] font-semibold rounded-xl border-2 border-[#B88655] shadow-md transition transform hover:-translate-y-1">
@@ -140,7 +294,7 @@
                 </div>
 
                 <!-- LIVE IMPACT COUNTER -->
-                <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto reveal">
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
                         <h3 id="counterFamilies" class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Families Supported</p>
@@ -162,7 +316,7 @@
         </section>
 
         <!-- ABOUT US -->
-        <section id="about" class="py-24 bg-[#FDFBF9]">
+        <section id="about" class="py-24 bg-[#FDFBF9] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div>
@@ -188,7 +342,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-[#3B261D] text-[#F6EFE8] p-8 sm:p-12 rounded-3xl border border-[#5C3D2E] relative shadow-xl">
+                    <div class="bg-[#3B261D] text-[#F6EFE8] p-8 sm:p-12 rounded-3xl border border-[#5C3D2E] relative shadow-xl hover-lift">
                         <div class="w-12 h-12 rounded-2xl bg-[#5C3D2E] text-[#E6B88A] flex items-center justify-center text-xl mb-5">
                             <i class="fa-solid fa-seedling"></i>
                         </div>
@@ -203,7 +357,7 @@
         </section>
 
         <!-- MISSION & VISION -->
-        <section id="mission" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+        <section id="mission" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR DIRECTION</span>
@@ -233,7 +387,7 @@
         </section>
 
         <!-- INITIATIVES -->
-        <section id="initiatives" class="py-24 bg-[#FDFBF9]">
+        <section id="initiatives" class="py-24 bg-[#FDFBF9] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR INITIATIVES</span>
@@ -272,7 +426,7 @@
         </section>
 
         <!-- TEAM DIRECTORY -->
-        <section id="team" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+        <section id="team" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">THE PEOPLE BEHIND SHIKHOR</span>
@@ -298,7 +452,7 @@
                 </div>
 
                 <!-- PANEL MEMBERS GRID -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div id="panelMembersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
                         <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="ahsan.jpg" alt="Ahsan Zaman" class="w-full h-full object-cover">
@@ -398,8 +552,11 @@
             </div>
         </section>
 
+        <!-- DYNAMIC EVENTS & FUNDRAISING SECTION -->
+        <div id="dynamicProgramsContainer"></div>
+
         <!-- DEDICATED DONATION SECTION -->
-        <section id="donation" class="py-24 bg-[#FDFBF9]">
+        <section id="donation" class="py-24 bg-[#FDFBF9] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">SUPPORT OUR CAUSE</span>
@@ -422,7 +579,7 @@
                             <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
                         <div class="mt-2">
-                            <a href="tel:*247*#*8801956631465#" class="inline-block px-4 py-2 bg-[#E2136F] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
+                            <a href="tel:*247*#*8801956631465#" class="inline-block px-4 py-2 bg-[#E2136F] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition btn-shimmer">
                                 <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*247#)
                             </a>
                         </div>
@@ -441,7 +598,7 @@
                             <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
                         <div class="mt-2">
-                            <a href="tel:*167*#*8801956631465#" class="inline-block px-4 py-2 bg-[#F7941D] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
+                            <a href="tel:*167*#*8801956631465#" class="inline-block px-4 py-2 bg-[#F7941D] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition btn-shimmer">
                                 <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*167#)
                             </a>
                         </div>
@@ -452,14 +609,14 @@
         </section>
 
         <!-- GALLERY -->
-        <section id="gallery" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+        <section id="gallery" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR GALLERY</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Moments of Humanity</h2>
                     <p class="mt-4 text-[#4F392E] text-sm">Click any photo to view full screen. Every picture tells a story of hope.</p>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div onclick="openLightbox('gallery1.jpg', 'Community Support Activity')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
                         <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
@@ -483,13 +640,13 @@
         </section>
 
         <!-- VOLUNTEER CALLOUT -->
-        <section class="py-20 bg-[#3B261D] text-white text-center border-b border-[#5C3D2E]">
+        <section class="py-20 bg-[#3B261D] text-white text-center border-b border-[#5C3D2E] reveal">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl sm:text-4xl font-extrabold font-heading mb-4">Want to Make a Real Difference?</h2>
                 <p class="text-[#E8D9CB] max-w-xl mx-auto mb-8 text-sm sm:text-base">
                     Join our team of dedicated volunteers and help us spread compassion where it's needed most.
                 </p>
-                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1">
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1 btn-shimmer">
                     Apply as a Volunteer Now ↗
                 </a>
             </div>
@@ -599,7 +756,94 @@
 
     <!-- SCRIPTS -->
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDWKD3Po8WfArkbvAUzPMCaOzpjo96zoJU7dVrMjY7NjN-s9P0N56qNV8HnaQnvf1L/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCpnGTzewYB0uuyPhxFUK4G60A9B0T3iPaP0CpAl6crnV6ZzLlaA0lCl1fW3vFc9ys/exec";
+        const THEME_MODES = ["device", "light", "dark"];
+        const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function getSavedThemeMode() {
+            return localStorage.getItem('shikhor_theme_mode') || 'device';
+        }
+
+        function applyThemeMode(mode) {
+            const shouldUseDark = mode === 'dark' || (mode === 'device' && mediaQueryDark.matches);
+            document.body.classList.toggle('dark-theme', shouldUseDark);
+
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            if (icon && label) {
+                if (mode === 'dark') {
+                    icon.className = 'fa-solid fa-moon';
+                    label.innerText = 'Dark';
+                } else if (mode === 'light') {
+                    icon.className = 'fa-solid fa-sun';
+                    label.innerText = 'Light';
+                } else {
+                    icon.className = 'fa-solid fa-desktop';
+                    label.innerText = 'Device';
+                }
+            }
+        }
+
+        function cycleThemeMode() {
+            const current = getSavedThemeMode();
+            const next = THEME_MODES[(THEME_MODES.indexOf(current) + 1) % THEME_MODES.length];
+            localStorage.setItem('shikhor_theme_mode', next);
+            applyThemeMode(next);
+        }
+
+        mediaQueryDark.addEventListener('change', () => {
+            if (getSavedThemeMode() === 'device') applyThemeMode('device');
+        });
+
+        applyThemeMode(getSavedThemeMode());
+
+        let liveNoticesList = [
+            "Welcome to Shikhor Foundation! Together for a Better Tomorrow.",
+            "Join our team of volunteers or support humanitarian drives via bKash & Nagad (+8801956631465)."
+        ];
+        let currentNoticeIdx = 0;
+        let noticeTimer = null;
+
+        function renderNoticeBoard() {
+            if (!liveNoticesList.length) return;
+            const marquee = document.getElementById('liveNoticeMarquee');
+            const itemsHTML = liveNoticesList.map(n => `<span><i class="fa-solid fa-bullhorn mr-1.5 text-white"></i> ${n}</span>`).join('');
+            marquee.innerHTML = itemsHTML + itemsHTML;
+            updateNoticeBoxDisplay();
+            if (noticeTimer) clearInterval(noticeTimer);
+            noticeTimer = setInterval(nextNotice, 4500);
+        }
+
+        function updateNoticeBoxDisplay() {
+            const box = document.getElementById('noticeBoxDisplay');
+            if (!box || !liveNoticesList.length) return;
+            box.style.opacity = '0';
+            setTimeout(() => {
+                box.innerHTML = `<i class="fa-solid fa-bullhorn text-[#8C583A] mr-2.5 text-base shrink-0"></i><span>${liveNoticesList[currentNoticeIdx]}</span>`;
+                box.style.opacity = '1';
+            }, 220);
+        }
+
+        function nextNotice() {
+            currentNoticeIdx = (currentNoticeIdx + 1) % liveNoticesList.length;
+            updateNoticeBoxDisplay();
+        }
+
+        function prevNotice() {
+            currentNoticeIdx = (currentNoticeIdx - 1 + liveNoticesList.length) % liveNoticesList.length;
+            updateNoticeBoxDisplay();
+        }
+
+        function initScrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
 
         function getReadableDeviceInfo() {
             const ua = navigator.userAgent;
@@ -634,16 +878,20 @@
         }
 
         function sendToGoogleSheet(payload) {
-            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
+            if (!GOOGLE_SCRIPT_URL) return;
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(payload)
-            }).catch(err => console.log('Tracking error:', err));
+            }).catch(() => {});
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
+            applyThemeMode(getSavedThemeMode());
+            initScrollReveal();
+            renderNoticeBoard();
+
             sendToGoogleSheet({
                 type: "visit",
                 status: "Website Visitor Entry",
@@ -651,7 +899,7 @@
             });
 
             try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData`);
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&t=${Date.now()}`);
                 const data = await res.json();
 
                 if (data.stats) {
@@ -660,19 +908,17 @@
                     if (data.stats.EventsCount) document.getElementById('counterEvents').innerText = data.stats.EventsCount;
 
                     if (data.stats.NoticeText && String(data.stats.NoticeText).trim() !== "") {
-                        const noticeBar = document.createElement('div');
-                        noticeBar.className = "bg-[#3B261D] text-[#E6B88A] text-xs font-bold py-2.5 px-4 text-center border-b border-[#8C583A]";
-                        noticeBar.innerHTML = `<i class="fa-solid fa-bullhorn mr-2"></i> ${data.stats.NoticeText}`;
-                        document.body.insertBefore(noticeBar, document.body.firstChild);
+                        const parsed = String(data.stats.NoticeText).split('||').map(s => s.trim()).filter(Boolean);
+                        if (parsed.length > 0) {
+                            liveNoticesList = parsed;
+                            currentNoticeIdx = 0;
+                            renderNoticeBoard();
+                        }
                     }
                 }
 
                 if ((data.events && data.events.length > 0) || (data.funding && data.funding.length > 0)) {
-                    const donationSec = document.getElementById('donation');
-                    const dynamicSec = document.createElement('section');
-                    dynamicSec.id = "programs";
-                    dynamicSec.className = "py-24 bg-[#F6EFE8] border-b border-[#D4C3B3]";
-
+                    const container = document.getElementById('dynamicProgramsContainer');
                     let eventsHTML = (data.events || []).map(ev => `
                         <div class="bg-[#FDFBF9] rounded-3xl border border-[#D4C3B3] overflow-hidden shadow-md hover-lift">
                             <img src="${ev.ImageURL}" class="h-52 w-full object-cover">
@@ -686,7 +932,7 @@
                     let fundingHTML = (data.funding || []).map(f => {
                         const pct = Math.min(100, Math.round((Number(f.RaisedAmount) / Number(f.TargetAmount)) * 100)) || 0;
                         return `
-                        <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm">
+                        <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm hover-lift">
                             <div class="flex justify-between items-center mb-2">
                                 <h4 class="font-bold font-heading text-lg text-[#231712]">${f.CampaignName}</h4>
                                 <span class="text-xs font-bold px-3 py-1 rounded-full bg-[#EFE5DC] text-[#3B261D]">${pct}% Funded</span>
@@ -701,20 +947,21 @@
                         </div>`;
                     }).join('');
 
-                    dynamicSec.innerHTML = `
-                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            ${data.events && data.events.length ? `<div class="text-center mb-12"><span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest">LATEST UPDATES</span><h2 class="text-3xl font-extrabold font-heading text-[#231712] mt-2">Events & Programs</h2></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">${eventsHTML}</div>` : ''}
-                            ${data.funding && data.funding.length ? `<div class="max-w-3xl mx-auto"><h3 class="text-2xl font-bold font-heading text-center text-[#231712] mb-6">Active Fundraising Campaigns</h3><div class="space-y-4">${fundingHTML}</div></div>` : ''}
-                        </div>`;
-                    donationSec.parentNode.insertBefore(dynamicSec, donationSec);
+                    container.innerHTML = `
+                        <section id="programs" class="py-24 bg-[#F6EFE8] border-b border-[#D4C3B3]">
+                            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                ${data.events && data.events.length ? `<div class="text-center mb-12"><span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest">LATEST UPDATES</span><h2 class="text-3xl font-extrabold font-heading text-[#231712] mt-2">Events & Programs</h2></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">${eventsHTML}</div>` : ''}
+                                ${data.funding && data.funding.length ? `<div class="max-w-3xl mx-auto"><h3 class="text-2xl font-bold font-heading text-center text-[#231712] mb-6">Active Fundraising Campaigns</h3><div class="space-y-4">${fundingHTML}</div></div>` : ''}
+                            </div>
+                        </section>`;
                 }
 
                 if (data.team && data.team.length > 0) {
-                    const teamGrid = document.querySelector('#team .grid.lg\\:grid-cols-4');
+                    const teamGrid = document.getElementById('panelMembersGrid');
                     if (teamGrid) {
                         teamGrid.innerHTML = data.team.map(m => `
                         <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                            <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                                 <img src="${m.ImageURL}" alt="${m.Name}" class="w-full h-full object-cover">
                             </div>
                             <h4 class="font-bold font-heading text-[#231712] text-lg">${m.Name}</h4>
@@ -724,7 +971,7 @@
                 }
 
                 if (data.gallery && data.gallery.length > 0) {
-                    const galGrid = document.querySelector('#gallery .grid');
+                    const galGrid = document.getElementById('galleryGrid');
                     if (galGrid) {
                         galGrid.innerHTML = data.gallery.map(g => `
                         <div onclick="openLightbox('${g.ImageURL}', '${g.Caption}')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
