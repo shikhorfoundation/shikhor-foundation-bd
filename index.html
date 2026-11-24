@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Outfit', sans-serif; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
@@ -37,7 +37,6 @@
             animation: fadeIn 0.45s ease-out forwards;
         }
 
-        /* Floating Logo Animation */
         @keyframes floatSlow {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
@@ -46,7 +45,6 @@
             animation: floatSlow 4s ease-in-out infinite;
         }
 
-        /* Button Shimmer Effect */
         .btn-shimmer {
             position: relative;
             overflow: hidden;
@@ -63,7 +61,6 @@
             left: 130%;
         }
 
-        /* Scroll Reveal Animation */
         .reveal {
             opacity: 0;
             transform: translateY(24px);
@@ -74,7 +71,6 @@
             transform: translateY(0);
         }
 
-        /* Live Notice Marquee Animation */
         @keyframes noticeMarquee {
             0% { transform: translateX(0%); }
             100% { transform: translateX(-50%); }
@@ -88,6 +84,12 @@
             animation-play-state: paused;
         }
 
+        /* Newspaper Masthead Rule */
+        .paper-rule {
+            border-top: 2px solid #3B261D;
+            border-bottom: 1px solid #B88655;
+        }
+
         /* DARK THEME OVERRIDES */
         body.dark-theme {
             background-color: #140E0B;
@@ -95,10 +97,15 @@
         }
         body.dark-theme header,
         body.dark-theme #mobileMenu,
-        body.dark-theme #chatWindow {
-            background-color: rgba(29, 20, 16, 0.96);
+        body.dark-theme #chatWindow,
+        body.dark-theme #newsReaderCard {
+            background-color: rgba(29, 20, 16, 0.97);
             border-color: #3D2A20;
             color: #F3EAE2;
+        }
+        body.dark-theme .paper-rule {
+            border-top-color: #E6A972;
+            border-bottom-color: #5C3D2E;
         }
         body.dark-theme nav a,
         body.dark-theme #mobileMenu a {
@@ -173,6 +180,34 @@
         </div>
     </div>
 
+    <!-- FULL NEWSPAPER ARTICLE READER MODAL (NEWS VIEW) -->
+    <div id="newsReaderModal" onclick="if(event.target===this) closeNewsReader()" class="fixed inset-0 z-50 bg-[#1A100C]/85 backdrop-blur-sm flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div id="newsReaderCard" class="bg-[#FDFBF9] max-w-3xl w-full rounded-3xl border-2 border-[#B88655] shadow-2xl overflow-hidden my-8 animate-fade-in">
+            <div class="bg-[#231712] text-[#F6EFE8] px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <span class="px-2.5 py-0.5 rounded-full bg-[#8C583A] text-[10px] font-bold uppercase tracking-wider">SHIKHOR PRESS</span>
+                    <span id="readerCategoryBadge" class="text-xs font-semibold text-[#E6B88A]"></span>
+                </div>
+                <button onclick="closeNewsReader()" class="text-white hover:text-[#E6B88A] text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 sm:p-8 max-h-[82vh] overflow-y-auto">
+                <div class="flex flex-wrap items-center gap-3 text-xs text-[#6E5649] mb-3">
+                    <span id="readerDateTime"><i class="fa-regular fa-clock mr-1 text-[#8C583A]"></i></span>
+                    <span id="readerLiveTag" class="hidden px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-extrabold uppercase animate-pulse">LIVE UPDATE</span>
+                    <span class="ml-auto text-[11px] font-semibold text-[#8C583A]"><i class="fa-solid fa-shield-halved mr-1"></i> Permanent Archive</span>
+                </div>
+                <h2 id="readerHeadline" class="text-2xl sm:text-4xl font-extrabold font-heading text-[#231712] leading-snug mb-4"></h2>
+                <p id="readerSummary" class="text-sm sm:text-base font-semibold text-[#5C3D2E] border-l-4 border-[#8C583A] pl-4 py-1 mb-6 bg-[#F2E8DF]/60 rounded-r-xl"></p>
+                <div class="mb-6 rounded-2xl overflow-hidden border border-[#D4C3B3] bg-[#EFE5DC]">
+                    <img id="readerImage" src="" alt="News Photo" class="w-full max-h-[420px] object-cover">
+                </div>
+                <div id="readerContent" class="text-sm sm:text-base text-[#3B261D] leading-relaxed whitespace-pre-line"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- IMAGE LIGHTBOX MODAL -->
     <div id="lightboxModal" onclick="closeLightbox()" class="fixed inset-0 z-50 bg-[#1A100C]/90 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="relative max-w-4xl w-full text-center">
@@ -200,7 +235,8 @@
                     </div>
                 </a>
 
-                <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-[#5C3D2E]">
+                <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-[#5C3D2E]">
+                    <a href="#news" class="hover:text-[#231712] hover:underline underline-offset-4 transition font-bold text-[#8C583A]">News</a>
                     <a href="#about" class="hover:text-[#231712] hover:underline underline-offset-4 transition">About</a>
                     <a href="#mission" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Mission & Vision</a>
                     <a href="#initiatives" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Initiatives</a>
@@ -229,6 +265,7 @@
 
             <!-- Mobile Dropdown Menu -->
             <div id="mobileMenu" class="hidden lg:hidden bg-[#FDFBF9] border-b border-[#D4C3B3] px-6 py-4 space-y-3 text-sm font-semibold text-[#3B261D]">
+                <a href="#news" onclick="toggleMobileMenu()" class="block py-1 text-[#8C583A] font-bold">Live News & Press</a>
                 <a href="#about" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">About Us</a>
                 <a href="#mission" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Mission & Vision</a>
                 <a href="#initiatives" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Initiatives</a>
@@ -285,6 +322,9 @@
                 </div>
 
                 <div class="mt-10 flex flex-wrap justify-center gap-4">
+                    <a href="#news" class="px-8 py-4 bg-[#8C583A] hover:bg-[#6E432B] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1 btn-shimmer">
+                        Read Live News <i class="fa-solid fa-newspaper ml-2"></i>
+                    </a>
                     <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1 btn-shimmer">
                         Join as Volunteer <i class="fa-solid fa-arrow-right ml-2"></i>
                     </a>
@@ -315,8 +355,38 @@
             </div>
         </section>
 
+        <!-- NEWSPAPER & LIVE NEWS ARCHIVE SECTION -->
+        <section id="news" class="py-24 bg-[#FDFBF9] border-b border-[#D4C3B3] reveal">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="paper-rule py-5 mb-10 text-center">
+                    <div class="flex flex-wrap items-center justify-between text-[11px] font-bold uppercase tracking-widest text-[#6E5649] mb-2">
+                        <span><i class="fa-solid fa-radio text-red-600 mr-1 animate-pulse"></i> LIVE DESK & PRESS</span>
+                        <span>PERMANENT ARCHIVE • NEVER DELETED</span>
+                        <span>SHIKHOR DISPATCH</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl font-extrabold font-heading text-[#231712] tracking-tight">
+                        Shikhor News & Live Updates
+                    </h2>
+                    <p class="mt-2 text-sm text-[#4F392E] max-w-2xl mx-auto">
+                        Field reports, live dispatches, and stories of compassion published directly from our desk. Click any story to open full news view.
+                    </p>
+                </div>
+
+                <div id="newsCategoryBar" class="flex flex-wrap justify-center gap-2 mb-10">
+                    <button onclick="filterNewsCategory('All', this)" class="news-cat-btn px-4 py-2 rounded-xl bg-[#3B261D] text-white text-xs font-bold shadow">All News</button>
+                    <button onclick="filterNewsCategory('Live Update', this)" class="news-cat-btn px-4 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs font-bold">Live Update</button>
+                    <button onclick="filterNewsCategory('Relief & Aid', this)" class="news-cat-btn px-4 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs font-bold">Relief & Aid</button>
+                    <button onclick="filterNewsCategory('Education', this)" class="news-cat-btn px-4 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs font-bold">Education</button>
+                    <button onclick="filterNewsCategory('Community', this)" class="news-cat-btn px-4 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs font-bold">Community</button>
+                </div>
+
+                <div id="leadNewsContainer" class="mb-10"></div>
+                <div id="newsFeedGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+        </section>
+
         <!-- ABOUT US -->
-        <section id="about" class="py-24 bg-[#FDFBF9] reveal">
+        <section id="about" class="py-24 bg-[#EFE5DC] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div>
@@ -328,15 +398,15 @@
                             Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.
                         </p>
                         <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
-                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
+                            <div class="p-5 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] hover-lift">
                                 <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Humanity</h4>
                                 <p class="text-xs text-[#5C3D2E]">Every person deserves dignity, care, and support.</p>
                             </div>
-                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
+                            <div class="p-5 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] hover-lift">
                                 <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Togetherness</h4>
                                 <p class="text-xs text-[#5C3D2E]">Collective effort builds sustainable impact.</p>
                             </div>
-                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
+                            <div class="p-5 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] hover-lift">
                                 <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Transparency</h4>
                                 <p class="text-xs text-[#5C3D2E]">Trust grows through honesty and accountability.</p>
                             </div>
@@ -357,14 +427,14 @@
         </section>
 
         <!-- MISSION & VISION -->
-        <section id="mission" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3] reveal">
+        <section id="mission" class="py-24 bg-[#FDFBF9] border-y border-[#D4C3B3] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR DIRECTION</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Mission & Vision</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-[#FDFBF9] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
+                    <div class="bg-[#F2E8DF] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-[#E6B88A] rounded-xl flex items-center justify-center font-bold text-xl mb-6">
                             <i class="fa-solid fa-eye"></i>
                         </div>
@@ -373,7 +443,7 @@
                             A compassionate and inclusive society where every individual has the opportunity to live with dignity, hope, and a secure future.
                         </p>
                     </div>
-                    <div class="bg-[#FDFBF9] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
+                    <div class="bg-[#F2E8DF] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-[#E6B88A] rounded-xl flex items-center justify-center font-bold text-xl mb-6">
                             <i class="fa-solid fa-bullseye"></i>
                         </div>
@@ -387,14 +457,14 @@
         </section>
 
         <!-- INITIATIVES -->
-        <section id="initiatives" class="py-24 bg-[#FDFBF9] reveal">
+        <section id="initiatives" class="py-24 bg-[#EFE5DC] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR INITIATIVES</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Turning compassion into action.</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-hands-holding-child"></i>
                         </div>
@@ -403,7 +473,7 @@
                             Supporting people and families experiencing hardship through thoughtful winter clothing distribution, relief packages, and emergency support.
                         </p>
                     </div>
-                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-book-open"></i>
                         </div>
@@ -412,7 +482,7 @@
                             Empowering rural and disadvantaged students by providing essential educational materials, books, and learning guidance for a brighter future.
                         </p>
                     </div>
-                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-people-group"></i>
                         </div>
@@ -426,7 +496,7 @@
         </section>
 
         <!-- TEAM DIRECTORY -->
-        <section id="team" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3] reveal">
+        <section id="team" class="py-24 bg-[#FDFBF9] border-y border-[#D4C3B3] reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">THE PEOPLE BEHIND SHIKHOR</span>
@@ -434,9 +504,9 @@
                 </div>
 
                 <!-- 1. FOUNDER CARD -->
-                <div class="bg-[#FDFBF9] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
+                <div class="bg-[#F2E8DF] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
                     <div class="text-center">
-                        <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#8C583A] shadow-md mb-4 transform transition hover:scale-105">
+                        <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#8C583A] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="zarif.jpg" alt="Md. Shewise Al Islam Zarif" class="w-full h-full object-cover">
                         </div>
                         <h3 class="text-xl font-bold font-heading text-[#231712]">Md. Shewise Al Islam Zarif</h3>
@@ -453,96 +523,96 @@
 
                 <!-- PANEL MEMBERS GRID -->
                 <div id="panelMembersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="ahsan.jpg" alt="Ahsan Zaman" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Ahsan Zaman</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="nafew.jpg" alt="Nafew Khalil" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Nafew Khalil</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President of Program Organisation</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="shakhawat.jpg" alt="Md. Shakhawat Hossain Sayem" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Shakhawat Hossain Sayem</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration & Marketing<br><span class="text-[10px] text-[#6E5649] font-normal">(Acting IT Secretary)</span></p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="minhajul.jpg" alt="MD. Minhajul Islam" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">MD. Minhajul Islam</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts & Finance</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="shafi.jpg" alt="Faymul Islam Shafi" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Faymul Islam Shafi</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Volunteer</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="sayed.jpg" alt="Sayed Bin Kamal" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Sayed Bin Kamal</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Administration</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="alif.jpg" alt="Alif Hasan Ayman" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Alif Hasan Ayman</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Accounts & Finance</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="rikto.png" alt="Rikto Ruddur Lyric" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Rikto Ruddur Lyric</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Marketing</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="mayasha.jpg" alt="Mayasha Afrin" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Mayasha Afrin</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Volunteer</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="wahid.jpg" alt="Wahid Yashfi" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Wahid Yashfi</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="arafat.jpg" alt="Arafat Sultan" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Arafat Sultan</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
                     </div>
 
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="raiyanul.jpg" alt="Md. Raiyanul Islam" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Raiyanul Islam</h4>
@@ -677,6 +747,7 @@
                 <div>
                     <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#E6B88A]">Quick Links</h4>
                     <ul class="space-y-2 text-xs text-[#D4C3B3]">
+                        <li><a href="#news" class="hover:text-white transition">Live News</a></li>
                         <li><a href="#about" class="hover:text-white transition">About Us</a></li>
                         <li><a href="#mission" class="hover:text-white transition">Mission & Vision</a></li>
                         <li><a href="#donation" class="hover:text-white transition">Donation</a></li>
@@ -756,7 +827,8 @@
 
     <!-- SCRIPTS -->
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCpnGTzewYB0uuyPhxFUK4G60A9B0T3iPaP0CpAl6crnV6ZzLlaA0lCl1fW3vFc9ys/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi9USPZIhXh51jPHumGvYRCbNCvRFsWvJoOf1XMSZP1XVDF2BNHwDuhq0kTifcE9xV/exec";
+        const PERMANENT_NEWS_KEY = "shikhor_permanent_news_v1";
         const THEME_MODES = ["device", "light", "dark"];
         const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -796,6 +868,174 @@
         });
 
         applyThemeMode(getSavedThemeMode());
+
+        const DEFAULT_PERMANENT_NEWS = [
+            {
+                ID: "NEWS_WELCOME_1",
+                Headline: "Shikhor Foundation Expands Community Care & Live Dispatch Desk",
+                Category: "Live Update",
+                DateTime: "24 Nov 2026 • Live Desk",
+                IsLive: "Yes",
+                ImageURL: "gallery1.jpg",
+                Summary: "Our volunteer network is actively coordinating local assistance, winter drives, and educational outreach with full transparency.",
+                Content: "Shikhor Foundation continues to stand beside families and students across communities. Every report published here remains permanently archived on our newspaper desk so supporters and volunteers can follow our ongoing work anytime."
+            },
+            {
+                ID: "NEWS_EDU_2",
+                Headline: "Educational Support & Learning Aid Drive for Students",
+                Category: "Education",
+                DateTime: "20 Nov 2026 • Press Note",
+                IsLive: "No",
+                ImageURL: "gallery2.jpg",
+                Summary: "Providing essential learning resources and encouragement to underserved learners.",
+                Content: "Education unlocks long-term dignity and opportunity. Through community contributions and volunteer coordination, Shikhor Foundation supports students with books, study materials, and guidance."
+            },
+            {
+                ID: "NEWS_VOL_3",
+                Headline: "Volunteers Gather to Plan Upcoming Humanitarian Outreach",
+                Category: "Community",
+                DateTime: "18 Nov 2026 • Field Report",
+                IsLive: "No",
+                ImageURL: "gallery3.jpg",
+                Summary: "Dedicated volunteers came together to organize logistics, outreach priorities, and community support plans.",
+                Content: "Together for a Better Tomorrow starts with people showing up for one another. Our volunteers reviewed ground needs and planned upcoming relief and awareness activities."
+            }
+        ];
+
+        let allNewsArticles = [];
+        let activeNewsCategory = "All";
+
+        function loadLocalNews() {
+            try {
+                const raw = localStorage.getItem(PERMANENT_NEWS_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_PERMANENT_NEWS;
+            } catch (e) {
+                return DEFAULT_PERMANENT_NEWS;
+            }
+        }
+
+        function saveLocalNews(list) {
+            try {
+                localStorage.setItem(PERMANENT_NEWS_KEY, JSON.stringify(list));
+            } catch (e) {}
+        }
+
+        function mergePermanentNews(remoteList) {
+            const localList = loadLocalNews();
+            const mapById = new Map();
+            [...DEFAULT_PERMANENT_NEWS, ...localList, ...(remoteList || [])].forEach(item => {
+                if (item && (item.ID || item.Headline)) {
+                    const key = String(item.ID || item.Headline);
+                    mapById.set(key, item);
+                }
+            });
+            const merged = Array.from(mapById.values()).reverse();
+            saveLocalNews(merged);
+            return merged;
+        }
+
+        function filterNewsCategory(cat, btnEl) {
+            activeNewsCategory = cat;
+            document.querySelectorAll('.news-cat-btn').forEach(b => {
+                b.className = "news-cat-btn px-4 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs font-bold transition";
+            });
+            if (btnEl) {
+                btnEl.className = "news-cat-btn px-4 py-2 rounded-xl bg-[#3B261D] text-white text-xs font-bold shadow transition";
+            }
+            renderNewsNewspaper();
+        }
+
+        function renderNewsNewspaper() {
+            const leadBox = document.getElementById('leadNewsContainer');
+            const gridBox = document.getElementById('newsFeedGrid');
+            if (!leadBox || !gridBox) return;
+
+            const filtered = activeNewsCategory === "All"
+                ? allNewsArticles
+                : allNewsArticles.filter(n => String(n.Category || "").toLowerCase() === activeNewsCategory.toLowerCase());
+
+            if (!filtered.length) {
+                leadBox.innerHTML = "";
+                gridBox.innerHTML = `<div class="col-span-full text-center p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] text-sm text-[#4F392E]">No news published in this category yet.</div>`;
+                return;
+            }
+
+            const lead = filtered[0];
+            const rest = filtered.slice(1);
+            const leadIsLive = String(lead.IsLive || "").toLowerCase() === "yes";
+
+            leadBox.innerHTML = `
+                <article onclick="openNewsReaderById('${encodeURIComponent(lead.ID)}')" class="bg-[#F2E8DF] rounded-3xl border-2 border-[#B88655] overflow-hidden shadow-lg hover-lift cursor-pointer grid grid-cols-1 lg:grid-cols-12">
+                    <div class="lg:col-span-6 h-64 lg:h-auto bg-[#EFE5DC] overflow-hidden relative">
+                        <img src="${lead.ImageURL || 'gallery1.jpg'}" alt="${lead.Headline}" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        ${leadIsLive ? `<span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-red-600 text-white text-[10px] font-extrabold uppercase tracking-wider shadow animate-pulse"><i class="fa-solid fa-circle mr-1 text-[8px]"></i> LIVE UPDATE</span>` : ''}
+                    </div>
+                    <div class="lg:col-span-6 p-6 sm:p-10 flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 text-xs font-bold mb-3">
+                                <span class="px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] uppercase tracking-wider">${lead.Category || 'Press'}</span>
+                                <span class="text-[#6E5649]"><i class="fa-regular fa-clock mr-1"></i>${lead.DateTime || 'Latest'}</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] leading-snug mb-3">${lead.Headline}</h3>
+                            <p class="text-sm text-[#4F392E] leading-relaxed mb-4">${lead.Summary || (lead.Content || '').slice(0, 180)}</p>
+                        </div>
+                        <div class="pt-4 border-t border-[#D4C3B3] flex items-center justify-between text-xs font-bold text-[#8C583A]">
+                            <span>Read Full News Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                            <span class="text-[#6E5649]"><i class="fa-solid fa-bookmark mr-1"></i> Archived</span>
+                        </div>
+                    </div>
+                </article>
+            `;
+
+            gridBox.innerHTML = rest.map(n => {
+                const isLive = String(n.IsLive || "").toLowerCase() === "yes";
+                return `
+                <article onclick="openNewsReaderById('${encodeURIComponent(n.ID)}')" class="bg-[#F2E8DF] rounded-3xl border border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer flex flex-col">
+                    <div class="h-48 bg-[#EFE5DC] overflow-hidden relative">
+                        <img src="${n.ImageURL || 'gallery1.jpg'}" alt="${n.Headline}" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        ${isLive ? `<span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-extrabold uppercase shadow animate-pulse">LIVE</span>` : ''}
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] font-bold text-[#8C583A] uppercase mb-2">
+                                <span>${n.Category || 'News'}</span>
+                                <span class="text-[#6E5649] font-medium normal-case">${n.DateTime || ''}</span>
+                            </div>
+                            <h4 class="text-lg font-bold font-heading text-[#231712] leading-snug mb-2">${n.Headline}</h4>
+                            <p class="text-xs text-[#4F392E] leading-relaxed">${n.Summary || (n.Content || '').slice(0, 120) + '...'}</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-[#D4C3B3] text-xs font-bold text-[#8C583A] flex items-center justify-between">
+                            <span>Open News View</span>
+                            <i class="fa-solid fa-up-right-from-square text-[11px]"></i>
+                        </div>
+                    </div>
+                </article>`;
+            }).join('');
+        }
+
+        function openNewsReaderById(encodedId) {
+            const id = decodeURIComponent(encodedId);
+            const article = allNewsArticles.find(n => String(n.ID) === String(id));
+            if (!article) return;
+
+            document.getElementById('readerCategoryBadge').innerText = article.Category || 'News';
+            document.getElementById('readerDateTime').innerHTML = `<i class="fa-regular fa-clock mr-1 text-[#8C583A]"></i> ${article.DateTime || ''}`;
+            document.getElementById('readerHeadline').innerText = article.Headline || '';
+            document.getElementById('readerSummary').innerText = article.Summary || '';
+            document.getElementById('readerImage').src = article.ImageURL || 'gallery1.jpg';
+            document.getElementById('readerContent').innerText = article.Content || article.Summary || '';
+
+            const liveBadge = document.getElementById('readerLiveTag');
+            if (String(article.IsLive || "").toLowerCase() === "yes") liveBadge.classList.remove('hidden');
+            else liveBadge.classList.add('hidden');
+
+            document.getElementById('newsReaderModal').classList.remove('hidden');
+        }
+
+        function closeNewsReader() {
+            document.getElementById('newsReaderModal').classList.add('hidden');
+        }
 
         let liveNoticesList = [
             "Welcome to Shikhor Foundation! Together for a Better Tomorrow.",
@@ -892,6 +1132,9 @@
             initScrollReveal();
             renderNoticeBoard();
 
+            allNewsArticles = mergePermanentNews([]);
+            renderNewsNewspaper();
+
             sendToGoogleSheet({
                 type: "visit",
                 status: "Website Visitor Entry",
@@ -901,6 +1144,9 @@
             try {
                 const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&t=${Date.now()}`);
                 const data = await res.json();
+
+                allNewsArticles = mergePermanentNews(data.news || []);
+                renderNewsNewspaper();
 
                 if (data.stats) {
                     if (data.stats.Families) document.getElementById('counterFamilies').innerText = data.stats.Families;
@@ -960,8 +1206,8 @@
                     const teamGrid = document.getElementById('panelMembersGrid');
                     if (teamGrid) {
                         teamGrid.innerHTML = data.team.map(m => `
-                        <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                            <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                        <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                            <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                                 <img src="${m.ImageURL}" alt="${m.Name}" class="w-full h-full object-cover">
                             </div>
                             <h4 class="font-bold font-heading text-[#231712] text-lg">${m.Name}</h4>
