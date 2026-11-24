@@ -105,8 +105,8 @@
                     <i id="themeIcon" class="fa-solid fa-desktop"></i>
                     <span id="themeLabel">Device</span>
                 </button>
-                <a href="index.html" target="_blank" class="px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-globe"></i> View Live Web
+                <a href="index.html#news" target="_blank" class="px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-newspaper"></i> View Live News
                 </a>
                 <button id="headerLogoutBtn" onclick="logoutAdmin()" class="hidden px-3.5 py-2.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-xl border border-red-300 transition">
                     <i class="fa-solid fa-right-from-bracket"></i> Logout
@@ -168,22 +168,96 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <span class="inline-block px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-widest mb-2">
-                        INSTANT SYNC ENABLED
+                        PERMANENT PRESS & LIVE EDITOR
                     </span>
                     <h1 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712]">
                         Shikhor Foundation — Full Site Control
                     </h1>
                     <p class="text-sm text-[#4F392E] mt-1">
-                        Changes update immediately without waiting. Add multiple live notices, events, funding, team, and gallery items below.
+                        Published news items are permanently preserved and never deleted. Edit existing stories or publish new live dispatches anytime.
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2 text-xs font-bold">
+                    <a href="#sec-news" class="px-3 py-2 rounded-xl bg-[#8C583A] text-white">News Desk</a>
                     <a href="#sec-notices" class="px-3 py-2 rounded-xl bg-[#3B261D] text-white">Live Notices</a>
                     <a href="#sec-counters" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Counters</a>
                     <a href="#sec-events" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Events</a>
                     <a href="#sec-funding" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Funding</a>
                     <a href="#sec-team" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Team</a>
                     <a href="#sec-gallery" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Gallery</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- PERMANENT NEWS & LIVE NEWSPAPER PUBLISHER -->
+        <section id="sec-news" class="py-14 bg-[#FDFBF9] border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+                    <div>
+                        <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-1">NEWSPAPER & LIVE UPDATES</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712]">Publish & Edit Permanent News</h2>
+                    </div>
+                    <span class="px-3 py-1.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] text-xs font-bold border border-[#D4C3B3]">
+                        <i class="fa-solid fa-lock mr-1 text-[#8C583A]"></i> Permanent Archive (Delete Disabled)
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-5 bg-[#F2E8DF] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm h-fit">
+                        <h3 class="text-lg font-bold font-heading mb-4" id="newsFormTitle"><i class="fa-solid fa-newspaper mr-1.5 text-[#8C583A]"></i> Publish New Story</h3>
+                        <form id="newsPublishForm" class="space-y-3.5">
+                            <input type="hidden" id="newsId">
+                            <div>
+                                <label class="block text-xs font-bold mb-1">News Headline *</label>
+                                <input type="text" id="newsHeadline" required placeholder="e.g. Live Relief Distribution at Dhaka" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold mb-1">Category *</label>
+                                    <select id="newsCategory" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                                        <option value="Live Update">Live Update</option>
+                                        <option value="Relief & Aid">Relief & Aid</option>
+                                        <option value="Education">Education</option>
+                                        <option value="Community">Community</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold mb-1">Live Badge?</label>
+                                    <select id="newsIsLive" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                                        <option value="Yes">Yes (LIVE)</option>
+                                        <option value="No">No (Archive)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Date / Time Label</label>
+                                <input type="text" id="newsDateTime" placeholder="Auto-filled if left blank (e.g. 24 Nov 2026)" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-xs bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Short Summary (Lead Line) *</label>
+                                <input type="text" id="newsSummary" required placeholder="Brief 1-2 line highlight for newspaper card..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-xs bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Full News Description *</label>
+                                <textarea id="newsContent" rows="4" required placeholder="Write full news details, ground updates, and report..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">News Photo (Crop & Upload or URL) *</label>
+                                <input type="file" accept="image/*" onchange="initCropper(event, 'newsImgUrl', 16/9)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-[#FDFBF9] file:text-[#3B261D] file:font-bold">
+                                <input type="text" id="newsImgUrl" required placeholder="Image URL or filename (e.g. gallery1.jpg)" class="mt-2 w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xs bg-white">
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button type="submit" class="flex-1 py-3 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow">
+                                    <i class="fa-solid fa-paper-plane mr-1.5"></i> Publish News Permanently
+                                </button>
+                                <button type="button" onclick="resetNewsForm()" class="px-4 py-3 bg-[#FDFBF9] text-[#3B261D] text-xs font-bold rounded-xl border border-[#D4C3B3]">Clear</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-7">
+                        <div id="adminNewsList" class="space-y-4"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -404,7 +478,8 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCpnGTzewYB0uuyPhxFUK4G60A9B0T3iPaP0CpAl6crnV6ZzLlaA0lCl1fW3vFc9ys/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi9USPZIhXh51jPHumGvYRCbNCvRFsWvJoOf1XMSZP1XVDF2BNHwDuhq0kTifcE9xV/exec";
+        const PERMANENT_NEWS_KEY = "shikhor_permanent_news_v1";
         const THEME_MODES = ["device", "light", "dark"];
         const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -467,7 +542,20 @@
             { ID: "GAL_DEF_3", Caption: "Volunteer Gathering", ImageURL: "gallery3.jpg" }
         ];
 
-        let siteData = { events: [], funding: [], team: [], gallery: [], stats: {} };
+        const DEFAULT_NEWS_ADMIN = [
+            {
+                ID: "NEWS_WELCOME_1",
+                Headline: "Shikhor Foundation Expands Community Care & Live Dispatch Desk",
+                Category: "Live Update",
+                DateTime: "24 Nov 2026 • Live Desk",
+                IsLive: "Yes",
+                ImageURL: "gallery1.jpg",
+                Summary: "Our volunteer network is actively coordinating local assistance, winter drives, and educational outreach with full transparency.",
+                Content: "Shikhor Foundation continues to stand beside families and students across communities. Every report published here remains permanently archived on our newspaper desk so supporters and volunteers can follow our ongoing work anytime."
+            }
+        ];
+
+        let siteData = { events: [], funding: [], team: [], gallery: [], news: [], stats: {} };
         let noticesArray = [];
         let cropper = null;
         let currentTargetInputId = "";
@@ -495,6 +583,22 @@
             })
             .then(() => showToast("Updated & Live on Website!"))
             .catch(() => showToast("Saved locally (check network)"));
+        }
+
+        function loadLocalNewsStore() {
+            try {
+                const raw = localStorage.getItem(PERMANENT_NEWS_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_NEWS_ADMIN;
+            } catch (e) {
+                return DEFAULT_NEWS_ADMIN;
+            }
+        }
+
+        function saveLocalNewsStore(list) {
+            try {
+                localStorage.setItem(PERMANENT_NEWS_KEY, JSON.stringify(list));
+            } catch (e) {}
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -534,14 +638,23 @@
 
         async function fetchAllAdminData() {
             showToast("Loading live data...", true);
+            const cachedNews = loadLocalNewsStore();
             try {
                 const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&t=${Date.now()}`);
                 const data = await res.json();
+                const mapNews = new Map();
+                [...cachedNews, ...(data.news || [])].forEach(n => {
+                    if (n && (n.ID || n.Headline)) mapNews.set(String(n.ID || n.Headline), n);
+                });
+                const mergedNews = Array.from(mapNews.values());
+                saveLocalNewsStore(mergedNews);
+
                 siteData = {
                     events: data.events || [],
                     funding: data.funding || [],
                     team: (data.team && data.team.length > 0) ? data.team : DEFAULT_TEAM,
                     gallery: (data.gallery && data.gallery.length > 0) ? data.gallery : DEFAULT_GALLERY,
+                    news: mergedNews,
                     stats: data.stats || { Families: "100+", Volunteers: "50+", EventsCount: "10+", NoticeText: "" }
                 };
                 showToast("Live data loaded!");
@@ -551,9 +664,10 @@
                     funding: [],
                     team: DEFAULT_TEAM,
                     gallery: DEFAULT_GALLERY,
+                    news: cachedNews,
                     stats: { Families: "100+", Volunteers: "50+", EventsCount: "10+", NoticeText: "" }
                 };
-                showToast("Loaded default layout");
+                showToast("Loaded permanent archive");
             }
             noticesArray = siteData.stats.NoticeText
                 ? String(siteData.stats.NoticeText).split('||').map(s => s.trim()).filter(Boolean)
@@ -562,6 +676,26 @@
         }
 
         function renderEverything() {
+            document.getElementById('adminNewsList').innerHTML = (siteData.news || []).slice().reverse().map(n => {
+                const isLive = String(n.IsLive || "").toLowerCase() === "yes";
+                return `
+                <div class="bg-[#F2E8DF] p-4 rounded-3xl border border-[#D4C3B3] shadow-sm flex flex-col sm:flex-row gap-4 items-start">
+                    <img src="${n.ImageURL || 'gallery1.jpg'}" class="w-full sm:w-32 h-24 rounded-2xl object-cover border border-[#B88655] shrink-0 bg-[#FDFBF9]">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase mb-1">
+                            <span class="px-2.5 py-0.5 rounded-full bg-[#3B261D] text-[#E6B88A]">${n.Category || 'News'}</span>
+                            ${isLive ? `<span class="px-2 py-0.5 rounded-full bg-red-600 text-white">LIVE</span>` : ''}
+                            <span class="text-[#6E5649] normal-case font-medium">${n.DateTime || ''}</span>
+                        </div>
+                        <h4 class="font-bold font-heading text-base text-[#231712] leading-snug">${n.Headline}</h4>
+                        <p class="text-xs text-[#4F392E] mt-1 line-clamp-2">${n.Summary || n.Content || ''}</p>
+                    </div>
+                    <button onclick="editNewsItem('${n.ID}')" class="px-3.5 py-2 bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] border border-[#D4C3B3] rounded-xl text-xs font-bold shrink-0">
+                        <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                    </button>
+                </div>`;
+            }).join('');
+
             document.getElementById('statFamilies').value = siteData.stats.Families || "100+";
             document.getElementById('statVolunteers').value = siteData.stats.Volunteers || "50+";
             document.getElementById('statEvents').value = siteData.stats.EventsCount || "10+";
@@ -641,7 +775,61 @@
             `).join('');
         }
 
-        // NOTICEBOARD CRUD
+        document.getElementById('newsPublishForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const existingId = document.getElementById('newsId').value;
+            const isEdit = Boolean(existingId);
+            const nowLabel = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            const newsObj = {
+                ID: existingId || "NEWS_" + Date.now(),
+                Headline: document.getElementById('newsHeadline').value.trim(),
+                Category: document.getElementById('newsCategory').value,
+                IsLive: document.getElementById('newsIsLive').value,
+                DateTime: document.getElementById('newsDateTime').value.trim() || nowLabel,
+                Summary: document.getElementById('newsSummary').value.trim(),
+                Content: document.getElementById('newsContent').value.trim(),
+                ImageURL: document.getElementById('newsImgUrl').value.trim()
+            };
+
+            if (isEdit) {
+                const idx = siteData.news.findIndex(x => String(x.ID) === String(existingId));
+                if (idx !== -1) siteData.news[idx] = newsObj;
+            } else {
+                siteData.news.push(newsObj);
+            }
+
+            saveLocalNewsStore(siteData.news);
+            renderEverything();
+            resetNewsForm();
+            postBg({
+                type: "save_news",
+                mode: isEdit ? "edit" : "add",
+                news: newsObj
+            });
+        });
+
+        function editNewsItem(id) {
+            const article = (siteData.news || []).find(x => String(x.ID) === String(id));
+            if (!article) return;
+            document.getElementById('newsId').value = article.ID;
+            document.getElementById('newsHeadline').value = article.Headline || "";
+            document.getElementById('newsCategory').value = article.Category || "Live Update";
+            document.getElementById('newsIsLive').value = article.IsLive || "No";
+            document.getElementById('newsDateTime').value = article.DateTime || "";
+            document.getElementById('newsSummary').value = article.Summary || "";
+            document.getElementById('newsContent').value = article.Content || "";
+            document.getElementById('newsImgUrl').value = article.ImageURL || "";
+            document.getElementById('newsFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square mr-1.5 text-[#8C583A]"></i> Edit Permanent News`;
+            document.getElementById('sec-news').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetNewsForm() {
+            document.getElementById('newsPublishForm').reset();
+            document.getElementById('newsId').value = "";
+            document.getElementById('newsFormTitle').innerHTML = `<i class="fa-solid fa-newspaper mr-1.5 text-[#8C583A]"></i> Publish New Story`;
+        }
+
         document.getElementById('noticeForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const text = document.getElementById('noticeInputText').value.trim();
@@ -682,7 +870,6 @@
             });
         }
 
-        // CROPPER & UPLOAD
         function initCropper(event, targetInputId, aspectRatio) {
             const file = event.target.files[0];
             if (!file) return;
@@ -735,7 +922,6 @@
             btn.innerHTML = `<i class="fa-solid fa-crop-simple mr-1"></i> Crop & Upload`;
         }
 
-        // INSTANT OPTIMISTIC SAVE / DELETE
         function saveItemInstant(sheetName, keyName, item, mode = "add") {
             if (mode === "edit") {
                 const idx = siteData[keyName].findIndex(x => String(x.ID) === String(item.ID));
@@ -756,7 +942,6 @@
             postBg({ type: "save_item", sheetName, mode: "delete", id });
         }
 
-        // EVENTS
         document.getElementById('eventForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const existingId = document.getElementById('eventId').value;
@@ -787,7 +972,6 @@
             document.getElementById('eventFormTitle').innerText = "+ Add New Event";
         }
 
-        // FUNDING
         document.getElementById('fundingForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const existingId = document.getElementById('fundId').value;
@@ -816,7 +1000,6 @@
             document.getElementById('fundId').value = "";
         }
 
-        // TEAM
         document.getElementById('teamForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const existingId = document.getElementById('teamId').value;
@@ -843,7 +1026,6 @@
             document.getElementById('teamId').value = "";
         }
 
-        // GALLERY
         document.getElementById('galleryForm').addEventListener('submit', function(e) {
             e.preventDefault();
             saveItemInstant("Gallery", "gallery", {
@@ -854,7 +1036,6 @@
             document.getElementById('galleryForm').reset();
         });
 
-        // STATS
         document.getElementById('statsForm').addEventListener('submit', function(e) {
             e.preventDefault();
             siteData.stats.Families = document.getElementById('statFamilies').value;
