@@ -8,27 +8,27 @@
     <meta name="description" content="Shikhor Foundation is a community-driven humanitarian initiative built on the power of people helping people. Together for a Better Tomorrow.">
     <meta property="og:site_name" content="Shikhor Foundation">
     <meta property="og:title" content="Shikhor Foundation | Together for a Better Tomorrow">
-
+    
     <!-- Favicon & Google Search Logo Optimization -->
     <link rel="icon" type="image/png" sizes="512x512" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
     <link rel="shortcut icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
     <link rel="apple-touch-icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Outfit', sans-serif; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
+        body { font-family: 'Outfit', sans-serif; }
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
-
+        
         .hover-lift {
-            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.3s ease;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
         }
         .hover-lift:hover {
             transform: translateY(-7px);
             box-shadow: 0 22px 35px -10px rgba(35, 23, 18, 0.22);
         }
-
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
@@ -36,71 +36,104 @@
         .animate-fade-in {
             animation: fadeIn 0.45s ease-out forwards;
         }
-
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-        }
-        .animate-float {
-            animation: floatSlow 4s ease-in-out infinite;
-        }
-
-        .btn-shimmer {
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-shimmer::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
-            transition: left 0.6s ease;
-        }
-        .btn-shimmer:hover::after {
-            left: 130%;
-        }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        @keyframes noticeMarquee {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-50%); }
-        }
-        .notice-marquee-track {
-            display: inline-flex;
-            white-space: nowrap;
-            animation: noticeMarquee 26s linear infinite;
-        }
-        .notice-marquee-wrapper:hover .notice-marquee-track {
-            animation-play-state: paused;
-        }
     </style>
 </head>
 <body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white">
 
-    <!-- TOP LIVE NOTICE TICKER BAR -->
-    <div id="topNoticeBar" class="bg-[#231712] text-[#F6EFE8] border-b border-[#8C583A]/60 py-2 px-3 overflow-hidden relative z-50">
-        <div class="max-w-7xl mx-auto flex items-center gap-3">
-            <span class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#8C583A] text-white text-[10px] font-bold uppercase tracking-wider shadow">
-                <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span> LIVE NOTICE
-            </span>
-            <div class="notice-marquee-wrapper overflow-hidden flex-1 text-xs font-medium text-[#E6B88A]">
-                <div id="liveNoticeMarquee" class="notice-marquee-track gap-12">
-                    <span><i class="fa-solid fa-bullhorn mr-1.5 text-white"></i> Welcome to Shikhor Foundation — Together for a Better Tomorrow!</span>
-                    <span><i class="fa-solid fa-hand-holding-heart mr-1.5 text-white"></i> Join our humanitarian drives or support via bKash & Nagad (+8801956631465).</span>
-                    <span><i class="fa-solid fa-bullhorn mr-1.5 text-white"></i> Welcome to Shikhor Foundation — Together for a Better Tomorrow!</span>
-                    <span><i class="fa-solid fa-hand-holding-heart mr-1.5 text-white"></i> Join our humanitarian drives or support via bKash & Nagad (+8801956631465).</span>
+    <!-- SIGN IN / SIGN UP WITH OTP VERIFICATION MODAL -->
+    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-[#1A100C]/85 backdrop-blur-md px-4 hidden">
+        <div class="bg-[#FDFBF9] rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-[#D4C3B3] transform transition-all animate-fade-in relative">
+            <button onclick="toggleAuthModal(false)" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#EFE5DC] text-[#3B261D] hover:bg-[#3B261D] hover:text-white flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="w-16 h-16 bg-[#EFE5DC] rounded-2xl flex items-center justify-center mx-auto mb-3 border border-[#D4C3B3] shadow-sm overflow-hidden p-1.5">
+                    <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                 </div>
+                <h2 class="text-2xl font-bold font-heading text-[#231712]">Shikhor Member Portal</h2>
+                <p class="text-xs text-[#6E5649] mt-1">Verify your Gmail, Yahoo, or any email with OTP</p>
             </div>
+
+            <!-- Tabs: Sign In vs Sign Up -->
+            <div id="authTabs" class="grid grid-cols-2 bg-[#EFE5DC] p-1 rounded-xl mb-5 border border-[#D4C3B3]">
+                <button type="button" id="tabSignIn" onclick="switchAuthTab('signin')" class="py-2 text-xs font-bold rounded-lg bg-[#3B261D] text-white shadow transition">
+                    Sign In
+                </button>
+                <button type="button" id="tabSignUp" onclick="switchAuthTab('signup')" class="py-2 text-xs font-bold rounded-lg text-[#3B261D] hover:bg-[#E2D3C5] transition">
+                    Sign Up
+                </button>
+            </div>
+
+            <!-- Error / Success Alert Box -->
+            <div id="authAlert" class="hidden mb-4 p-3 rounded-xl text-xs font-medium flex items-center gap-2"></div>
+
+            <!-- STEP 1A: SIGN IN FORM -->
+            <form id="signInForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Email Address (Gmail / Yahoo / Any)</label>
+                    <input type="email" id="signInEmail" required placeholder="yourname@gmail.com or yahoo.com" class="w-full px-4 py-3 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Password</label>
+                    <div class="relative">
+                        <input type="password" id="signInPassword" required placeholder="Enter your password" class="w-full px-4 py-3 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('signInPassword', this)" class="absolute right-3 top-3.5 text-[#7A6254] hover:text-[#231712]">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" id="signInSubmitBtn" class="w-full py-3.5 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm transform active:scale-95">
+                    Send Verification Code <i class="fa-solid fa-paper-plane ml-2"></i>
+                </button>
+            </form>
+
+            <!-- STEP 1B: SIGN UP FORM -->
+            <form id="signUpForm" class="space-y-3.5 hidden">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Full Name</label>
+                    <input type="text" id="signUpName" required placeholder="e.g. Md. Rahim" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Username</label>
+                    <input type="text" id="signUpUsername" required placeholder="e.g. rahim_bd" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Email Address (Gmail / Yahoo / Any)</label>
+                    <input type="email" id="signUpEmail" required placeholder="yourname@yahoo.com or gmail.com" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Create Password (Min 6 chars)</label>
+                    <div class="relative">
+                        <input type="password" id="signUpPassword" required minlength="6" placeholder="Create a strong password" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('signUpPassword', this)" class="absolute right-3 top-3 text-[#7A6254] hover:text-[#231712]">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" id="signUpSubmitBtn" class="w-full py-3.5 bg-[#5C3D2E] hover:bg-[#3B261D] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm transform active:scale-95">
+                    Send Verification Code <i class="fa-solid fa-envelope-circle-check ml-2"></i>
+                </button>
+            </form>
+
+            <!-- STEP 2: OTP VERIFICATION FORM -->
+            <form id="otpForm" class="space-y-4 hidden">
+                <div class="bg-[#F2E8DF] p-4 rounded-2xl border border-[#D4C3B3] text-center">
+                    <p class="text-xs text-[#4F392E]">We have sent a 6-digit verification code to:</p>
+                    <p id="otpTargetEmail" class="text-sm font-bold text-[#231712] mt-1"></p>
+                    <p class="text-[11px] text-[#8C583A] mt-1">(Please check Inbox or Spam folder)</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1 text-center">Enter 6-Digit Verification Code</label>
+                    <input type="text" id="otpInput" required maxlength="6" pattern="\d{6}" placeholder="------" class="w-full px-4 py-3.5 rounded-xl bg-white border-2 border-[#8C583A] focus:outline-none focus:ring-2 focus:ring-[#3B261D] text-center text-2xl font-extrabold tracking-[0.5em] text-[#231712]">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm">
+                    Verify Code & Grant Access <i class="fa-solid fa-shield-check ml-2"></i>
+                </button>
+                <button type="button" onclick="cancelOtpProcess()" class="w-full py-2 text-xs font-semibold text-[#6E5649] hover:text-[#231712] underline">
+                    Cancel / Change Email
+                </button>
+            </form>
         </div>
     </div>
 
@@ -110,7 +143,7 @@
             <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-[#D4A373]">
                 <i class="fa-solid fa-xmark"></i> Close
             </button>
-            <img id="lightboxImg" src="gallery1.jpg" alt="Gallery Preview" class="max-h-[80vh] mx-auto rounded-2xl shadow-2xl border-2 border-[#B88655]">
+            <img id="lightboxImg" src="" alt="Gallery Preview" class="max-h-[80vh] mx-auto rounded-2xl shadow-2xl border-2 border-[#B88655]">
             <p id="lightboxCaption" class="text-[#EFE5DC] text-sm mt-3 font-medium"></p>
         </div>
     </div>
@@ -132,17 +165,23 @@
                 </a>
 
                 <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-[#5C3D2E]">
-                    <a href="#team" class="hover:text-[#231712] hover:underline underline-offset-4 transition font-bold text-[#8C583A]">Our Leadership & Panel</a>
                     <a href="#about" class="hover:text-[#231712] hover:underline underline-offset-4 transition">About</a>
                     <a href="#mission" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Mission & Vision</a>
                     <a href="#initiatives" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Initiatives</a>
+                    <a href="#news" class="hover:text-[#231712] hover:underline underline-offset-4 transition font-bold text-[#8C583A]">Live News</a>
+                    <a href="#team" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Team</a>
                     <a href="#donation" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Donation</a>
                     <a href="#gallery" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Gallery</a>
                     <a href="#contact" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Contact</a>
                 </nav>
 
-                <div class="flex items-center gap-2">
-<a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 btn-shimmer">
+                <div class="flex items-center gap-2.5">
+                    <div id="userSection">
+                        <button onclick="toggleAuthModal(true)" class="px-4 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-shield"></i> Sign In / Sign Up
+                        </button>
+                    </div>
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         Join Volunteer
                     </a>
                     <button onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] border border-[#D4C3B3]">
@@ -153,65 +192,46 @@
 
             <!-- Mobile Dropdown Menu -->
             <div id="mobileMenu" class="hidden lg:hidden bg-[#FDFBF9] border-b border-[#D4C3B3] px-6 py-4 space-y-3 text-sm font-semibold text-[#3B261D]">
-                <a href="#team" onclick="toggleMobileMenu()" class="block py-1 text-[#8C583A] font-bold">Our Leadership & Panel Members</a>
                 <a href="#about" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">About Us</a>
                 <a href="#mission" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Mission & Vision</a>
                 <a href="#initiatives" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Initiatives</a>
+                <a href="#news" onclick="toggleMobileMenu()" class="block py-1 text-[#8C583A] font-bold">Live News & Other News</a>
+                <a href="#team" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Our Team</a>
                 <a href="#donation" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Donation</a>
                 <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
                 <a href="#contact" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Contact</a>
-<a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
             </div>
         </header>
 
         <!-- HERO SECTION -->
-        <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-20 lg:py-28 overflow-hidden border-b border-[#D4C3B3]">
+        <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-24 lg:py-32 overflow-hidden border-b border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-[#FDFBF9] shadow-2xl border-4 border-[#B88655] flex items-center justify-center overflow-hidden p-2.5 animate-float">
+                <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-[#FDFBF9] shadow-2xl border-4 border-[#B88655] flex items-center justify-center overflow-hidden p-2.5 transform transition hover:scale-105">
                     <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                 </div>
 
-                <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#3B261D] text-[#F6EFE8] text-xs font-bold mb-6 tracking-widest shadow-md animate-fade-in">
+                <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#3B261D] text-[#F6EFE8] text-xs font-bold mb-6 tracking-widest shadow-md">
                     <span>HELP</span> • <span>SUPPORT</span> • <span>EMPOWER</span>
                 </div>
-                <h1 class="text-4xl sm:text-6xl font-extrabold font-heading text-[#231712] tracking-tight max-w-4xl mx-auto leading-tight animate-fade-in">
+                <h1 class="text-4xl sm:text-6xl font-extrabold font-heading text-[#231712] tracking-tight max-w-4xl mx-auto leading-tight">
                     A little kindness can grow into a <span class="text-[#8C583A]">better tomorrow.</span>
                 </h1>
-                <p class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed animate-fade-in">
+                <p class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed">
                     Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.
                 </p>
-
-                <!-- INTERACTIVE LIVE NOTICEBOARD BOX -->
-                <div class="mt-8 max-w-2xl mx-auto bg-[#FDFBF9] rounded-2xl border-2 border-[#B88655] shadow-lg p-4 text-left animate-fade-in">
-                    <div class="flex items-center justify-between border-b border-[#EFE5DC] pb-2 mb-2.5">
-                        <span class="text-xs font-extrabold uppercase tracking-wider text-[#3B261D] flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></span> Live Noticeboard
-                        </span>
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="prevNotice()" class="w-6 h-6 rounded-lg bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs flex items-center justify-center" title="Previous"><i class="fa-solid fa-chevron-left"></i></button>
-                            <button onclick="nextNotice()" class="w-6 h-6 rounded-lg bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs flex items-center justify-center" title="Next"><i class="fa-solid fa-chevron-right"></i></button>
-                        </div>
-                    </div>
-                    <div id="noticeBoxDisplay" class="min-h-[44px] flex items-center text-sm font-medium text-[#3B261D] transition-all duration-500">
-                        <i class="fa-solid fa-circle-info text-[#8C583A] mr-2.5 text-base"></i>
-                        <span>Welcome to Shikhor Foundation! Check our upcoming humanitarian initiatives below.</span>
-                    </div>
-                </div>
-
+                
                 <div class="mt-6 flex justify-center items-center gap-4">
-                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 btn-shimmer">
+                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-brands fa-facebook-f text-sm"></i> Facebook Page
                     </a>
-                    <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 btn-shimmer">
+                    <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-brands fa-instagram text-sm"></i> Instagram
                     </a>
                 </div>
 
                 <div class="mt-10 flex flex-wrap justify-center gap-4">
-                    <a href="#team" class="px-8 py-4 bg-[#8C583A] hover:bg-[#6E432B] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1 btn-shimmer">
-                        Our Leadership & Panel <i class="fa-solid fa-users ml-2"></i>
-                    </a>
-                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1 btn-shimmer">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1">
                         Join as Volunteer <i class="fa-solid fa-arrow-right ml-2"></i>
                     </a>
                     <a href="#donation" class="px-8 py-4 bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] font-semibold rounded-xl border-2 border-[#B88655] shadow-md transition transform hover:-translate-y-1">
@@ -220,17 +240,17 @@
                 </div>
 
                 <!-- LIVE IMPACT COUNTER -->
-                <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto reveal">
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
-                        <h3 id="counterFamilies" class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Families Supported</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
-                        <h3 id="counterVolunteers" class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Active Volunteers</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift col-span-2 md:col-span-1">
-                        <h3 id="counterEvents" class="text-3xl font-extrabold font-heading text-[#8C583A]">10+</h3>
+                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">10+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Successful Events</p>
                     </div>
                 </div>
@@ -241,156 +261,8 @@
             </div>
         </section>
 
-        <!-- NEWS & LIVE UPDATES -->
-        <section id="news" class="py-24 bg-[#FDFBF9] border-b border-[#D4C3B3] reveal">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-12">
-                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">LATEST ANNOUNCEMENTS</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">News & Live Updates</h2>
-                    <p class="mt-3 text-sm text-[#4F392E]">Stay tuned for official news, press releases, and live updates from Shikhor Foundation.</p>
-                </div>
-                <div id="newsGrid" class="max-w-3xl mx-auto">
-                    <div class="bg-[#F2E8DF] border border-dashed border-[#B88655] rounded-3xl p-10 text-center">
-                        <div class="w-12 h-12 rounded-2xl bg-[#EFE5DC] text-[#8C583A] flex items-center justify-center text-xl mx-auto mb-3 border border-[#D4C3B3]">
-                            <i class="fa-regular fa-newspaper"></i>
-                        </div>
-                        <h3 class="text-lg font-bold font-heading text-[#231712]">No News & Live Updates Yet</h3>
-                        <p class="text-xs text-[#6E5649] mt-1">Updates will appear here once published.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- OUR LEADERSHIP & PANEL MEMBERS (PLACED RIGHT ABOVE) -->
-        <section id="team" class="py-24 bg-[#FDFBF9] border-b border-[#D4C3B3] reveal">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-16">
-                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">THE PEOPLE BEHIND SHIKHOR</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Our Leadership & Panel Members</h2>
-                </div>
-
-                <!-- 1. FOUNDER CARD -->
-                <div class="bg-[#F2E8DF] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
-                    <div class="text-center">
-                        <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#8C583A] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="zarif.jpg" alt="Md. Shewise Al Islam Zarif" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h3 class="text-xl font-bold font-heading text-[#231712]">Md. Shewise Al Islam Zarif</h3>
-                        <p class="text-sm font-bold text-[#8C583A] mt-1">Founder & CEO / President</p>
-                    </div>
-                    <div class="md:col-span-2">
-                        <span class="text-xs uppercase font-bold text-[#5C3D2E] tracking-wider block mb-2">Message from the Founder</span>
-                        <blockquote class="text-[#3B261D] italic text-base leading-relaxed mb-4">
-                            "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow."
-                        </blockquote>
-                        <p class="text-xs font-semibold text-[#6E5649]">— Md. Shewise Al Islam Zarif</p>
-                    </div>
-                </div>
-
-                <!-- PANEL MEMBERS GRID -->
-                <div id="panelMembersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="ahsan.jpg" alt="Ahsan Zaman" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Ahsan Zaman</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="nafew.jpg" alt="Nafew Khalil" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Nafew Khalil</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President of Program Organisation</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="shakhawat.jpg" alt="Md. Shakhawat Hossain Sayem" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Shakhawat Hossain Sayem</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration & Marketing<br><span class="text-[10px] text-[#6E5649] font-normal">(Acting IT Secretary)</span></p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="minhajul.jpg" alt="MD. Minhajul Islam" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">MD. Minhajul Islam</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts & Finance</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="shafi.jpg" alt="Faymul Islam Shafi" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Faymul Islam Shafi</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Volunteer</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="sayed.jpg" alt="Sayed Bin Kamal" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Sayed Bin Kamal</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Administration</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="alif.jpg" alt="Alif Hasan Ayman" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Alif Hasan Ayman</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Accounts & Finance</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="rikto.png" alt="Rikto Ruddur Lyric" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Rikto Ruddur Lyric</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Marketing</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="mayasha.jpg" alt="Mayasha Afrin" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Mayasha Afrin</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Volunteer</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="wahid.jpg" alt="Wahid Yashfi" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Wahid Yashfi</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="arafat.jpg" alt="Arafat Sultan" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Arafat Sultan</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
-                    </div>
-
-                    <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="raiyanul.jpg" alt="Md. Raiyanul Islam" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Raiyanul Islam</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- ABOUT US -->
-        <section id="about" class="py-24 bg-[#EFE5DC] reveal">
+        <section id="about" class="py-24 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div>
@@ -402,21 +274,21 @@
                             Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.
                         </p>
                         <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
-                            <div class="p-5 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] hover-lift">
+                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
                                 <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Humanity</h4>
                                 <p class="text-xs text-[#5C3D2E]">Every person deserves dignity, care, and support.</p>
                             </div>
-                            <div class="p-5 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] hover-lift">
+                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
                                 <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Togetherness</h4>
                                 <p class="text-xs text-[#5C3D2E]">Collective effort builds sustainable impact.</p>
                             </div>
-                            <div class="p-5 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] hover-lift">
+                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
                                 <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Transparency</h4>
                                 <p class="text-xs text-[#5C3D2E]">Trust grows through honesty and accountability.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-[#3B261D] text-[#F6EFE8] p-8 sm:p-12 rounded-3xl border border-[#5C3D2E] relative shadow-xl hover-lift">
+                    <div class="bg-[#3B261D] text-[#F6EFE8] p-8 sm:p-12 rounded-3xl border border-[#5C3D2E] relative shadow-xl">
                         <div class="w-12 h-12 rounded-2xl bg-[#5C3D2E] text-[#E6B88A] flex items-center justify-center text-xl mb-5">
                             <i class="fa-solid fa-seedling"></i>
                         </div>
@@ -431,14 +303,14 @@
         </section>
 
         <!-- MISSION & VISION -->
-        <section id="mission" class="py-24 bg-[#FDFBF9] border-y border-[#D4C3B3] reveal">
+        <section id="mission" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR DIRECTION</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Mission & Vision</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-[#F2E8DF] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
+                    <div class="bg-[#FDFBF9] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-[#E6B88A] rounded-xl flex items-center justify-center font-bold text-xl mb-6">
                             <i class="fa-solid fa-eye"></i>
                         </div>
@@ -447,7 +319,7 @@
                             A compassionate and inclusive society where every individual has the opportunity to live with dignity, hope, and a secure future.
                         </p>
                     </div>
-                    <div class="bg-[#F2E8DF] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
+                    <div class="bg-[#FDFBF9] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-[#E6B88A] rounded-xl flex items-center justify-center font-bold text-xl mb-6">
                             <i class="fa-solid fa-bullseye"></i>
                         </div>
@@ -461,14 +333,14 @@
         </section>
 
         <!-- INITIATIVES -->
-        <section id="initiatives" class="py-24 bg-[#EFE5DC] reveal">
+        <section id="initiatives" class="py-24 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR INITIATIVES</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Turning compassion into action.</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift">
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-hands-holding-child"></i>
                         </div>
@@ -477,7 +349,7 @@
                             Supporting people and families experiencing hardship through thoughtful winter clothing distribution, relief packages, and emergency support.
                         </p>
                     </div>
-                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift">
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-book-open"></i>
                         </div>
@@ -486,7 +358,7 @@
                             Empowering rural and disadvantaged students by providing essential educational materials, books, and learning guidance for a brighter future.
                         </p>
                     </div>
-                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift">
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-people-group"></i>
                         </div>
@@ -499,11 +371,208 @@
             </div>
         </section>
 
-        <!-- DYNAMIC EVENTS & FUNDRAISING SECTION -->
-        <div id="dynamicProgramsContainer"></div>
+        <!-- LIVE NEWS & OTHER NEWS (OUR NEWS) -->
+        <section id="news" class="py-24 bg-[#F6EFE8] border-y border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-14">
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR NEWS DESK</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Live News &amp; Other News</h2>
+                    <p class="mt-3 text-sm text-[#4F392E]">Real-time dispatches, urgent announcements, and community updates from Shikhor Foundation.</p>
+                </div>
+
+                <!-- Live News Breaking Ticker Banner -->
+                <div class="bg-[#3B261D] text-[#F6EFE8] rounded-2xl p-4 sm:p-5 mb-10 border border-[#8C583A] shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5 shrink-0">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8C583A] text-white text-[11px] font-bold uppercase tracking-wider">
+                            <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span> LIVE NEWS
+                        </span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-[#E6B88A]">Our News</span>
+                    </div>
+                    <p id="liveNewsBannerText" class="text-xs sm:text-sm font-medium text-[#FDFBF9] flex-1">
+                        Shikhor Foundation Live Desk: Community support, educational drives, and volunteer updates are synced via our Admin Panel.
+                    </p>
+                </div>
+
+                <!-- Live News & Other News Grid (Populated dynamically from Admin / Google Sheet) -->
+                <div id="liveNewsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-800 text-[10px] font-extrabold uppercase tracking-wider">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span> Live News
+                                </span>
+                                <span class="text-[11px] font-semibold text-[#6E5649]">Our News</span>
+                            </div>
+                            <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">Community Care &amp; Live Dispatch</h3>
+                            <p class="text-xs text-[#4F392E] leading-relaxed">
+                                Publish live news, urgent notices, and other foundation news directly from the Admin Panel without editing HTML code.
+                            </p>
+                        </div>
+                        <div class="mt-5 pt-3 border-t border-[#EFE5DC] text-[11px] font-semibold text-[#8C583A]">
+                            Shikhor Foundation &bull; Live Desk
+                        </div>
+                    </div>
+
+                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#EFE5DC] text-[#3B261D] text-[10px] font-extrabold uppercase tracking-wider">
+                                    Other News
+                                </span>
+                                <span class="text-[11px] font-semibold text-[#6E5649]">Our News</span>
+                            </div>
+                            <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">Volunteer &amp; Relief Updates</h3>
+                            <p class="text-xs text-[#4F392E] leading-relaxed">
+                                All upcoming drives, fundraising milestones, and field reports appear automatically once added through the Admin Panel.
+                            </p>
+                        </div>
+                        <div class="mt-5 pt-3 border-t border-[#EFE5DC] text-[11px] font-semibold text-[#8C583A]">
+                            Shikhor Foundation &bull; Community News
+                        </div>
+                    </div>
+
+                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-dashed border-[#B88655] flex flex-col justify-center items-center text-center">
+                        <div class="w-11 h-11 rounded-2xl bg-[#EFE5DC] text-[#8C583A] flex items-center justify-center text-lg mb-3 border border-[#D4C3B3]">
+                            <i class="fa-solid fa-newspaper"></i>
+                        </div>
+                        <h3 class="text-base font-bold font-heading text-[#231712]">More News Feed</h3>
+                        <p class="text-xs text-[#6E5649] mt-1">
+                            New Live News and Other News entries sync automatically from your connected sheet.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEAM DIRECTORY -->
+        <section id="team" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">THE PEOPLE BEHIND SHIKHOR</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Our Leadership & Panel Members</h2>
+                </div>
+
+                <!-- 1. FOUNDER CARD -->
+                <div class="bg-[#FDFBF9] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
+                    <div class="text-center">
+                        <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#8C583A] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="zarif.jpg" alt="Md. Shewise Al Islam Zarif" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="text-xl font-bold font-heading text-[#231712]">Md. Shewise Al Islam Zarif</h3>
+                        <p class="text-sm font-bold text-[#8C583A] mt-1">Founder & CEO / President</p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <span class="text-xs uppercase font-bold text-[#5C3D2E] tracking-wider block mb-2">Message from the Founder</span>
+                        <blockquote class="text-[#3B261D] italic text-base leading-relaxed mb-4">
+                            "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow."
+                        </blockquote>
+                        <p class="text-xs font-semibold text-[#6E5649]">— Md. Shewise Al Islam Zarif</p>
+                    </div>
+                </div>
+
+                <!-- PANEL MEMBERS GRID -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="ahsan.jpg" alt="Ahsan Zaman" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Ahsan Zaman</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="nafew.jpg" alt="Nafew Khalil" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Nafew Khalil</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President of Program Organisation</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="shakhawat.jpg" alt="Md. Shakhawat Hossain Sayem" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Shakhawat Hossain Sayem</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration & Marketing<br><span class="text-[10px] text-[#6E5649] font-normal">(Acting IT Secretary)</span></p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="minhajul.jpg" alt="MD. Minhajul Islam" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">MD. Minhajul Islam</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts & Finance</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="shafi.jpg" alt="Faymul Islam Shafi" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Faymul Islam Shafi</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Volunteer</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="sayed.jpg" alt="Sayed Bin Kamal" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Sayed Bin Kamal</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Administration</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="alif.jpg" alt="Alif Hasan Ayman" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Alif Hasan Ayman</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Accounts & Finance</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="rikto.png" alt="Rikto Ruddur Lyric" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Rikto Ruddur Lyric</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Marketing</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="mayasha.jpg" alt="Mayasha Afrin" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Mayasha Afrin</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Volunteer</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="wahid.jpg" alt="Wahid Yashfi" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Wahid Yashfi</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="arafat.jpg" alt="Arafat Sultan" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Arafat Sultan</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="raiyanul.jpg" alt="Md. Raiyanul Islam" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Raiyanul Islam</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- DEDICATED DONATION SECTION -->
-        <section id="donation" class="py-24 bg-[#FDFBF9] reveal">
+        <section id="donation" class="py-24 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">SUPPORT OUR CAUSE</span>
@@ -517,7 +586,7 @@
                     <!-- bKash Card -->
                     <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
-                            <img src="bkash.png" alt="bKash Logo" class="h-14 object-contain" onerror="this.onerror=null;this.src='logo.png';">
+                            <img src="bkash.png" alt="bKash Logo" class="h-14 object-contain">
                         </div>
                         <h3 class="text-2xl font-bold font-heading text-[#231712] mb-2">bKash Personal</h3>
                         <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
@@ -526,7 +595,7 @@
                             <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
                         <div class="mt-2">
-                            <a href="tel:*247*#*8801956631465#" class="inline-block px-4 py-2 bg-[#E2136F] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition btn-shimmer">
+                            <a href="tel:*247*#*8801956631465#" class="inline-block px-4 py-2 bg-[#E2136F] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
                                 <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*247#)
                             </a>
                         </div>
@@ -536,7 +605,7 @@
                     <!-- Nagad Card -->
                     <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
-                            <img src="nagad.png" alt="Nagad Logo" class="h-14 object-contain" onerror="this.onerror=null;this.src='logo.png';">
+                            <img src="nagad.png" alt="Nagad Logo" class="h-14 object-contain">
                         </div>
                         <h3 class="text-2xl font-bold font-heading text-[#231712] mb-2">Nagad Personal</h3>
                         <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
@@ -545,7 +614,7 @@
                             <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
                         <div class="mt-2">
-                            <a href="tel:*167*#*8801956631465#" class="inline-block px-4 py-2 bg-[#F7941D] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition btn-shimmer">
+                            <a href="tel:*167*#*8801956631465#" class="inline-block px-4 py-2 bg-[#F7941D] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
                                 <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*167#)
                             </a>
                         </div>
@@ -556,28 +625,28 @@
         </section>
 
         <!-- GALLERY -->
-        <section id="gallery" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3] reveal">
+        <section id="gallery" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR GALLERY</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Moments of Humanity</h2>
                     <p class="mt-4 text-[#4F392E] text-sm">Click any photo to view full screen. Every picture tells a story of hope.</p>
                 </div>
-                <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div onclick="openLightbox('gallery1.jpg', 'Community Support Activity')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
-                        <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.onerror=null;this.src='logo.png';">
+                        <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
                             <i class="fa-solid fa-expand mr-2"></i> View Photo
                         </div>
                     </div>
-                    <div onclick="openLightbox('gallery1.jpg', 'Educational Support Initiative')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
-                        <img src="gallery1.jpg" alt="Educational Support Initiative" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.onerror=null;this.src='logo.png';">
+                    <div onclick="openLightbox('gallery2.jpg', 'Educational Support Initiative')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                        <img src="gallery2.jpg" alt="Educational Support Initiative" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
                             <i class="fa-solid fa-expand mr-2"></i> View Photo
                         </div>
                     </div>
-                    <div onclick="openLightbox('logo.png', 'Volunteer Gathering')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
-                        <img src="logo.png" alt="Volunteer Gathering" class="w-full h-full object-contain p-6 group-hover:scale-105 transition duration-500" onerror="this.onerror=null;this.src='gallery1.jpg';">
+                    <div onclick="openLightbox('gallery3.jpg', 'Volunteer Gathering')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                        <img src="gallery3.jpg" alt="Volunteer Gathering" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
                             <i class="fa-solid fa-expand mr-2"></i> View Photo
                         </div>
@@ -587,13 +656,13 @@
         </section>
 
         <!-- VOLUNTEER CALLOUT -->
-        <section class="py-20 bg-[#3B261D] text-white text-center border-b border-[#5C3D2E] reveal">
+        <section class="py-20 bg-[#3B261D] text-white text-center border-b border-[#5C3D2E]">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl sm:text-4xl font-extrabold font-heading mb-4">Want to Make a Real Difference?</h2>
                 <p class="text-[#E8D9CB] max-w-xl mx-auto mb-8 text-sm sm:text-base">
                     Join our team of dedicated volunteers and help us spread compassion where it's needed most.
                 </p>
-                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1 btn-shimmer">
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1">
                     Apply as a Volunteer Now ↗
                 </a>
             </div>
@@ -624,13 +693,10 @@
                 <div>
                     <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#E6B88A]">Quick Links</h4>
                     <ul class="space-y-2 text-xs text-[#D4C3B3]">
-                        <li><a href="#team" class="hover:text-white transition">Our Leadership & Panel</a></li>
                         <li><a href="#about" class="hover:text-white transition">About Us</a></li>
                         <li><a href="#mission" class="hover:text-white transition">Mission & Vision</a></li>
                         <li><a href="#donation" class="hover:text-white transition">Donation</a></li>
-                        <li><a href="#gallery" class="hover:text-white transition">Gallery</a></li>
-                        <li>
-</li>
+                        <li><a href="#team" class="hover:text-white transition">Our Team</a></li>
                     </ul>
                 </div>
                 <div>
@@ -649,12 +715,15 @@
 
     <!-- 24/7 FAQ CHATBOT WIDGET -->
     <div class="fixed bottom-6 left-6 z-50">
+        <!-- Chat Toggle Button -->
         <button onclick="toggleChatbot()" id="chatToggleBtn" class="w-14 h-14 bg-[#3B261D] text-[#E6B88A] border-2 border-[#8C583A] rounded-full shadow-2xl flex items-center justify-center text-xl hover:scale-110 transition duration-300 relative" title="Chat with Us">
             <i class="fa-solid fa-comments"></i>
             <span class="absolute -top-1 -right-1 w-4 h-4 bg-green-600 rounded-full border-2 border-white animate-pulse"></span>
         </button>
 
+        <!-- Chat Window Box -->
         <div id="chatWindow" class="hidden absolute bottom-16 left-0 w-80 sm:w-96 bg-[#FDFBF9] rounded-3xl shadow-2xl border border-[#D4C3B3] overflow-hidden flex flex-col animate-fade-in">
+            <!-- Chat Header -->
             <div class="bg-[#3B261D] text-white p-4 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-[#5C3D2E] flex items-center justify-center border border-[#8C583A] overflow-hidden p-1">
@@ -670,12 +739,14 @@
                 </button>
             </div>
 
+            <!-- Chat Messages Area -->
             <div id="chatMessages" class="p-4 h-72 overflow-y-auto space-y-3 text-xs bg-[#F6EFE8]/50 flex flex-col">
                 <div class="bg-[#EFE5DC] text-[#3B261D] p-3 rounded-2xl rounded-tl-none max-w-[85%] border border-[#D4C3B3] shadow-sm">
                     Hello! Welcome to <strong>Shikhor Foundation</strong>. How can I help you today? Please choose a common question below or message us directly.
                 </div>
             </div>
 
+            <!-- FAQ Quick Options -->
             <div class="p-2.5 bg-[#FDFBF9] border-t border-[#D4C3B3] grid grid-cols-1 gap-1.5">
                 <button onclick="handleFAQClick('volunteer')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
                     <span><i class="fa-solid fa-user-plus text-[#8C583A] mr-1.5"></i> How to join as a volunteer?</span>
@@ -705,93 +776,18 @@
 
     <!-- SCRIPTS -->
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi9USPZIhXh51jPHumGvYRCbNCvRFsWvJoOf1XMSZP1XVDF2BNHwDuhq0kTifcE9xV/exec";
-else if (mode === 'light') {
-                    icon.className = 'fa-solid fa-sun';
-                    label.innerText = 'Light';
-                } else {
-                    icon.className = 'fa-solid fa-desktop';
-                    label.innerText = 'Device';
-                }
-            }
-        }
-});
-// Safe field helper to prevent "undefined" anywhere
-        function pickField(obj, keys, fallback = "") {
-            if (!obj || typeof obj !== 'object') return fallback;
-            for (const k of keys) {
-                const val = obj[k];
-                if (val !== undefined && val !== null && String(val).trim() !== "" && String(val).trim().toLowerCase() !== "undefined") {
-                    return String(val).trim();
-                }
-            }
-            return fallback;
-        }
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDWKD3Po8WfArkbvAUzPMCaOzpjo96zoJU7dVrMjY7NjN-s9P0N56qNV8HnaQnvf1L/exec"; 
 
-        function safeImgUrl(url, fallback = "logo.png") {
-            const clean = String(url || "").trim();
-            if (!clean || clean.toLowerCase() === "undefined" || clean.toLowerCase() === "null") {
-                return fallback;
-            }
-            return clean;
-        }
+        const authModal = document.getElementById('authModal');
+        const authAlert = document.getElementById('authAlert');
+        const authTabs = document.getElementById('authTabs');
+        const signInForm = document.getElementById('signInForm');
+        const signUpForm = document.getElementById('signUpForm');
+        const otpForm = document.getElementById('otpForm');
+        const userSection = document.getElementById('userSection');
 
-        function escapeAttr(str) {
-            return String(str || "")
-                .replace(/&/g, "&amp;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
-        }
-
-        let liveNoticesList = [
-            "Welcome to Shikhor Foundation! Together for a Better Tomorrow.",
-            "Join our team of volunteers or support humanitarian drives via bKash & Nagad (+8801956631465)."
-        ];
-        let currentNoticeIdx = 0;
-        let noticeTimer = null;
-
-        function renderNoticeBoard() {
-            if (!liveNoticesList.length) return;
-            const marquee = document.getElementById('liveNoticeMarquee');
-            const itemsHTML = liveNoticesList.map(n => `<span><i class="fa-solid fa-bullhorn mr-1.5 text-white"></i> ${escapeAttr(n)}</span>`).join('');
-            marquee.innerHTML = itemsHTML + itemsHTML;
-            updateNoticeBoxDisplay();
-            if (noticeTimer) clearInterval(noticeTimer);
-            noticeTimer = setInterval(nextNotice, 4500);
-        }
-
-        function updateNoticeBoxDisplay() {
-            const box = document.getElementById('noticeBoxDisplay');
-            if (!box || !liveNoticesList.length) return;
-            box.style.opacity = '0';
-            setTimeout(() => {
-                box.innerHTML = `<i class="fa-solid fa-bullhorn text-[#8C583A] mr-2.5 text-base shrink-0"></i><span>${escapeAttr(liveNoticesList[currentNoticeIdx])}</span>`;
-                box.style.opacity = '1';
-            }, 220);
-        }
-
-        function nextNotice() {
-            currentNoticeIdx = (currentNoticeIdx + 1) % liveNoticesList.length;
-            updateNoticeBoxDisplay();
-        }
-
-        function prevNotice() {
-            currentNoticeIdx = (currentNoticeIdx - 1 + liveNoticesList.length) % liveNoticesList.length;
-            updateNoticeBoxDisplay();
-        }
-
-        function initScrollReveal() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-        }
+        let pendingAuthData = null;
+        let generatedOTP = null;
 
         function getReadableDeviceInfo() {
             const ua = navigator.userAgent;
@@ -825,150 +821,261 @@ else if (mode === 'light') {
             return `${deviceType} (${os} - ${browser}) | Screen: ${window.screen.width}x${window.screen.height}`;
         }
 
+        function isValidEmailFormat(email) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email.trim());
+        }
+
+        function showAlert(message, isError = true) {
+            authAlert.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'border-red-300', 'bg-green-100', 'text-green-800', 'border-green-300');
+            if (isError) {
+                authAlert.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-300');
+                authAlert.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-600"></i> <span>${message}</span>`;
+            } else {
+                authAlert.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-300');
+                authAlert.innerHTML = `<i class="fa-solid fa-circle-check text-green-600"></i> <span>${message}</span>`;
+            }
+        }
+
+        function toggleAuthModal(show) {
+            authAlert.classList.add('hidden');
+            if (show) {
+                cancelOtpProcess();
+                authModal.classList.remove('hidden');
+            } else {
+                authModal.classList.add('hidden');
+            }
+        }
+
+        function switchAuthTab(tab) {
+            authAlert.classList.add('hidden');
+            const tabSignIn = document.getElementById('tabSignIn');
+            const tabSignUp = document.getElementById('tabSignUp');
+
+            if (tab === 'signin') {
+                signInForm.classList.remove('hidden');
+                signUpForm.classList.add('hidden');
+                tabSignIn.classList.add('bg-[#3B261D]', 'text-white', 'shadow');
+                tabSignIn.classList.remove('text-[#3B261D]');
+                tabSignUp.classList.remove('bg-[#3B261D]', 'text-white', 'shadow');
+                tabSignUp.classList.add('text-[#3B261D]');
+            } else {
+                signUpForm.classList.remove('hidden');
+                signInForm.classList.add('hidden');
+                tabSignUp.classList.add('bg-[#3B261D]', 'text-white', 'shadow');
+                tabSignUp.classList.remove('text-[#3B261D]');
+                tabSignIn.classList.remove('bg-[#3B261D]', 'text-white', 'shadow');
+                tabSignIn.classList.add('text-[#3B261D]');
+            }
+        }
+
+        function cancelOtpProcess() {
+            pendingAuthData = null;
+            generatedOTP = null;
+            otpForm.classList.add('hidden');
+            authTabs.classList.remove('hidden');
+            switchAuthTab('signin');
+            document.getElementById('otpInput').value = "";
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.innerHTML = `<i class="fa-regular fa-eye-slash"></i>`;
+            } else {
+                input.type = "password";
+                btn.innerHTML = `<i class="fa-regular fa-eye"></i>`;
+            }
+        }
+
         function sendToGoogleSheet(payload) {
-            if (!GOOGLE_SCRIPT_URL) return;
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            }).catch(() => {});
+            }).catch(err => console.log('Tracking error:', err));
         }
 
-        window.addEventListener('DOMContentLoaded', async () => {
-initScrollReveal();
-            renderNoticeBoard();
+        function updateHeaderForLoggedInUser(user) {
+            userSection.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#231712] bg-[#EFE5DC] px-3 py-2 rounded-xl border border-[#C4AE99]" title="Verified Member">
+                        <i class="fa-solid fa-circle-check text-green-700"></i>
+                        <span>@${user.username}</span>
+                    </div>
+                    <button onclick="handleLogout()" class="px-2.5 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-xl border border-red-300 transition" title="Sign Out">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const activeUser = JSON.parse(localStorage.getItem('shikhor_active_user'));
+            if (activeUser) {
+                updateHeaderForLoggedInUser(activeUser);
+            }
 
             sendToGoogleSheet({
                 type: "visit",
-                status: "Website Visitor Entry",
+                status: activeUser ? "Returning Member Visit" : "Direct Guest Visit",
+                userEmail: activeUser ? `${activeUser.fullName} (${activeUser.email})` : "Guest Visitor",
+                deviceInfo: getReadableDeviceInfo()
+            });
+        });
+
+        signUpForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('signUpName').value.trim();
+            const username = document.getElementById('signUpUsername').value.trim().replace(/\s+/g, '_').toLowerCase();
+            const email = document.getElementById('signUpEmail').value.trim().toLowerCase();
+            const password = document.getElementById('signUpPassword').value;
+
+            if (!isValidEmailFormat(email)) {
+                showAlert("Error: Please enter a valid email address (Gmail, Yahoo, etc.)!");
+                return;
+            }
+
+            let usersDB = JSON.parse(localStorage.getItem('shikhor_users_db')) || [];
+            if (usersDB.some(u => u.email === email)) {
+                showAlert("This email is already registered! Please switch to Sign In.");
+                return;
+            }
+
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            pendingAuthData = {
+                mode: "signup",
+                user: { fullName, username, email, password }
+            };
+
+            sendToGoogleSheet({
+                type: "send_otp",
+                email: email,
+                otp: generatedOTP,
+                purpose: "New Account Sign Up"
+            });
+
+            signUpForm.classList.add('hidden');
+            authTabs.classList.add('hidden');
+            otpForm.classList.remove('hidden');
+            document.getElementById('otpTargetEmail').innerText = email;
+            showAlert("Verification code sent! Check your email inbox.", false);
+        });
+
+        signInForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('signInEmail').value.trim().toLowerCase();
+            const password = document.getElementById('signInPassword').value;
+
+            if (!isValidEmailFormat(email)) {
+                showAlert("Error: Please enter a valid email address!");
+                return;
+            }
+
+            let usersDB = JSON.parse(localStorage.getItem('shikhor_users_db')) || [];
+            const matchedUser = usersDB.find(u => u.email === email);
+
+            if (!matchedUser) {
+                showAlert("No account found with this email. Please Sign Up first!");
+                return;
+            }
+
+            if (matchedUser.password !== password) {
+                showAlert("Incorrect password! Please try again.");
+                return;
+            }
+
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            pendingAuthData = {
+                mode: "signin",
+                user: matchedUser
+            };
+
+            sendToGoogleSheet({
+                type: "send_otp",
+                email: email,
+                otp: generatedOTP,
+                purpose: "Member Sign In Verification"
+            });
+
+            signInForm.classList.add('hidden');
+            authTabs.classList.add('hidden');
+            otpForm.classList.remove('hidden');
+            document.getElementById('otpTargetEmail').innerText = email;
+            showAlert("Verification code sent! Please enter the 6-digit code.", false);
+        });
+
+        otpForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const enteredOtp = document.getElementById('otpInput').value.trim();
+
+            if (!pendingAuthData || !generatedOTP) {
+                showAlert("Session expired. Please try again.");
+                cancelOtpProcess();
+                return;
+            }
+
+            if (enteredOtp !== generatedOTP) {
+                showAlert("Invalid Verification Code! Access Denied. Please enter the exact code sent to your email.");
+                return;
+            }
+
+            const user = pendingAuthData.user;
+            let loginCount = parseInt(localStorage.getItem(`shikhor_login_count_${user.email}`)) || 0;
+            loginCount += 1;
+            localStorage.setItem(`shikhor_login_count_${user.email}`, loginCount);
+
+            if (pendingAuthData.mode === "signup") {
+                let usersDB = JSON.parse(localStorage.getItem('shikhor_users_db')) || [];
+                usersDB.push(user);
+                localStorage.setItem('shikhor_users_db', JSON.stringify(usersDB));
+            }
+
+            localStorage.setItem('shikhor_active_user', JSON.stringify(user));
+
+            sendToGoogleSheet({
+                type: "auth",
+                fullName: user.fullName,
+                username: user.username,
+                email: user.email,
+                action: pendingAuthData.mode === "signup" ? `New Sign Up (Verified - Login #${loginCount})` : `Sign In (Verified - Login #${loginCount})`,
                 deviceInfo: getReadableDeviceInfo()
             });
 
-            try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&t=${Date.now()}`);
-                const data = await res.json();
+            updateHeaderForLoggedInUser(user);
+            showAlert("Verification Successful! Access Granted.", false);
 
-                if (data.stats) {
-                    const fam = pickField(data.stats, ["Families", "families"]);
-                    const vol = pickField(data.stats, ["Volunteers", "volunteers"]);
-                    const evc = pickField(data.stats, ["EventsCount", "eventscount"]);
-                    const ntc = pickField(data.stats, ["NoticeText", "noticetext"]);
-
-                    if (fam) document.getElementById('counterFamilies').innerText = fam;
-                    if (vol) document.getElementById('counterVolunteers').innerText = vol;
-                    if (evc) document.getElementById('counterEvents').innerText = evc;
-
-                    if (ntc) {
-                        const parsed = ntc.split('||').map(s => s.trim()).filter(Boolean);
-                        if (parsed.length > 0) {
-                            liveNoticesList = parsed;
-                            currentNoticeIdx = 0;
-                            renderNoticeBoard();
-                        }
-                    }
-                }
-
-                const validEvents = (data.events || []).filter(ev => pickField(ev, ["Title", "title"]));
-                const validFunding = (data.funding || []).filter(f => pickField(f, ["CampaignName", "campaignname"]));
-
-                if (validEvents.length > 0 || validFunding.length > 0) {
-                    const container = document.getElementById('dynamicProgramsContainer');
-                    let eventsHTML = validEvents.map(ev => {
-                        const title = pickField(ev, ["Title", "title"], "Event");
-                        const dateStr = pickField(ev, ["Date", "date"], "");
-                        const desc = pickField(ev, ["Description", "description"], "");
-                        const imgUrl = safeImgUrl(pickField(ev, ["ImageURL", "Image URL", "imageurl"]), "gallery1.jpg");
-                        return `
-                        <div class="bg-[#FDFBF9] rounded-3xl border border-[#D4C3B3] overflow-hidden shadow-md hover-lift">
-                            <img src="${escapeAttr(imgUrl)}" alt="${escapeAttr(title)}" class="h-52 w-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                            <div class="p-6">
-                                ${dateStr ? `<span class="text-xs font-bold text-[#8C583A] uppercase">${escapeAttr(dateStr)}</span>` : ''}
-                                <h3 class="text-xl font-bold font-heading text-[#231712] mt-1 mb-2">${escapeAttr(title)}</h3>
-                                <p class="text-xs text-[#4F392E] leading-relaxed">${escapeAttr(desc)}</p>
-                            </div>
-                        </div>`;
-                    }).join('');
-
-                    let fundingHTML = validFunding.map(f => {
-                        const campName = pickField(f, ["CampaignName", "campaignname"], "Fundraising Campaign");
-                        const raised = Number(pickField(f, ["RaisedAmount", "raisedamount"], "0")) || 0;
-                        const target = Number(pickField(f, ["TargetAmount", "targetamount"], "1")) || 1;
-                        const pct = Math.min(100, Math.round((raised / target) * 100)) || 0;
-                        return `
-                        <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm hover-lift">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-bold font-heading text-lg text-[#231712]">${escapeAttr(campName)}</h4>
-                                <span class="text-xs font-bold px-3 py-1 rounded-full bg-[#EFE5DC] text-[#3B261D]">${pct}% Funded</span>
-                            </div>
-                            <div class="w-full bg-[#EFE5DC] h-3 rounded-full overflow-hidden mb-2">
-                                <div class="bg-[#8C583A] h-full transition-all duration-700" style="width:${pct}%"></div>
-                            </div>
-                            <div class="flex justify-between text-xs font-bold text-[#6E5649]">
-                                <span>Raised: ৳${raised}</span>
-                                <span>Goal: ৳${target}</span>
-                            </div>
-                        </div>`;
-                    }).join('');
-
-                    container.innerHTML = `
-                        <section id="programs" class="py-24 bg-[#F6EFE8] border-b border-[#D4C3B3]">
-                            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                ${validEvents.length ? `<div class="text-center mb-12"><span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest">LATEST UPDATES</span><h2 class="text-3xl font-extrabold font-heading text-[#231712] mt-2">Events & Programs</h2></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">${eventsHTML}</div>` : ''}
-                                ${validFunding.length ? `<div class="max-w-3xl mx-auto"><h3 class="text-2xl font-bold font-heading text-center text-[#231712] mb-6">Active Fundraising Campaigns</h3><div class="space-y-4">${fundingHTML}</div></div>` : ''}
-                            </div>
-                        </section>`;
-                }
-
-                const validTeam = (data.team || []).filter(m => pickField(m, ["Name", "Full Name", "name"]));
-                if (validTeam.length > 0) {
-                    const teamGrid = document.getElementById('panelMembersGrid');
-                    if (teamGrid) {
-                        teamGrid.innerHTML = validTeam.map(m => {
-                            const memberName = pickField(m, ["Name", "Full Name", "name"], "Panel Member");
-                            const memberRole = pickField(m, ["Role", "Designation", "Department / Role", "role"], "Member");
-                            const memberImg = safeImgUrl(pickField(m, ["ImageURL", "Photo URL", "imageurl"]), "logo.png");
-                            return `
-                            <div class="bg-[#F2E8DF] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                                <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#FDFBF9] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                                    <img src="${escapeAttr(memberImg)}" alt="${escapeAttr(memberName)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='logo.png';">
-                                </div>
-                                <h4 class="font-bold font-heading text-[#231712] text-lg">${escapeAttr(memberName)}</h4>
-                                <p class="text-xs font-bold text-[#8C583A] mt-1">${escapeAttr(memberRole)}</p>
-                            </div>`;
-                        }).join('');
-                    }
-                }
-
-                const validGallery = (data.gallery || []).filter(g => pickField(g, ["ImageURL", "Image URL", "imageurl"]));
-                if (validGallery.length > 0) {
-                    const galGrid = document.getElementById('galleryGrid');
-                    if (galGrid) {
-                        galGrid.innerHTML = validGallery.map(g => {
-                            const cap = pickField(g, ["Caption", "Title", "caption"], "Shikhor Foundation Gallery");
-                            const imgUrl = safeImgUrl(pickField(g, ["ImageURL", "Image URL", "imageurl"]), "gallery1.jpg");
-                            return `
-                            <div onclick="openLightbox('${escapeAttr(imgUrl)}', '${escapeAttr(cap)}')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
-                                <img src="${escapeAttr(imgUrl)}" alt="${escapeAttr(cap)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.onerror=null;this.src='logo.png';">
-                                <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
-                                    <i class="fa-solid fa-expand mr-2"></i> ${escapeAttr(cap)}
-                                </div>
-                            </div>`;
-                        }).join('');
-                    }
-                }
-            } catch (e) {
-                console.log("Sync fallback:", e);
-            }
+            setTimeout(() => {
+                toggleAuthModal(false);
+            }, 1200);
         });
+
+        function handleLogout() {
+            const activeUser = JSON.parse(localStorage.getItem('shikhor_active_user'));
+            if (activeUser) {
+                sendToGoogleSheet({
+                    type: "auth",
+                    fullName: activeUser.fullName,
+                    username: activeUser.username,
+                    email: activeUser.email,
+                    action: "Sign Out / Logout",
+                    deviceInfo: getReadableDeviceInfo()
+                });
+            }
+            localStorage.removeItem('shikhor_active_user');
+            location.reload();
+        }
 
         function toggleMobileMenu() {
             document.getElementById('mobileMenu').classList.toggle('hidden');
         }
 
         function openLightbox(src, caption) {
-            document.getElementById('lightboxImg').src = safeImgUrl(src, "logo.png");
-            document.getElementById('lightboxCaption').innerText = caption || "";
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightboxCaption').innerText = caption;
             document.getElementById('lightboxModal').classList.remove('hidden');
         }
 
@@ -988,10 +1095,98 @@ initScrollReveal();
             });
         }
 
+        // CHATBOT LOGIC
         function toggleChatbot() {
             const chatWindow = document.getElementById('chatWindow');
             chatWindow.classList.toggle('hidden');
         }
+
+        function cleanVal(val, fallback = "") {
+            if (val === undefined || val === null) return fallback;
+            const s = String(val).trim();
+            if (!s || s.toLowerCase() === "undefined" || s.toLowerCase() === "null") return fallback;
+            return s;
+        }
+
+        function escText(str) {
+            return String(str || "")
+                .replace(/&/g, "&amp;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        function renderLiveAndOtherNews(items) {
+            const grid = document.getElementById("liveNewsGrid");
+            const banner = document.getElementById("liveNewsBannerText");
+            if (!grid) return;
+
+            const validItems = (Array.isArray(items) ? items : []).filter(item =>
+                cleanVal(item.Title || item.title || item.Headline || item.headline || item.Summary || item.summary)
+            );
+
+            if (!validItems.length) return;
+
+            const firstLive = validItems.find(it => cleanVal(it.Category || it.category || it.Type || it.type).toLowerCase().includes("live")) || validItems[0];
+            if (banner && firstLive) {
+                const bTitle = cleanVal(firstLive.Title || firstLive.title || firstLive.Headline || firstLive.headline, "Live Update");
+                const bSum = cleanVal(firstLive.Summary || firstLive.summary || firstLive.Description || firstLive.description || firstLive.Content || firstLive.content, "");
+                banner.textContent = bSum ? `${bTitle}: ${bSum}` : bTitle;
+            }
+
+            grid.innerHTML = validItems.map(item => {
+                const title = cleanVal(item.Title || item.title || item.Headline || item.headline, "News Update");
+                const rawCat = cleanVal(item.Category || item.category || item.Type || item.type, "Other News");
+                const isLive = rawCat.toLowerCase().includes("live");
+                const badgeLabel = isLive ? "Live News" : rawCat;
+                const dateVal = cleanVal(item.Date || item.date || item.Time || item.time, "Our News");
+                const body = cleanVal(item.Summary || item.summary || item.Description || item.description || item.Content || item.content, "");
+                const imgUrl = cleanVal(item.ImageURL || item.Image || item.imageurl || item.image, "");
+
+                const badgeHtml = isLive
+                    ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-800 text-[10px] font-extrabold uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span> ${escText(badgeLabel)}</span>`
+                    : `<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#EFE5DC] text-[#3B261D] text-[10px] font-extrabold uppercase tracking-wider">${escText(badgeLabel)}</span>`;
+
+                const imgHtml = imgUrl
+                    ? `<div class="h-44 -mx-8 -mt-8 mb-5 rounded-t-3xl overflow-hidden border-b border-[#E5D7C8] bg-[#F2E8DF]"><img src="${escText(imgUrl)}" alt="${escText(title)}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none';"></div>`
+                    : "";
+
+                return `
+                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift flex flex-col justify-between overflow-hidden">
+                        <div>
+                            ${imgHtml}
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                ${badgeHtml}
+                                <span class="text-[11px] font-semibold text-[#6E5649]">${escText(dateVal)}</span>
+                            </div>
+                            <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">${escText(title)}</h3>
+                            ${body ? `<p class="text-xs text-[#4F392E] leading-relaxed">${escText(body)}</p>` : ""}
+                        </div>
+                        <div class="mt-5 pt-3 border-t border-[#EFE5DC] text-[11px] font-semibold text-[#8C583A]">
+                            Shikhor Foundation &bull; Our News
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        async function syncLiveNewsFromBackend() {
+            if (!GOOGLE_SCRIPT_URL) return;
+            try {
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&t=${Date.now()}`);
+                const data = await res.json();
+                if (data && Array.isArray(data.news) && data.news.length > 0) {
+                    renderLiveAndOtherNews(data.news);
+                }
+            } catch (err) {
+                // Keep default cards if offline
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            syncLiveNewsFromBackend();
+        });
 
         function handleFAQClick(type) {
             const chatMessages = document.getElementById('chatMessages');
