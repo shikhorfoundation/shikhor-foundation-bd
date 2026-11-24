@@ -83,71 +83,6 @@
         .notice-marquee-wrapper:hover .notice-marquee-track {
             animation-play-state: paused;
         }
-
-        /* DARK THEME OVERRIDES */
-        body.dark-theme {
-            background-color: #140E0B;
-            color: #F3EAE2;
-        }
-        body.dark-theme header,
-        body.dark-theme #mobileMenu,
-        body.dark-theme #chatWindow {
-            background-color: rgba(29, 20, 16, 0.97);
-            border-color: #3D2A20;
-            color: #F3EAE2;
-        }
-        body.dark-theme nav a,
-        body.dark-theme #mobileMenu a {
-            color: #DECBB8;
-        }
-        body.dark-theme nav a:hover,
-        body.dark-theme #mobileMenu a:hover {
-            color: #FFFFFF;
-        }
-        body.dark-theme section.bg-gradient-to-b {
-            background-image: linear-gradient(to bottom, #241812, #1A110D, #140E0B);
-            border-color: #3D2A20;
-        }
-        body.dark-theme section.bg-\[\#FDFBF9\],
-        body.dark-theme #programs {
-            background-color: #18100C;
-            border-color: #3D2A20;
-        }
-        body.dark-theme section.bg-\[\#EFE5DC\] {
-            background-color: #201510;
-            border-color: #3D2A20;
-        }
-        body.dark-theme .bg-\[\#FDFBF9\] {
-            background-color: #241812;
-            border-color: #463024;
-            color: #F3EAE2;
-        }
-        body.dark-theme .bg-\[\#F2E8DF\] {
-            background-color: #2C1E17;
-            border-color: #463024;
-            color: #F3EAE2;
-        }
-        body.dark-theme .bg-\[\#EFE5DC\] {
-            background-color: #2A1C15;
-            border-color: #463024;
-            color: #E6D5C5;
-        }
-        body.dark-theme h1,
-        body.dark-theme h2,
-        body.dark-theme h3,
-        body.dark-theme h4,
-        body.dark-theme blockquote {
-            color: #FBF4EE;
-        }
-        body.dark-theme p,
-        body.dark-theme .text-\[\#4F392E\],
-        body.dark-theme .text-\[\#5C3D2E\],
-        body.dark-theme .text-\[\#6E5649\] {
-            color: #CBB6A4;
-        }
-        body.dark-theme .text-\[\#8C583A\] {
-            color: #E6A972;
-        }
     </style>
 </head>
 <body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white">
@@ -207,14 +142,7 @@
                 </nav>
 
                 <div class="flex items-center gap-2">
-                    <button onclick="cycleThemeMode()" id="themeCycleBtn" title="Switch Theme (Device / Light / Dark)" class="px-3 py-2.5 bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] text-xs font-bold rounded-xl border border-[#C4AE99] transition flex items-center gap-1.5">
-                        <i id="themeIcon" class="fa-solid fa-desktop"></i>
-                        <span id="themeLabel">Device</span>
-                    </button>
-                    <a href="admin.html" class="px-4 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 btn-shimmer">
-                        <i class="fa-solid fa-sliders"></i> Admin Panel
-                    </a>
-                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 btn-shimmer">
+<a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 btn-shimmer">
                         Join Volunteer
                     </a>
                     <button onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] border border-[#D4C3B3]">
@@ -232,8 +160,7 @@
                 <a href="#donation" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Donation</a>
                 <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
                 <a href="#contact" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Contact</a>
-                <a href="admin.html" class="block text-center py-2.5 bg-[#3B261D] text-white rounded-xl mt-2">Admin Panel</a>
-                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
+<a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
             </div>
         </header>
 
@@ -702,7 +629,8 @@
                         <li><a href="#mission" class="hover:text-white transition">Mission & Vision</a></li>
                         <li><a href="#donation" class="hover:text-white transition">Donation</a></li>
                         <li><a href="#gallery" class="hover:text-white transition">Gallery</a></li>
-                        <li><a href="admin.html" class="hover:text-white transition">Admin Panel</a></li>
+                        <li>
+</li>
                     </ul>
                 </div>
                 <div>
@@ -778,24 +706,7 @@
     <!-- SCRIPTS -->
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi9USPZIhXh51jPHumGvYRCbNCvRFsWvJoOf1XMSZP1XVDF2BNHwDuhq0kTifcE9xV/exec";
-        const THEME_MODES = ["device", "light", "dark"];
-        const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)');
-
-        function getSavedThemeMode() {
-            return localStorage.getItem('shikhor_theme_mode') || 'device';
-        }
-
-        function applyThemeMode(mode) {
-            const shouldUseDark = mode === 'dark' || (mode === 'device' && mediaQueryDark.matches);
-            document.body.classList.toggle('dark-theme', shouldUseDark);
-
-            const icon = document.getElementById('themeIcon');
-            const label = document.getElementById('themeLabel');
-            if (icon && label) {
-                if (mode === 'dark') {
-                    icon.className = 'fa-solid fa-moon';
-                    label.innerText = 'Dark';
-                } else if (mode === 'light') {
+else if (mode === 'light') {
                     icon.className = 'fa-solid fa-sun';
                     label.innerText = 'Light';
                 } else {
@@ -804,21 +715,8 @@
                 }
             }
         }
-
-        function cycleThemeMode() {
-            const current = getSavedThemeMode();
-            const next = THEME_MODES[(THEME_MODES.indexOf(current) + 1) % THEME_MODES.length];
-            localStorage.setItem('shikhor_theme_mode', next);
-            applyThemeMode(next);
-        }
-
-        mediaQueryDark.addEventListener('change', () => {
-            if (getSavedThemeMode() === 'device') applyThemeMode('device');
-        });
-
-        applyThemeMode(getSavedThemeMode());
-
-        // Safe field helper to prevent "undefined" anywhere
+});
+// Safe field helper to prevent "undefined" anywhere
         function pickField(obj, keys, fallback = "") {
             if (!obj || typeof obj !== 'object') return fallback;
             for (const k of keys) {
@@ -938,8 +836,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            applyThemeMode(getSavedThemeMode());
-            initScrollReveal();
+initScrollReveal();
             renderNoticeBoard();
 
             sendToGoogleSheet({
