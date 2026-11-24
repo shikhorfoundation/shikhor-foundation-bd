@@ -8,7 +8,7 @@
     <meta name="description" content="Shikhor Foundation is a community-driven humanitarian initiative built on the power of people helping people. Together for a Better Tomorrow.">
     <meta property="og:site_name" content="Shikhor Foundation">
     <meta property="og:title" content="Shikhor Foundation | Together for a Better Tomorrow">
-    
+
     <!-- Favicon & Google Search Logo Optimization -->
     <link rel="icon" type="image/png" sizes="512x512" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
     <link rel="shortcut icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
@@ -20,7 +20,7 @@
     <style>
         body { font-family: 'Outfit', sans-serif; }
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
-        
+
         .hover-lift {
             transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
         }
@@ -28,7 +28,7 @@
             transform: translateY(-7px);
             box-shadow: 0 22px 35px -10px rgba(35, 23, 18, 0.22);
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
@@ -39,103 +39,6 @@
     </style>
 </head>
 <body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white">
-
-    <!-- SIGN IN / SIGN UP WITH OTP VERIFICATION MODAL -->
-    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-[#1A100C]/85 backdrop-blur-md px-4 hidden">
-        <div class="bg-[#FDFBF9] rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-[#D4C3B3] transform transition-all animate-fade-in relative">
-            <button onclick="toggleAuthModal(false)" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#EFE5DC] text-[#3B261D] hover:bg-[#3B261D] hover:text-white flex items-center justify-center transition">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <div class="text-center mb-5">
-                <div class="w-16 h-16 bg-[#EFE5DC] rounded-2xl flex items-center justify-center mx-auto mb-3 border border-[#D4C3B3] shadow-sm overflow-hidden p-1.5">
-                    <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
-                </div>
-                <h2 class="text-2xl font-bold font-heading text-[#231712]">Shikhor Member Portal</h2>
-                <p class="text-xs text-[#6E5649] mt-1">Verify your Gmail, Yahoo, or any email with OTP</p>
-            </div>
-
-            <!-- Tabs: Sign In vs Sign Up -->
-            <div id="authTabs" class="grid grid-cols-2 bg-[#EFE5DC] p-1 rounded-xl mb-5 border border-[#D4C3B3]">
-                <button type="button" id="tabSignIn" onclick="switchAuthTab('signin')" class="py-2 text-xs font-bold rounded-lg bg-[#3B261D] text-white shadow transition">
-                    Sign In
-                </button>
-                <button type="button" id="tabSignUp" onclick="switchAuthTab('signup')" class="py-2 text-xs font-bold rounded-lg text-[#3B261D] hover:bg-[#E2D3C5] transition">
-                    Sign Up
-                </button>
-            </div>
-
-            <!-- Error / Success Alert Box -->
-            <div id="authAlert" class="hidden mb-4 p-3 rounded-xl text-xs font-medium flex items-center gap-2"></div>
-
-            <!-- STEP 1A: SIGN IN FORM -->
-            <form id="signInForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Email Address (Gmail / Yahoo / Any)</label>
-                    <input type="email" id="signInEmail" required placeholder="yourname@gmail.com or yahoo.com" class="w-full px-4 py-3 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Password</label>
-                    <div class="relative">
-                        <input type="password" id="signInPassword" required placeholder="Enter your password" class="w-full px-4 py-3 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition pr-10">
-                        <button type="button" onclick="togglePasswordVisibility('signInPassword', this)" class="absolute right-3 top-3.5 text-[#7A6254] hover:text-[#231712]">
-                            <i class="fa-regular fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <button type="submit" id="signInSubmitBtn" class="w-full py-3.5 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm transform active:scale-95">
-                    Send Verification Code <i class="fa-solid fa-paper-plane ml-2"></i>
-                </button>
-            </form>
-
-            <!-- STEP 1B: SIGN UP FORM -->
-            <form id="signUpForm" class="space-y-3.5 hidden">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Full Name</label>
-                    <input type="text" id="signUpName" required placeholder="e.g. Md. Rahim" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Username</label>
-                    <input type="text" id="signUpUsername" required placeholder="e.g. rahim_bd" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Email Address (Gmail / Yahoo / Any)</label>
-                    <input type="email" id="signUpEmail" required placeholder="yourname@yahoo.com or gmail.com" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Create Password (Min 6 chars)</label>
-                    <div class="relative">
-                        <input type="password" id="signUpPassword" required minlength="6" placeholder="Create a strong password" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#5C3D2E] text-sm transition pr-10">
-                        <button type="button" onclick="togglePasswordVisibility('signUpPassword', this)" class="absolute right-3 top-3 text-[#7A6254] hover:text-[#231712]">
-                            <i class="fa-regular fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <button type="submit" id="signUpSubmitBtn" class="w-full py-3.5 bg-[#5C3D2E] hover:bg-[#3B261D] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm transform active:scale-95">
-                    Send Verification Code <i class="fa-solid fa-envelope-circle-check ml-2"></i>
-                </button>
-            </form>
-
-            <!-- STEP 2: OTP VERIFICATION FORM -->
-            <form id="otpForm" class="space-y-4 hidden">
-                <div class="bg-[#F2E8DF] p-4 rounded-2xl border border-[#D4C3B3] text-center">
-                    <p class="text-xs text-[#4F392E]">We have sent a 6-digit verification code to:</p>
-                    <p id="otpTargetEmail" class="text-sm font-bold text-[#231712] mt-1"></p>
-                    <p class="text-[11px] text-[#8C583A] mt-1">(Please check Inbox or Spam folder)</p>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1 text-center">Enter 6-Digit Verification Code</label>
-                    <input type="text" id="otpInput" required maxlength="6" pattern="\d{6}" placeholder="------" class="w-full px-4 py-3.5 rounded-xl bg-white border-2 border-[#8C583A] focus:outline-none focus:ring-2 focus:ring-[#3B261D] text-center text-2xl font-extrabold tracking-[0.5em] text-[#231712]">
-                </div>
-                <button type="submit" class="w-full py-3.5 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-lg transition duration-300 text-sm">
-                    Verify Code & Grant Access <i class="fa-solid fa-shield-check ml-2"></i>
-                </button>
-                <button type="button" onclick="cancelOtpProcess()" class="w-full py-2 text-xs font-semibold text-[#6E5649] hover:text-[#231712] underline">
-                    Cancel / Change Email
-                </button>
-            </form>
-        </div>
-    </div>
 
     <!-- IMAGE LIGHTBOX MODAL -->
     <div id="lightboxModal" onclick="closeLightbox()" class="fixed inset-0 z-50 bg-[#1A100C]/90 backdrop-blur-sm flex items-center justify-center p-4 hidden">
@@ -175,11 +78,9 @@
                 </nav>
 
                 <div class="flex items-center gap-2.5">
-                    <div id="userSection">
-                        <button onclick="toggleAuthModal(true)" class="px-4 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-user-shield"></i> Sign In / Sign Up
-                        </button>
-                    </div>
+                    <a href="admin.html" class="px-4 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-sliders"></i> Admin Panel
+                    </a>
                     <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         Join Volunteer
                     </a>
@@ -198,6 +99,7 @@
                 <a href="#donation" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Donation</a>
                 <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
                 <a href="#contact" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Contact</a>
+                <a href="admin.html" class="block text-center py-2.5 bg-[#3B261D] text-white rounded-xl mt-2">Admin Panel</a>
                 <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
             </div>
         </header>
@@ -218,7 +120,7 @@
                 <p class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed">
                     Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.
                 </p>
-                
+
                 <div class="mt-6 flex justify-center items-center gap-4">
                     <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-brands fa-facebook-f text-sm"></i> Facebook Page
@@ -240,15 +142,15 @@
                 <!-- LIVE IMPACT COUNTER -->
                 <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
+                        <h3 id="counterFamilies" class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Families Supported</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
+                        <h3 id="counterVolunteers" class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Active Volunteers</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift col-span-2 md:col-span-1">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">10+</h3>
+                        <h3 id="counterEvents" class="text-3xl font-extrabold font-heading text-[#8C583A]">10+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Successful Events</p>
                     </div>
                 </div>
@@ -622,6 +524,7 @@
                         <li><a href="#mission" class="hover:text-white transition">Mission & Vision</a></li>
                         <li><a href="#donation" class="hover:text-white transition">Donation</a></li>
                         <li><a href="#team" class="hover:text-white transition">Our Team</a></li>
+                        <li><a href="admin.html" class="hover:text-white transition">Admin Panel</a></li>
                     </ul>
                 </div>
                 <div>
@@ -640,15 +543,12 @@
 
     <!-- 24/7 FAQ CHATBOT WIDGET -->
     <div class="fixed bottom-6 left-6 z-50">
-        <!-- Chat Toggle Button -->
         <button onclick="toggleChatbot()" id="chatToggleBtn" class="w-14 h-14 bg-[#3B261D] text-[#E6B88A] border-2 border-[#8C583A] rounded-full shadow-2xl flex items-center justify-center text-xl hover:scale-110 transition duration-300 relative" title="Chat with Us">
             <i class="fa-solid fa-comments"></i>
             <span class="absolute -top-1 -right-1 w-4 h-4 bg-green-600 rounded-full border-2 border-white animate-pulse"></span>
         </button>
 
-        <!-- Chat Window Box -->
         <div id="chatWindow" class="hidden absolute bottom-16 left-0 w-80 sm:w-96 bg-[#FDFBF9] rounded-3xl shadow-2xl border border-[#D4C3B3] overflow-hidden flex flex-col animate-fade-in">
-            <!-- Chat Header -->
             <div class="bg-[#3B261D] text-white p-4 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-[#5C3D2E] flex items-center justify-center border border-[#8C583A] overflow-hidden p-1">
@@ -664,14 +564,12 @@
                 </button>
             </div>
 
-            <!-- Chat Messages Area -->
             <div id="chatMessages" class="p-4 h-72 overflow-y-auto space-y-3 text-xs bg-[#F6EFE8]/50 flex flex-col">
                 <div class="bg-[#EFE5DC] text-[#3B261D] p-3 rounded-2xl rounded-tl-none max-w-[85%] border border-[#D4C3B3] shadow-sm">
                     Hello! Welcome to <strong>Shikhor Foundation</strong>. How can I help you today? Please choose a common question below or message us directly.
                 </div>
             </div>
 
-            <!-- FAQ Quick Options -->
             <div class="p-2.5 bg-[#FDFBF9] border-t border-[#D4C3B3] grid grid-cols-1 gap-1.5">
                 <button onclick="handleFAQClick('volunteer')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
                     <span><i class="fa-solid fa-user-plus text-[#8C583A] mr-1.5"></i> How to join as a volunteer?</span>
@@ -701,18 +599,7 @@
 
     <!-- SCRIPTS -->
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDWKD3Po8WfArkbvAUzPMCaOzpjo96zoJU7dVrMjY7NjN-s9P0N56qNV8HnaQnvf1L/exec"; 
-
-        const authModal = document.getElementById('authModal');
-        const authAlert = document.getElementById('authAlert');
-        const authTabs = document.getElementById('authTabs');
-        const signInForm = document.getElementById('signInForm');
-        const signUpForm = document.getElementById('signUpForm');
-        const otpForm = document.getElementById('otpForm');
-        const userSection = document.getElementById('userSection');
-
-        let pendingAuthData = null;
-        let generatedOTP = null;
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDWKD3Po8WfArkbvAUzPMCaOzpjo96zoJU7dVrMjY7NjN-s9P0N56qNV8HnaQnvf1L/exec";
 
         function getReadableDeviceInfo() {
             const ua = navigator.userAgent;
@@ -746,74 +633,6 @@
             return `${deviceType} (${os} - ${browser}) | Screen: ${window.screen.width}x${window.screen.height}`;
         }
 
-        function isValidEmailFormat(email) {
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            return emailRegex.test(email.trim());
-        }
-
-        function showAlert(message, isError = true) {
-            authAlert.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'border-red-300', 'bg-green-100', 'text-green-800', 'border-green-300');
-            if (isError) {
-                authAlert.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-300');
-                authAlert.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-600"></i> <span>${message}</span>`;
-            } else {
-                authAlert.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-300');
-                authAlert.innerHTML = `<i class="fa-solid fa-circle-check text-green-600"></i> <span>${message}</span>`;
-            }
-        }
-
-        function toggleAuthModal(show) {
-            authAlert.classList.add('hidden');
-            if (show) {
-                cancelOtpProcess();
-                authModal.classList.remove('hidden');
-            } else {
-                authModal.classList.add('hidden');
-            }
-        }
-
-        function switchAuthTab(tab) {
-            authAlert.classList.add('hidden');
-            const tabSignIn = document.getElementById('tabSignIn');
-            const tabSignUp = document.getElementById('tabSignUp');
-
-            if (tab === 'signin') {
-                signInForm.classList.remove('hidden');
-                signUpForm.classList.add('hidden');
-                tabSignIn.classList.add('bg-[#3B261D]', 'text-white', 'shadow');
-                tabSignIn.classList.remove('text-[#3B261D]');
-                tabSignUp.classList.remove('bg-[#3B261D]', 'text-white', 'shadow');
-                tabSignUp.classList.add('text-[#3B261D]');
-            } else {
-                signUpForm.classList.remove('hidden');
-                signInForm.classList.add('hidden');
-                tabSignUp.classList.add('bg-[#3B261D]', 'text-white', 'shadow');
-                tabSignUp.classList.remove('text-[#3B261D]');
-                tabSignIn.classList.remove('bg-[#3B261D]', 'text-white', 'shadow');
-                tabSignIn.classList.add('text-[#3B261D]');
-            }
-        }
-
-        function cancelOtpProcess() {
-            pendingAuthData = null;
-            generatedOTP = null;
-            otpForm.classList.add('hidden');
-            authTabs.classList.remove('hidden');
-            switchAuthTab('signin');
-            document.getElementById('otpInput').value = "";
-        }
-
-        function togglePasswordVisibility(inputId, btn) {
-            const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-                btn.innerHTML = `<i class="fa-regular fa-eye-slash"></i>`;
-            } else {
-                input.type = "password";
-                btn.innerHTML = `<i class="fa-regular fa-eye"></i>`;
-            }
-        }
-
         function sendToGoogleSheet(payload) {
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
             fetch(GOOGLE_SCRIPT_URL, {
@@ -824,175 +643,102 @@
             }).catch(err => console.log('Tracking error:', err));
         }
 
-        function updateHeaderForLoggedInUser(user) {
-            userSection.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#231712] bg-[#EFE5DC] px-3 py-2 rounded-xl border border-[#C4AE99]" title="Verified Member">
-                        <i class="fa-solid fa-circle-check text-green-700"></i>
-                        <span>@${user.username}</span>
-                    </div>
-                    <button onclick="handleLogout()" class="px-2.5 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-xl border border-red-300 transition" title="Sign Out">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            `;
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const activeUser = JSON.parse(localStorage.getItem('shikhor_active_user'));
-            if (activeUser) {
-                updateHeaderForLoggedInUser(activeUser);
-            }
-
+        window.addEventListener('DOMContentLoaded', async () => {
             sendToGoogleSheet({
                 type: "visit",
-                status: activeUser ? "Returning Member Visit" : "Direct Guest Visit",
-                userEmail: activeUser ? `${activeUser.fullName} (${activeUser.email})` : "Guest Visitor",
-                deviceInfo: getReadableDeviceInfo()
-            });
-        });
-
-        signUpForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const fullName = document.getElementById('signUpName').value.trim();
-            const username = document.getElementById('signUpUsername').value.trim().replace(/\s+/g, '_').toLowerCase();
-            const email = document.getElementById('signUpEmail').value.trim().toLowerCase();
-            const password = document.getElementById('signUpPassword').value;
-
-            if (!isValidEmailFormat(email)) {
-                showAlert("Error: Please enter a valid email address (Gmail, Yahoo, etc.)!");
-                return;
-            }
-
-            let usersDB = JSON.parse(localStorage.getItem('shikhor_users_db')) || [];
-            if (usersDB.some(u => u.email === email)) {
-                showAlert("This email is already registered! Please switch to Sign In.");
-                return;
-            }
-
-            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-            pendingAuthData = {
-                mode: "signup",
-                user: { fullName, username, email, password }
-            };
-
-            sendToGoogleSheet({
-                type: "send_otp",
-                email: email,
-                otp: generatedOTP,
-                purpose: "New Account Sign Up"
-            });
-
-            signUpForm.classList.add('hidden');
-            authTabs.classList.add('hidden');
-            otpForm.classList.remove('hidden');
-            document.getElementById('otpTargetEmail').innerText = email;
-            showAlert("Verification code sent! Check your email inbox.", false);
-        });
-
-        signInForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('signInEmail').value.trim().toLowerCase();
-            const password = document.getElementById('signInPassword').value;
-
-            if (!isValidEmailFormat(email)) {
-                showAlert("Error: Please enter a valid email address!");
-                return;
-            }
-
-            let usersDB = JSON.parse(localStorage.getItem('shikhor_users_db')) || [];
-            const matchedUser = usersDB.find(u => u.email === email);
-
-            if (!matchedUser) {
-                showAlert("No account found with this email. Please Sign Up first!");
-                return;
-            }
-
-            if (matchedUser.password !== password) {
-                showAlert("Incorrect password! Please try again.");
-                return;
-            }
-
-            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-            pendingAuthData = {
-                mode: "signin",
-                user: matchedUser
-            };
-
-            sendToGoogleSheet({
-                type: "send_otp",
-                email: email,
-                otp: generatedOTP,
-                purpose: "Member Sign In Verification"
-            });
-
-            signInForm.classList.add('hidden');
-            authTabs.classList.add('hidden');
-            otpForm.classList.remove('hidden');
-            document.getElementById('otpTargetEmail').innerText = email;
-            showAlert("Verification code sent! Please enter the 6-digit code.", false);
-        });
-
-        otpForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const enteredOtp = document.getElementById('otpInput').value.trim();
-
-            if (!pendingAuthData || !generatedOTP) {
-                showAlert("Session expired. Please try again.");
-                cancelOtpProcess();
-                return;
-            }
-
-            if (enteredOtp !== generatedOTP) {
-                showAlert("Invalid Verification Code! Access Denied. Please enter the exact code sent to your email.");
-                return;
-            }
-
-            const user = pendingAuthData.user;
-            let loginCount = parseInt(localStorage.getItem(`shikhor_login_count_${user.email}`)) || 0;
-            loginCount += 1;
-            localStorage.setItem(`shikhor_login_count_${user.email}`, loginCount);
-
-            if (pendingAuthData.mode === "signup") {
-                let usersDB = JSON.parse(localStorage.getItem('shikhor_users_db')) || [];
-                usersDB.push(user);
-                localStorage.setItem('shikhor_users_db', JSON.stringify(usersDB));
-            }
-
-            localStorage.setItem('shikhor_active_user', JSON.stringify(user));
-
-            sendToGoogleSheet({
-                type: "auth",
-                fullName: user.fullName,
-                username: user.username,
-                email: user.email,
-                action: pendingAuthData.mode === "signup" ? `New Sign Up (Verified - Login #${loginCount})` : `Sign In (Verified - Login #${loginCount})`,
+                status: "Website Visitor Entry",
                 deviceInfo: getReadableDeviceInfo()
             });
 
-            updateHeaderForLoggedInUser(user);
-            showAlert("Verification Successful! Access Granted.", false);
+            try {
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData`);
+                const data = await res.json();
 
-            setTimeout(() => {
-                toggleAuthModal(false);
-            }, 1200);
-        });
+                if (data.stats) {
+                    if (data.stats.Families) document.getElementById('counterFamilies').innerText = data.stats.Families;
+                    if (data.stats.Volunteers) document.getElementById('counterVolunteers').innerText = data.stats.Volunteers;
+                    if (data.stats.EventsCount) document.getElementById('counterEvents').innerText = data.stats.EventsCount;
 
-        function handleLogout() {
-            const activeUser = JSON.parse(localStorage.getItem('shikhor_active_user'));
-            if (activeUser) {
-                sendToGoogleSheet({
-                    type: "auth",
-                    fullName: activeUser.fullName,
-                    username: activeUser.username,
-                    email: activeUser.email,
-                    action: "Sign Out / Logout",
-                    deviceInfo: getReadableDeviceInfo()
-                });
+                    if (data.stats.NoticeText && String(data.stats.NoticeText).trim() !== "") {
+                        const noticeBar = document.createElement('div');
+                        noticeBar.className = "bg-[#3B261D] text-[#E6B88A] text-xs font-bold py-2.5 px-4 text-center border-b border-[#8C583A]";
+                        noticeBar.innerHTML = `<i class="fa-solid fa-bullhorn mr-2"></i> ${data.stats.NoticeText}`;
+                        document.body.insertBefore(noticeBar, document.body.firstChild);
+                    }
+                }
+
+                if ((data.events && data.events.length > 0) || (data.funding && data.funding.length > 0)) {
+                    const donationSec = document.getElementById('donation');
+                    const dynamicSec = document.createElement('section');
+                    dynamicSec.id = "programs";
+                    dynamicSec.className = "py-24 bg-[#F6EFE8] border-b border-[#D4C3B3]";
+
+                    let eventsHTML = (data.events || []).map(ev => `
+                        <div class="bg-[#FDFBF9] rounded-3xl border border-[#D4C3B3] overflow-hidden shadow-md hover-lift">
+                            <img src="${ev.ImageURL}" class="h-52 w-full object-cover">
+                            <div class="p-6">
+                                <span class="text-xs font-bold text-[#8C583A] uppercase">${ev.Date}</span>
+                                <h3 class="text-xl font-bold font-heading text-[#231712] mt-1 mb-2">${ev.Title}</h3>
+                                <p class="text-xs text-[#4F392E] leading-relaxed">${ev.Description}</p>
+                            </div>
+                        </div>`).join('');
+
+                    let fundingHTML = (data.funding || []).map(f => {
+                        const pct = Math.min(100, Math.round((Number(f.RaisedAmount) / Number(f.TargetAmount)) * 100)) || 0;
+                        return `
+                        <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold font-heading text-lg text-[#231712]">${f.CampaignName}</h4>
+                                <span class="text-xs font-bold px-3 py-1 rounded-full bg-[#EFE5DC] text-[#3B261D]">${pct}% Funded</span>
+                            </div>
+                            <div class="w-full bg-[#EFE5DC] h-3 rounded-full overflow-hidden mb-2">
+                                <div class="bg-[#8C583A] h-full transition-all duration-700" style="width:${pct}%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs font-bold text-[#6E5649]">
+                                <span>Raised: ৳${f.RaisedAmount}</span>
+                                <span>Goal: ৳${f.TargetAmount}</span>
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    dynamicSec.innerHTML = `
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            ${data.events && data.events.length ? `<div class="text-center mb-12"><span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest">LATEST UPDATES</span><h2 class="text-3xl font-extrabold font-heading text-[#231712] mt-2">Events & Programs</h2></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">${eventsHTML}</div>` : ''}
+                            ${data.funding && data.funding.length ? `<div class="max-w-3xl mx-auto"><h3 class="text-2xl font-bold font-heading text-center text-[#231712] mb-6">Active Fundraising Campaigns</h3><div class="space-y-4">${fundingHTML}</div></div>` : ''}
+                        </div>`;
+                    donationSec.parentNode.insertBefore(dynamicSec, donationSec);
+                }
+
+                if (data.team && data.team.length > 0) {
+                    const teamGrid = document.querySelector('#team .grid.lg\\:grid-cols-4');
+                    if (teamGrid) {
+                        teamGrid.innerHTML = data.team.map(m => `
+                        <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                            <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                                <img src="${m.ImageURL}" alt="${m.Name}" class="w-full h-full object-cover">
+                            </div>
+                            <h4 class="font-bold font-heading text-[#231712] text-lg">${m.Name}</h4>
+                            <p class="text-xs font-bold text-[#8C583A] mt-1">${m.Role}</p>
+                        </div>`).join('');
+                    }
+                }
+
+                if (data.gallery && data.gallery.length > 0) {
+                    const galGrid = document.querySelector('#gallery .grid');
+                    if (galGrid) {
+                        galGrid.innerHTML = data.gallery.map(g => `
+                        <div onclick="openLightbox('${g.ImageURL}', '${g.Caption}')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                            <img src="${g.ImageURL}" alt="${g.Caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
+                                <i class="fa-solid fa-expand mr-2"></i> ${g.Caption}
+                            </div>
+                        </div>`).join('');
+                    }
+                }
+            } catch (e) {
+                console.log("Sync fallback:", e);
             }
-            localStorage.removeItem('shikhor_active_user');
-            location.reload();
-        }
+        });
 
         function toggleMobileMenu() {
             document.getElementById('mobileMenu').classList.toggle('hidden');
@@ -1020,7 +766,6 @@
             });
         }
 
-        // CHATBOT LOGIC
         function toggleChatbot() {
             const chatWindow = document.getElementById('chatWindow');
             chatWindow.classList.toggle('hidden');
