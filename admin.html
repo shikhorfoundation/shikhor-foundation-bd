@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shikhor Foundation | Complete Website Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        .font-heading { font-family: 'Playfair Display', serif; }
+        .hover-lift {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 25px -8px rgba(35, 23, 18, 0.18);
+        }
+    </style>
+</head>
+<body class="bg-[#F6EFE8] text-[#231712] min-h-screen antialiased">
+
+    <!-- TOP BAR -->
+    <header class="sticky top-0 z-40 bg-[#FDFBF9]/95 backdrop-blur-md border-b border-[#D4C3B3] shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="admin.html" class="flex items-center gap-3">
+                <div class="w-11 h-11 bg-[#EFE5DC] rounded-2xl flex items-center justify-center border border-[#C4AE99] p-1 shadow-sm">
+                    <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <span class="text-xl font-bold font-heading tracking-tight text-[#231712] block leading-none">SHIKHOR</span>
+                    <span class="text-[10px] tracking-widest text-[#8C583A] font-bold uppercase mt-1 block">WEBSITE EDITOR</span>
+                </div>
+            </a>
+
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-globe"></i> Live Web
+                </a>
+                <button id="headerLogoutBtn" onclick="logoutAdmin()" class="hidden px-3.5 py-2.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-xl border border-red-300 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- LOGIN GATE -->
+    <section id="loginScreen" class="py-16 px-4">
+        <div class="max-w-md mx-auto bg-[#FDFBF9] p-8 rounded-3xl shadow-xl border-2 border-[#D4C3B3]">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-[#EFE5DC] rounded-2xl mx-auto mb-3 p-2 border border-[#B88655] flex items-center justify-center">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-contain">
+                </div>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-[#8C583A]">SHIKHOR FOUNDATION</span>
+                <h1 class="text-2xl font-bold font-heading text-[#231712] mt-1">Admin Login</h1>
+                <p class="text-xs text-[#6E5649] mt-1">Enter credentials to load full website editor</p>
+            </div>
+
+            <div id="loginAlert" class="hidden mb-4 p-3 rounded-xl bg-red-100 text-red-800 border border-red-300 text-xs font-semibold"></div>
+
+            <form id="adminLoginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-[#3B261D] mb-1">Username</label>
+                    <input type="text" id="adminUser" required placeholder="shikhor@bd" class="w-full px-4 py-3 rounded-xl border border-[#D4C3B3] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#5C3D2E]">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-[#3B261D] mb-1">Password</label>
+                    <input type="password" id="adminPass" required placeholder="Enter password" class="w-full px-4 py-3 rounded-xl border border-[#D4C3B3] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#5C3D2E]">
+                </div>
+                <button type="submit" id="loginBtn" class="w-full py-3.5 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl shadow-lg transition text-sm">
+                    Enter Full Editor <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- IMAGE CROPPER MODAL -->
+    <div id="cropModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-[#FDFBF9] rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#D4C3B3]">
+            <h3 class="text-lg font-bold font-heading text-[#231712] mb-2">Crop & Adjust Photo</h3>
+            <div class="max-h-80 overflow-hidden bg-black rounded-xl mb-4">
+                <img id="cropImageTarget" class="max-w-full block">
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeCropModal()" class="px-4 py-2 rounded-xl bg-gray-200 text-xs font-bold">Cancel</button>
+                <button type="button" id="confirmCropBtn" onclick="applyCropAndUpload()" class="px-5 py-2 rounded-xl bg-[#3B261D] text-white text-xs font-bold shadow">
+                    <i class="fa-solid fa-crop-simple mr-1"></i> Crop & Upload
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADER -->
+    <div id="globalLoader" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+        <div class="bg-[#FDFBF9] px-6 py-4 rounded-2xl shadow-xl border border-[#D4C3B3] flex items-center gap-3 text-sm font-bold text-[#3B261D]">
+            <i class="fa-solid fa-spinner fa-spin text-xl text-[#8C583A]"></i> Syncing with Website...
+        </div>
+    </div>
+
+    <!-- FULL WEBSITE EDITOR -->
+    <div id="editorWorkspace" class="hidden">
+
+        <section class="bg-gradient-to-b from-[#E8D9CB] to-[#F6EFE8] py-10 border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <span class="inline-block px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-widest mb-2">
+                        ALL-IN-ONE LIVE EDITOR
+                    </span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712]">
+                        Shikhor Foundation — Full Site Control
+                    </h1>
+                    <p class="text-sm text-[#4F392E] mt-1">
+                        Every section is open below. Add new, edit existing, or delete anything—changes update the live site automatically.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 text-xs font-bold">
+                    <a href="#sec-counters" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Counters</a>
+                    <a href="#sec-events" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Events</a>
+                    <a href="#sec-funding" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Funding</a>
+                    <a href="#sec-team" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Team</a>
+                    <a href="#sec-gallery" class="px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#D4C3B3] hover:bg-[#EFE5DC]">Gallery</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. COUNTERS & NOTICE -->
+        <section id="sec-counters" class="py-14 bg-[#FDFBF9] border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-1">HOMEPAGE STATS & BANNER</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mb-6">Impact Counters & Notice</h2>
+
+                <form id="statsForm" class="bg-[#F2E8DF] p-6 sm:p-8 rounded-3xl border border-[#D4C3B3] shadow-sm space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        <div class="bg-[#FDFBF9] p-4 rounded-2xl border border-[#D4C3B3]">
+                            <label class="block text-xs font-bold uppercase text-[#6E5649] mb-1">Families Supported</label>
+                            <input type="text" id="statFamilies" required class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xl font-extrabold text-[#8C583A] bg-white">
+                        </div>
+                        <div class="bg-[#FDFBF9] p-4 rounded-2xl border border-[#D4C3B3]">
+                            <label class="block text-xs font-bold uppercase text-[#6E5649] mb-1">Active Volunteers</label>
+                            <input type="text" id="statVolunteers" required class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xl font-extrabold text-[#8C583A] bg-white">
+                        </div>
+                        <div class="bg-[#FDFBF9] p-4 rounded-2xl border border-[#D4C3B3]">
+                            <label class="block text-xs font-bold uppercase text-[#6E5649] mb-1">Successful Events</label>
+                            <input type="text" id="statEvents" required class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xl font-extrabold text-[#8C583A] bg-white">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#3B261D] mb-1">Top Announcement Ticker Text</label>
+                        <input type="text" id="statNotice" placeholder="e.g. Winter Cloth Distribution 2026 registration open!" class="w-full px-4 py-3 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                    </div>
+                    <button type="submit" class="px-6 py-3 bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold rounded-xl shadow-md transition">
+                        <i class="fa-solid fa-check mr-1.5"></i> Save Counters & Notice
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. EVENTS & PROGRAMS -->
+        <section id="sec-events" class="py-14 bg-[#EFE5DC] border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-1">EVENTS & PROGRAMS</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mb-6">Manage Events (New / Edit / Delete)</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm h-fit">
+                        <h3 class="text-lg font-bold font-heading mb-4" id="eventFormTitle">+ Add New Event</h3>
+                        <form id="eventForm" class="space-y-3.5">
+                            <input type="hidden" id="eventId">
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Event Title *</label>
+                                <input type="text" id="eventTitle" required placeholder="Event Name" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Date *</label>
+                                <input type="text" id="eventDate" required placeholder="e.g. 25 December 2026" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Description *</label>
+                                <textarea id="eventDesc" rows="3" required placeholder="Write details..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Photo (Auto Crop & Upload)</label>
+                                <input type="file" accept="image/*" onchange="initCropper(event, 'eventImgUrl', 16/9)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-[#EFE5DC] file:text-[#3B261D] file:font-bold">
+                                <input type="text" id="eventImgUrl" required placeholder="Photo URL auto-fills after crop" class="mt-2 w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xs bg-[#F6EFE8]" readonly>
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button type="submit" class="flex-1 py-3 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow">Save Event</button>
+                                <button type="button" onclick="resetEventForm()" class="px-4 py-3 bg-[#EFE5DC] text-[#3B261D] text-xs font-bold rounded-xl">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <div id="eventsList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. FUNDING CAMPAIGNS -->
+        <section id="sec-funding" class="py-14 bg-[#FDFBF9] border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-1">FUNDRAISING</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mb-6">Manage Funding Campaigns</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm h-fit">
+                        <h3 class="text-lg font-bold font-heading mb-4">+ Add / Edit Campaign</h3>
+                        <form id="fundingForm" class="space-y-3.5">
+                            <input type="hidden" id="fundId">
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Campaign Name *</label>
+                                <input type="text" id="fundName" required placeholder="e.g. Winter Blanket Fund" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold mb-1">Target (BDT) *</label>
+                                    <input type="number" id="fundTarget" required placeholder="50000" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold mb-1">Raised (BDT) *</label>
+                                    <input type="number" id="fundRaised" required placeholder="20000" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Status</label>
+                                <select id="fundStatus" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                                    <option value="Active">Active</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button type="submit" class="flex-1 py-3 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow">Save Campaign</button>
+                                <button type="button" onclick="resetFundingForm()" class="px-4 py-3 bg-[#FDFBF9] text-[#3B261D] text-xs font-bold rounded-xl border border-[#D4C3B3]">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <div id="fundingList" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. TEAM & PANEL MEMBERS -->
+        <section id="sec-team" class="py-14 bg-[#EFE5DC] border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-1">LEADERSHIP & PANEL</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mb-6">Team & Panel Members</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm h-fit">
+                        <h3 class="text-lg font-bold font-heading mb-4">+ Add / Edit Member</h3>
+                        <form id="teamForm" class="space-y-3.5">
+                            <input type="hidden" id="teamId">
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Member Name *</label>
+                                <input type="text" id="teamName" required placeholder="Full Name" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Designation / Role *</label>
+                                <input type="text" id="teamRole" required placeholder="e.g. Executive Member" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Photo (1:1 Crop)</label>
+                                <input type="file" accept="image/*" onchange="initCropper(event, 'teamImgUrl', 1)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-[#EFE5DC] file:text-[#3B261D] file:font-bold">
+                                <input type="text" id="teamImgUrl" required placeholder="Photo URL or filename (e.g. arafat.jpg)" class="mt-2 w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xs bg-white">
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button type="submit" class="flex-1 py-3 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow">Save Member</button>
+                                <button type="button" onclick="resetTeamForm()" class="px-4 py-3 bg-[#EFE5DC] text-[#3B261D] text-xs font-bold rounded-xl">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <div id="teamList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. PHOTO GALLERY -->
+        <section id="sec-gallery" class="py-14 bg-[#FDFBF9]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-1">MOMENTS OF HUMANITY</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mb-6">Photo Gallery</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-[#F2E8DF] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm h-fit">
+                        <h3 class="text-lg font-bold font-heading mb-4">+ Add Gallery Photo</h3>
+                        <form id="galleryForm" class="space-y-3.5">
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Photo Caption *</label>
+                                <input type="text" id="galCaption" required placeholder="e.g. Community Event" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4C3B3] text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Photo (4:3 Crop)</label>
+                                <input type="file" accept="image/*" onchange="initCropper(event, 'galImgUrl', 4/3)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-[#FDFBF9] file:text-[#3B261D] file:font-bold">
+                                <input type="text" id="galImgUrl" required placeholder="Photo URL auto-fills after crop" class="mt-2 w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-xs bg-white" readonly>
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow">Add to Gallery</button>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <div id="galleryList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDWKD3Po8WfArkbvAUzPMCaOzpjo96zoJU7dVrMjY7NjN-s9P0N56qNV8HnaQnvf1L/exec";
+
+        const DEFAULT_TEAM = [
+            { ID: "DEF_1", Name: "Md. Shewise Al Islam Zarif", Role: "Founder & CEO / President", ImageURL: "zarif.jpg" },
+            { ID: "DEF_2", Name: "Ahsan Zaman", Role: "Vice President", ImageURL: "ahsan.jpg" },
+            { ID: "DEF_3", Name: "Nafew Khalil", Role: "Vice President of Program Organisation", ImageURL: "nafew.jpg" },
+            { ID: "DEF_4", Name: "Md. Shakhawat Hossain Sayem", Role: "Head Of Administration & Marketing (Acting IT Secretary)", ImageURL: "shakhawat.jpg" },
+            { ID: "DEF_5", Name: "MD. Minhajul Islam", Role: "Head of Accounts & Finance", ImageURL: "minhajul.jpg" },
+            { ID: "DEF_6", Name: "Faymul Islam Shafi", Role: "Head Of Volunteer", ImageURL: "shafi.jpg" },
+            { ID: "DEF_7", Name: "Sayed Bin Kamal", Role: "Asst. Head Of Administration", ImageURL: "sayed.jpg" },
+            { ID: "DEF_8", Name: "Alif Hasan Ayman", Role: "Asst. Head Of Accounts & Finance", ImageURL: "alif.jpg" },
+            { ID: "DEF_9", Name: "Rikto Ruddur Lyric", Role: "Asst. Head Of Marketing", ImageURL: "rikto.png" },
+            { ID: "DEF_10", Name: "Mayasha Afrin", Role: "Asst. Head Of Volunteer", ImageURL: "mayasha.jpg" },
+            { ID: "DEF_11", Name: "Wahid Yashfi", Role: "Executive Member", ImageURL: "wahid.jpg" },
+            { ID: "DEF_12", Name: "Arafat Sultan", Role: "Executive Member", ImageURL: "arafat.jpg" },
+            { ID: "DEF_13", Name: "Md. Raiyanul Islam", Role: "Executive Member", ImageURL: "raiyanul.jpg" }
+        ];
+
+        const DEFAULT_GALLERY = [
+            { ID: "GAL_DEF_1", Caption: "Community Support Activity", ImageURL: "gallery1.jpg" },
+            { ID: "GAL_DEF_2", Caption: "Educational Support Initiative", ImageURL: "gallery2.jpg" },
+            { ID: "GAL_DEF_3", Caption: "Volunteer Gathering", ImageURL: "gallery3.jpg" }
+        ];
+
+        let siteData = { events: [], funding: [], team: [], gallery: [], stats: {} };
+        let cropper = null;
+        let currentTargetInputId = "";
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const session = JSON.parse(sessionStorage.getItem('shikhor_admin_auth'));
+            if (session && session.loggedIn) {
+                openEditorWorkspace();
+            }
+        });
+
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('adminUser').value.trim();
+            const password = document.getElementById('adminPass').value.trim();
+            const btn = document.getElementById('loginBtn');
+            const alertBox = document.getElementById('loginAlert');
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Verifying...`;
+            alertBox.classList.add('hidden');
+
+            let authorized = (username === "shikhor@bd" && password === "Shikhor_foundation_bd");
+
+            try {
+                const res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ type: "admin_login", username, password })
+                });
+                const result = await res.json();
+                if (result.success) authorized = true;
+            } catch (err) {
+                console.log("Login check fallback:", err);
+            }
+
+            if (authorized) {
+                sessionStorage.setItem('shikhor_admin_auth', JSON.stringify({ loggedIn: true, username }));
+                openEditorWorkspace();
+            } else {
+                alertBox.innerText = "Invalid username or password!";
+                alertBox.classList.remove('hidden');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = `Enter Full Editor <i class="fa-solid fa-arrow-right ml-2"></i>`;
+        });
+
+        function openEditorWorkspace() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('editorWorkspace').classList.remove('hidden');
+            document.getElementById('headerLogoutBtn').classList.remove('hidden');
+            fetchAllAdminData();
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('shikhor_admin_auth');
+            location.reload();
+        }
+
+        function toggleLoader(show) {
+            document.getElementById('globalLoader').classList.toggle('hidden', !show);
+        }
+
+        async function fetchAllAdminData() {
+            toggleLoader(true);
+            try {
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData`);
+                const data = await res.json();
+                siteData = {
+                    events: data.events || [],
+                    funding: data.funding || [],
+                    team: (data.team && data.team.length > 0) ? data.team : DEFAULT_TEAM,
+                    gallery: (data.gallery && data.gallery.length > 0) ? data.gallery : DEFAULT_GALLERY,
+                    stats: data.stats || { Families: "100+", Volunteers: "50+", EventsCount: "10+", NoticeText: "" }
+                };
+            } catch (err) {
+                siteData = {
+                    events: [],
+                    funding: [],
+                    team: DEFAULT_TEAM,
+                    gallery: DEFAULT_GALLERY,
+                    stats: { Families: "100+", Volunteers: "50+", EventsCount: "10+", NoticeText: "" }
+                };
+            }
+            renderEverything();
+            toggleLoader(false);
+        }
+
+        function renderEverything() {
+            document.getElementById('statFamilies').value = siteData.stats.Families || "100+";
+            document.getElementById('statVolunteers').value = siteData.stats.Volunteers || "50+";
+            document.getElementById('statEvents').value = siteData.stats.EventsCount || "10+";
+            document.getElementById('statNotice').value = siteData.stats.NoticeText || "";
+
+            document.getElementById('eventsList').innerHTML = siteData.events.map(ev => `
+                <div class="bg-[#FDFBF9] rounded-3xl border border-[#D4C3B3] overflow-hidden shadow-sm hover-lift flex flex-col">
+                    <img src="${ev.ImageURL}" class="h-40 w-full object-cover bg-[#EFE5DC]">
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase text-[#8C583A]">${ev.Date}</span>
+                            <h4 class="font-bold font-heading text-base mt-0.5">${ev.Title}</h4>
+                            <p class="text-xs text-[#6E5649] mt-1">${ev.Description}</p>
+                        </div>
+                        <div class="flex gap-2 mt-4 pt-3 border-t border-[#EFE5DC]">
+                            <button onclick="editEvent('${ev.ID}')" class="flex-1 py-1.5 bg-[#EFE5DC] hover:bg-[#D4C3B3] text-[#3B261D] rounded-lg text-xs font-bold">Edit</button>
+                            <button onclick="deleteItem('Events', '${ev.ID}')" class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-bold">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('') || `<div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] text-xs text-[#6E5649] col-span-2">No events added yet. Use the form on the left to add one.</div>`;
+
+            document.getElementById('fundingList').innerHTML = siteData.funding.map(f => {
+                const pct = Math.min(100, Math.round((Number(f.RaisedAmount) / Number(f.TargetAmount)) * 100)) || 0;
+                return `
+                <div class="bg-[#F2E8DF] p-5 rounded-3xl border border-[#D4C3B3] shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold font-heading text-base">${f.CampaignName}</h4>
+                        <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-[#FDFBF9] text-[#3B261D] border border-[#D4C3B3]">${f.Status} (${pct}%)</span>
+                    </div>
+                    <div class="w-full bg-[#FDFBF9] h-2.5 rounded-full overflow-hidden mb-2 border border-[#D4C3B3]">
+                        <div class="bg-[#8C583A] h-full" style="width:${pct}%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs font-semibold text-[#4F392E] mb-3">
+                        <span>Raised: ৳${f.RaisedAmount}</span>
+                        <span>Target: ৳${f.TargetAmount}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editFunding('${f.ID}')" class="px-4 py-1.5 bg-[#FDFBF9] text-[#3B261D] rounded-lg text-xs font-bold border border-[#D4C3B3]">Edit</button>
+                        <button onclick="deleteItem('Funding', '${f.ID}')" class="px-4 py-1.5 bg-red-100 text-red-700 rounded-lg text-xs font-bold">Delete</button>
+                    </div>
+                </div>`;
+            }).join('') || `<div class="bg-[#F2E8DF] p-6 rounded-3xl border border-[#D4C3B3] text-xs text-[#6E5649]">No funding campaigns yet.</div>`;
+
+            document.getElementById('teamList').innerHTML = siteData.team.map(t => `
+                <div class="bg-[#FDFBF9] p-4 rounded-3xl border border-[#D4C3B3] text-center shadow-sm hover-lift">
+                    <img src="${t.ImageURL}" class="w-20 h-20 rounded-2xl mx-auto object-cover border border-[#8C583A] mb-2">
+                    <h4 class="font-bold font-heading text-sm">${t.Name}</h4>
+                    <p class="text-[11px] text-[#8C583A] font-semibold mb-3">${t.Role}</p>
+                    <div class="flex gap-1.5 justify-center">
+                        <button onclick="editTeam('${t.ID}')" class="px-3 py-1 bg-[#EFE5DC] hover:bg-[#D4C3B3] rounded-lg text-[11px] font-bold">Edit</button>
+                        <button onclick="deleteItem('Team', '${t.ID}')" class="px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-[11px] font-bold">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('galleryList').innerHTML = siteData.gallery.map(g => `
+                <div class="bg-[#F2E8DF] rounded-3xl border border-[#D4C3B3] overflow-hidden shadow-sm">
+                    <img src="${g.ImageURL}" class="h-36 w-full object-cover">
+                    <div class="p-3 flex justify-between items-center bg-[#FDFBF9]">
+                        <span class="text-xs font-semibold truncate pr-2">${g.Caption}</span>
+                        <button onclick="deleteItem('Gallery', '${g.ID}')" class="text-red-600 hover:text-red-800 text-xs font-bold"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initCropper(event, targetInputId, aspectRatio) {
+            const file = event.target.files[0];
+            if (!file) return;
+            currentTargetInputId = targetInputId;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('cropImageTarget');
+                img.src = e.target.result;
+                document.getElementById('cropModal').classList.remove('hidden');
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(img, { aspectRatio, viewMode: 1 });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function closeCropModal() {
+            document.getElementById('cropModal').classList.add('hidden');
+            if (cropper) cropper.destroy();
+        }
+
+        async function applyCropAndUpload() {
+            if (!cropper) return;
+            const btn = document.getElementById('confirmCropBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading...`;
+            const canvas = cropper.getCroppedCanvas({ maxWidth: 1000, maxHeight: 1000 });
+            const base64Data = canvas.toDataURL('image/jpeg', 0.85);
+            try {
+                const res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        type: "upload_image",
+                        base64: base64Data,
+                        filename: "shikhor_" + Date.now() + ".jpg"
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    document.getElementById(currentTargetInputId).value = result.url;
+                    closeCropModal();
+                } else {
+                    alert("Upload failed!");
+                }
+            } catch (err) {
+                alert("Error uploading image.");
+            }
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-crop-simple mr-1"></i> Crop & Upload`;
+        }
+
+        async function saveToSheet(sheetName, item, mode = "add") {
+            toggleLoader(true);
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ type: "save_item", sheetName, item, mode, id: item.ID })
+            });
+            await fetchAllAdminData();
+        }
+
+        async function deleteItem(sheetName, id) {
+            if (!confirm("Delete this item from the website?")) return;
+            toggleLoader(true);
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ type: "save_item", sheetName, mode: "delete", id })
+            });
+            await fetchAllAdminData();
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const existingId = document.getElementById('eventId').value;
+            await saveToSheet("Events", {
+                ID: existingId || "EV_" + Date.now(),
+                Title: document.getElementById('eventTitle').value,
+                Date: document.getElementById('eventDate').value,
+                Description: document.getElementById('eventDesc').value,
+                ImageURL: document.getElementById('eventImgUrl').value
+            }, existingId ? "edit" : "add");
+            resetEventForm();
+        });
+
+        function editEvent(id) {
+            const ev = siteData.events.find(x => String(x.ID) === String(id));
+            if (!ev) return;
+            document.getElementById('eventId').value = ev.ID;
+            document.getElementById('eventTitle').value = ev.Title;
+            document.getElementById('eventDate').value = ev.Date;
+            document.getElementById('eventDesc').value = ev.Description;
+            document.getElementById('eventImgUrl').value = ev.ImageURL;
+            document.getElementById('eventFormTitle').innerText = "Edit Event";
+            document.getElementById('sec-events').scrollIntoView({ behavior: 'smooth' });
+        }
+        function resetEventForm() {
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventId').value = "";
+            document.getElementById('eventFormTitle').innerText = "+ Add New Event";
+        }
+
+        document.getElementById('fundingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const existingId = document.getElementById('fundId').value;
+            await saveToSheet("Funding", {
+                ID: existingId || "FN_" + Date.now(),
+                CampaignName: document.getElementById('fundName').value,
+                TargetAmount: document.getElementById('fundTarget').value,
+                RaisedAmount: document.getElementById('fundRaised').value,
+                Status: document.getElementById('fundStatus').value
+            }, existingId ? "edit" : "add");
+            resetFundingForm();
+        });
+
+        function editFunding(id) {
+            const f = siteData.funding.find(x => String(x.ID) === String(id));
+            if (!f) return;
+            document.getElementById('fundId').value = f.ID;
+            document.getElementById('fundName').value = f.CampaignName;
+            document.getElementById('fundTarget').value = f.TargetAmount;
+            document.getElementById('fundRaised').value = f.RaisedAmount;
+            document.getElementById('fundStatus').value = f.Status;
+            document.getElementById('sec-funding').scrollIntoView({ behavior: 'smooth' });
+        }
+        function resetFundingForm() {
+            document.getElementById('fundingForm').reset();
+            document.getElementById('fundId').value = "";
+        }
+
+        document.getElementById('teamForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const existingId = document.getElementById('teamId').value;
+            await saveToSheet("Team", {
+                ID: existingId || "TM_" + Date.now(),
+                Name: document.getElementById('teamName').value,
+                Role: document.getElementById('teamRole').value,
+                ImageURL: document.getElementById('teamImgUrl').value
+            }, existingId ? "edit" : "add");
+            resetTeamForm();
+        });
+
+        function editTeam(id) {
+            const t = siteData.team.find(x => String(x.ID) === String(id));
+            if (!t) return;
+            document.getElementById('teamId').value = t.ID;
+            document.getElementById('teamName').value = t.Name;
+            document.getElementById('teamRole').value = t.Role;
+            document.getElementById('teamImgUrl').value = t.ImageURL;
+            document.getElementById('sec-team').scrollIntoView({ behavior: 'smooth' });
+        }
+        function resetTeamForm() {
+            document.getElementById('teamForm').reset();
+            document.getElementById('teamId').value = "";
+        }
+
+        document.getElementById('galleryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await saveToSheet("Gallery", {
+                ID: "GL_" + Date.now(),
+                Caption: document.getElementById('galCaption').value,
+                ImageURL: document.getElementById('galImgUrl').value
+            }, "add");
+            document.getElementById('galleryForm').reset();
+        });
+
+        document.getElementById('statsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            toggleLoader(true);
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: "update_stats",
+                    Families: document.getElementById('statFamilies').value,
+                    Volunteers: document.getElementById('statVolunteers').value,
+                    EventsCount: document.getElementById('statEvents').value,
+                    NoticeText: document.getElementById('statNotice').value
+                })
+            });
+            await fetchAllAdminData();
+        });
+    </script>
+</body>
+</html>
