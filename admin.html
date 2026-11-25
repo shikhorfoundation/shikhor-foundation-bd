@@ -1,1420 +1,1130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikhor Foundation | Admin Panel &amp; Change Audit Console</title>
-    <link rel="icon" type="image/png" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+    <title>Shikhor Foundation | Admin Control Center</title>
+    <link rel="icon" type="image/png" sizes="512x512" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Outfit', sans-serif; }
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
-        .tab-btn.active {
-            background-color: #3B261D;
-            color: #FDFBF9;
-            border-color: #3B261D;
+
+        .hover-lift {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 26px -8px rgba(35, 23, 18, 0.18);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
         }
     </style>
 </head>
-<body class="bg-[#F6EFE8] text-[#231712] antialiased min-h-screen">
+<body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white min-h-screen flex flex-col">
 
-    <!-- ADMIN GATE / ACCESS MODAL -->
-    <div id="adminLockScreen" class="fixed inset-0 z-50 bg-[#1A100C]/90 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-[#FDFBF9] rounded-3xl max-w-md w-full p-8 shadow-2xl border-2 border-[#B88655]">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-[#EFE5DC] rounded-2xl mx-auto mb-3 flex items-center justify-center border border-[#C4AE99] p-1.5">
-                    <img src="logo.png" alt="Shikhor Logo" class="w-full h-full object-contain">
+    <!-- TOAST NOTIFICATION -->
+    <div id="toastBanner" class="fixed top-5 right-5 z-50 hidden max-w-sm bg-[#231712] text-[#F6EFE8] border border-[#B88655] rounded-2xl shadow-2xl px-4 py-3.5 flex items-start gap-3 animate-fade-in">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-[#E6B88A] mt-0.5 text-base"></i>
+        <div class="flex-1 text-xs leading-relaxed">
+            <p id="toastTitle" class="font-bold text-white uppercase tracking-wider text-[11px]">Synced</p>
+            <p id="toastMessage" class="text-[#E8D9CB] mt-0.5"></p>
+        </div>
+        <button type="button" onclick="hideToast()" class="text-[#D4C3B3] hover:text-white">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- ADMIN LOGIN SCREEN -->
+    <div id="adminLoginScreen" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8]">
+        <div class="w-full max-w-md bg-[#FDFBF9] rounded-3xl border-2 border-[#B88655] shadow-2xl p-7 sm:p-9 animate-fade-in">
+            <div class="text-center mb-7">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#EFE5DC] border border-[#C4AE99] p-2 shadow-md flex items-center justify-center">
+                    <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                 </div>
-                <h1 class="text-2xl font-bold font-heading text-[#231712]">Shikhor Admin Panel</h1>
-                <p class="text-xs text-[#6E5649] mt-1">Every action logs exact before/after changes to your Google Sheet</p>
+                <span class="inline-block px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-widest mb-2">
+                    Restricted Access
+                </span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712]">Admin Sign In</h1>
+                <p class="text-xs text-[#5C3D2E] mt-1.5">Enter your authorized credentials to access Shikhor Foundation Admin Workspace.</p>
             </div>
-            <form id="adminUnlockForm" class="space-y-4">
+
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 text-sm">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Admin Name / Operator</label>
-                    <input type="text" id="adminOperatorName" required readonly value="shikhor@bd" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm focus:outline-none focus:ring-2 focus:ring-[#8C583A]">
+                    <label for="adminUsernameInput" class="block text-xs font-bold text-[#3B261D] mb-1.5">Username</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A] text-xs">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="adminUsernameInput" required autocomplete="username" placeholder="Enter admin username" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                    </div>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1">Admin Passcode</label>
-                    <input type="password" id="adminPasscodeInput" required placeholder="Enter admin passcode" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm focus:outline-none focus:ring-2 focus:ring-[#8C583A]">
+                    <label for="adminPasswordInput" class="block text-xs font-bold text-[#3B261D] mb-1.5">Password</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A] text-xs">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter admin password" class="w-full pl-10 pr-11 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6E5649] hover:text-[#231712] text-xs" title="Show/Hide Password">
+                            <i id="passwordEyeIcon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
-                <p id="adminAuthError" class="text-xs font-semibold text-red-700 hidden"></p>
-                <button type="submit" class="w-full py-3 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl shadow-lg text-sm transition">
-                    Unlock Admin Panel <i class="fa-solid fa-arrow-right ml-1.5"></i>
+
+                <p id="loginErrorMsg" class="hidden text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5">
+                    Invalid username or password. Please try again.
+                </p>
+
+                <button type="submit" class="w-full py-3 px-5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold uppercase tracking-wider shadow-lg transition flex items-center justify-center gap-2 mt-2">
+                    <span>Unlock Admin Panel</span>
+                    <i class="fa-solid fa-arrow-right text-[#E6B88A]"></i>
                 </button>
             </form>
+
+            <div class="mt-6 pt-4 border-t border-[#EFE5DC] text-center">
+                <a href="index.html" class="text-xs font-bold text-[#8C583A] hover:underline inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Main Website
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- MAIN ADMIN WORKSPACE -->
-    <div id="adminApp" class="hidden">
-        <!-- HEADER -->
+    <!-- PROTECTED ADMIN WORKSPACE -->
+    <div id="adminDashboardApp" class="hidden flex-1 flex flex-col">
+
+        <!-- TOP HEADER -->
         <header class="sticky top-0 z-40 bg-[#FDFBF9]/95 backdrop-blur-md border-b border-[#D4C3B3] shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 bg-[#EFE5DC] rounded-2xl flex items-center justify-center border border-[#C4AE99] p-1">
-                        <img src="logo.png" alt="Shikhor Logo" class="w-full h-full object-contain">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+                <a href="#top" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 bg-[#EFE5DC] rounded-2xl flex items-center justify-center shadow-sm border border-[#C4AE99] p-1 overflow-hidden">
+                        <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                     </div>
                     <div>
-                        <span class="text-lg font-bold font-heading text-[#231712] block leading-none">SHIKHOR ADMIN</span>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-[#8C583A]">Sheet Sync &amp; Change Audit</span>
+                        <span class="text-xl font-bold font-heading tracking-tight text-[#231712] block leading-none">SHIKHOR</span>
+                        <span class="text-[10px] tracking-widest text-[#8C583A] font-bold uppercase mt-1 block">ADMIN WORKSPACE</span>
                     </div>
+                </a>
+
+                <div class="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFE5DC] border border-[#D4C3B3] text-xs font-semibold text-[#3B261D]">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-600 animate-pulse"></span>
+                    <span>Sheet Sync Active</span>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2">
-                    <span id="operatorBadge" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] text-xs font-bold border border-[#D4C3B3]">
-                        <i class="fa-solid fa-user-check text-[#8C583A]"></i>
-                        <span id="operatorNameDisplay">Admin</span>
-                    </span>
-                    <button onclick="refreshAllFromSheet()" class="px-3.5 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] text-xs font-bold border border-[#D4C3B3] transition">
-                        <i class="fa-solid fa-rotate mr-1"></i> Sync Sheet
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="syncAllWithSheet(true)" class="px-3.5 py-2.5 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition flex items-center gap-1.5">
+                        <i id="syncSpinIcon" class="fa-solid fa-rotate text-[#8C583A]"></i>
+                        <span class="hidden sm:inline">Refresh & Sync</span>
                     </button>
-                    <a href="index.html" class="px-3.5 py-2 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition">
-                        View Website ↗
+                    <a href="index.html" target="_blank" class="px-3.5 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                        <span class="hidden sm:inline">View Live Site</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
                     </a>
-                    <button onclick="lockAdminPanel()" class="px-3.5 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold border border-red-300 transition" title="Lock Panel">
-                        <i class="fa-solid fa-lock"></i>
+                    <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition flex items-center gap-1.5" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="hidden sm:inline">Logout</span>
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <!-- MAIN CONTENT -->
+        <main id="top" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-            <!-- STATUS TOAST / BANNER -->
-            <div id="statusBanner" class="hidden p-4 rounded-2xl border text-xs sm:text-sm font-semibold flex items-center justify-between gap-3 shadow-sm"></div>
+            <!-- HERO BANNER & QUICK STATS -->
+            <section class="bg-gradient-to-r from-[#3B261D] via-[#4A3025] to-[#231712] text-[#F6EFE8] rounded-3xl p-6 sm:p-8 border border-[#8C583A] shadow-xl">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div>
+                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#5C3D2E] text-[#E6B88A] text-[11px] font-bold uppercase tracking-widest mb-3">
+                            <i class="fa-solid fa-sliders"></i> Centralized Sheet & Site Control
+                        </span>
+                        <h1 class="text-2xl sm:text-4xl font-extrabold font-heading text-white leading-tight">
+                            Shikhor Foundation Admin Panel
+                        </h1>
+                        <p class="text-xs sm:text-sm text-[#E8D9CB] mt-2 max-w-2xl leading-relaxed">
+                            Manage Notices, News, Headlines, Site Sections, Team Panel, Audit Logs, and Visitor Device Logs in dedicated sectors—every add, edit, or delete is recorded in your Google Sheet and synced with the live site.
+                        </p>
+                    </div>
 
-            <!-- TOP OVERVIEW CARDS -->
-            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#6E5649]">Total Viewer Visits</p>
-                    <h3 id="kpiVisits" class="text-3xl font-extrabold font-heading text-[#231712] mt-1">—</h3>
-                    <p class="text-[11px] text-[#8C583A] mt-1">From Website_Visits</p>
+                    <!-- Connection Status Box -->
+                    <div class="bg-[#231712]/80 border border-[#8C583A]/60 rounded-2xl p-4 min-w-[260px] space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-[#D4C3B3]">Apps Script Endpoint</span>
+                            <span class="px-2 py-0.5 rounded bg-green-900/70 text-green-300 font-bold text-[10px] uppercase">Connected</span>
+                        </div>
+                        <p id="scriptEndpointPreview" class="text-[11px] text-[#E6B88A] truncate font-mono"></p>
+                        <p id="lastSyncTimeLabel" class="text-[11px] text-[#A68F80]">Last synced: Just now</p>
+                    </div>
                 </div>
-                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#6E5649]">Published News</p>
-                    <h3 id="kpiNews" class="text-3xl font-extrabold font-heading text-[#231712] mt-1">—</h3>
-                    <p class="text-[11px] text-[#8C583A] mt-1">Live &amp; Other News</p>
-                </div>
-                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#6E5649]">Total Funding (BDT)</p>
-                    <h3 id="kpiFunding" class="text-3xl font-extrabold font-heading text-[#231712] mt-1">—</h3>
-                    <p class="text-[11px] text-[#8C583A] mt-1">From Funding Tab</p>
-                </div>
-                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#6E5649]">Session Changes Logged</p>
-                    <h3 id="kpiSessionLogs" class="text-3xl font-extrabold font-heading text-[#8C583A] mt-1">0</h3>
-                    <p class="text-[11px] text-[#6E5649] mt-1">Sent to Admin_Change_Log</p>
+
+                <!-- 4 TOP SUMMARY CARDS -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-7">
+                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published Notices</p>
+                        <h3 id="statNoticeCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
+                    </div>
+                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published News</p>
+                        <h3 id="statNewsCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
+                    </div>
+                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Change Audit Entries</p>
+                        <h3 id="statAuditCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
+                    </div>
+                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Visitor Device Logs</p>
+                        <h3 id="statVisitorCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
+                    </div>
                 </div>
             </section>
 
-            <!-- NAVIGATION TABS -->
-            <div class="flex flex-wrap gap-2 bg-[#EFE5DC] p-2 rounded-2xl border border-[#D4C3B3]">
-                <button onclick="switchAdminTab('news')" id="tab-news" class="tab-btn active px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent transition">
-                    <i class="fa-solid fa-newspaper mr-1.5"></i> News (Live &amp; Other)
+            <!-- DEDICATED SECTOR NAVIGATION TABS -->
+            <div class="bg-[#FDFBF9] p-2.5 rounded-2xl border border-[#D4C3B3] shadow-sm flex flex-wrap gap-2">
+                <button type="button" data-sector-tab="notices_news" onclick="switchSector('notices_news')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#3B261D] text-white shadow">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Notice & News</span>
                 </button>
-                <button onclick="switchAdminTab('stats')" id="tab-stats" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-[#3B261D] hover:bg-[#E2D3C5] transition">
-                    <i class="fa-solid fa-chart-line mr-1.5"></i> Impact Stats
+                <button type="button" data-sector-tab="headlines" onclick="switchSector('headlines')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Headline Ticker</span>
                 </button>
-                <button onclick="switchAdminTab('events')" id="tab-events" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-[#3B261D] hover:bg-[#E2D3C5] transition">
-                    <i class="fa-solid fa-calendar-days mr-1.5"></i> Events
+                <button type="button" data-sector-tab="site_sections" onclick="switchSector('site_sections')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Site Sections & Stats</span>
                 </button>
-                <button onclick="switchAdminTab('funding')" id="tab-funding" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-[#3B261D] hover:bg-[#E2D3C5] transition">
-                    <i class="fa-solid fa-hand-holding-dollar mr-1.5"></i> Funding
+                <button type="button" data-sector-tab="team" onclick="switchSector('team')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Team & Panel</span>
                 </button>
-                <button onclick="switchAdminTab('team')" id="tab-team" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-[#3B261D] hover:bg-[#E2D3C5] transition">
-                    <i class="fa-solid fa-users mr-1.5"></i> Team
+                <button type="button" data-sector-tab="audit_logs" onclick="switchSector('audit_logs')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <span>Change & Delete Proof</span>
                 </button>
-                <button onclick="switchAdminTab('gallery')" id="tab-gallery" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-[#3B261D] hover:bg-[#E2D3C5] transition">
-                    <i class="fa-solid fa-images mr-1.5"></i> Gallery
-                </button>
-                <button onclick="switchAdminTab('audit')" id="tab-audit" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-[#3B261D] hover:bg-[#E2D3C5] transition">
-                    <i class="fa-solid fa-clipboard-list mr-1.5"></i> Change History &amp; Viewers
+                <button type="button" data-sector-tab="visitor_logs" onclick="switchSector('visitor_logs')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <span>Visitor Devices</span>
                 </button>
             </div>
 
-            <!-- 1. NEWS PANEL -->
-            <section id="panel-news" class="admin-panel grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm">
-                    <h2 class="text-xl font-bold font-heading text-[#231712] mb-1" id="newsFormTitle">Add / Edit News</h2>
-                    <p class="text-xs text-[#6E5649] mb-4">Changes automatically record field-by-field before/after details to the spreadsheet.</p>
-                    <form id="newsForm" class="space-y-3">
-                        <input type="hidden" id="newsRowId">
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Headline *</label>
-                            <input type="text" id="newsHeadline" required placeholder="e.g. Winter Blanket Drive Notice" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
+            <!-- SECTOR 1: NOTICE & NEWS MANAGER -->
+            <section id="sector-notices_news" class="admin-sector space-y-6 animate-fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-5 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm h-fit">
+                        <div class="flex items-center justify-between mb-4">
                             <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Category</label>
-                                <select id="newsCategory" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                                    <option value="Live Update">Live Update</option>
-                                    <option value="Other News">Other News</option>
-                                    <option value="Announcement">Announcement</option>
-                                    <option value="Field Report">Field Report</option>
-                                </select>
+                                <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 01 • Publish</span>
+                                <h2 id="nnFormHeading" class="text-xl font-bold font-heading text-[#231712]">Add New Notice or News</h2>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Is Live?</label>
-                                <select id="newsIsLive" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                                    <option value="Yes">Yes (Live News)</option>
-                                    <option value="No">No (Other News)</option>
-                                </select>
-                            </div>
+                            <button type="button" onclick="resetNoticeNewsForm()" class="text-xs font-bold text-[#8C583A] hover:underline">Reset</button>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">DateTime</label>
-                                <input type="text" id="newsDateTime" placeholder="24 Nov 2026 • Live Desk" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Image URL</label>
-                                <input type="text" id="newsImageURL" placeholder="gallery1.jpg" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Summary *</label>
-                            <textarea id="newsSummary" rows="2" required placeholder="Short summary shown on live ticker and card..." class="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Full Content</label>
-                            <textarea id="newsContent" rows="3" placeholder="Detailed dispatch..." class="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm"></textarea>
-                        </div>
-                        <div class="flex gap-2 pt-2">
-                            <button type="submit" class="flex-1 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow transition">
-                                Save &amp; Log Change
-                            </button>
-                            <button type="button" onclick="resetNewsForm()" class="px-4 py-2.5 bg-[#EFE5DC] text-[#3B261D] font-bold rounded-xl text-xs border border-[#D4C3B3]">
-                                Clear
-                            </button>
-                        </div>
-                    </form>
-                </div>
 
-                <div class="lg:col-span-2 bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm overflow-x-auto">
-                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4">News Records (Live &amp; Other News)</h3>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="border-b border-[#D4C3B3] text-[#6E5649] uppercase">
-                                <th class="py-2.5 px-2">Headline</th>
-                                <th class="py-2.5 px-2">Category</th>
-                                <th class="py-2.5 px-2">Live</th>
-                                <th class="py-2.5 px-2">DateTime</th>
-                                <th class="py-2.5 px-2 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="newsTableBody" class="divide-y divide-[#EFE5DC]"></tbody>
-                    </table>
+                        <form id="noticeNewsForm" onsubmit="handleNoticeNewsSubmit(event)" class="space-y-4 text-xs sm:text-sm">
+                            <input type="hidden" id="nnEditId" value="">
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Category</label>
+                                    <select id="nnCategory" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] font-medium focus:outline-none focus:border-[#8C583A]">
+                                        <option value="Notice">Notice</option>
+                                        <option value="News">News</option>
+                                        <option value="Press Release">Press Release</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Status</label>
+                                    <select id="nnStatus" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] font-medium focus:outline-none focus:border-[#8C583A]">
+                                        <option value="Published">Published (Live)</option>
+                                        <option value="Draft">Draft</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Publish Date & Time</label>
+                                    <input type="text" id="nnDate" placeholder="e.g. Nov 25, 2026" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Banner / Cover Image URL</label>
+                                    <input type="text" id="nnBanner" placeholder="gallery2.jpg or https://..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Headline / Title *</label>
+                                <input type="text" id="nnTitle" required placeholder="Enter notice or news headline..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Short Summary</label>
+                                <textarea id="nnSummary" rows="2" placeholder="Short card preview summary..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Full News / Notice Details (Shown on View)</label>
+                                <textarea id="nnFullContent" rows="4" placeholder="Write the complete story or notice details shown when a visitor clicks View News / View Notice..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]"></textarea>
+                            </div>
+
+                            <button type="submit" id="nnSubmitBtn" class="w-full py-3 px-5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-cloud-arrow-up text-[#E6B88A]"></i>
+                                <span>Publish & Save to Spreadsheet</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-7 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Live Items</span>
+                                <h2 class="text-xl font-bold font-heading text-[#231712]">Active Notices & News</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="setNnFilter('all')" id="filter-all" class="nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#3B261D] text-white">All</button>
+                                <button type="button" onclick="setNnFilter('Notice')" id="filter-Notice" class="nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F2E8DF] text-[#3B261D]">Notices</button>
+                                <button type="button" onclick="setNnFilter('News')" id="filter-News" class="nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F2E8DF] text-[#3B261D]">News</button>
+                            </div>
+                        </div>
+
+                        <div id="adminNoticeNewsList" class="space-y-3.5 max-h-[620px] overflow-y-auto pr-1"></div>
+                    </div>
                 </div>
             </section>
 
-            <!-- 2. STATS PANEL -->
-            <section id="panel-stats" class="admin-panel hidden grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm">
-                    <h2 class="text-xl font-bold font-heading text-[#231712] mb-1" id="statsFormTitle">Add / Edit Impact Stat</h2>
-                    <p class="text-xs text-[#6E5649] mb-4">Updates hero impact numbers and logs exact old → new changes.</p>
-                    <form id="statsForm" class="space-y-3">
-                        <input type="hidden" id="statsRowId">
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Metric Name *</label>
-                            <input type="text" id="statMetricName" required placeholder="e.g. Families Supported" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Value *</label>
-                                <input type="text" id="statValue" required placeholder="e.g. 120+" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Unit / Label</label>
-                                <input type="text" id="statUnit" placeholder="Families" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Category</label>
-                                <input type="text" id="statCategory" value="Impact" class="w-full px-3 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Order</label>
-                                <input type="number" id="statOrder" value="1" class="w-full px-3 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Status</label>
-                                <select id="statStatus" class="w-full px-2 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                                    <option value="Active">Active</option>
-                                    <option value="Hidden">Hidden</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="flex gap-2 pt-2">
-                            <button type="submit" class="flex-1 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow transition">
-                                Save &amp; Log Change
-                            </button>
-                            <button type="button" onclick="resetStatsForm()" class="px-4 py-2.5 bg-[#EFE5DC] text-[#3B261D] font-bold rounded-xl text-xs border border-[#D4C3B3]">
-                                Clear
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            <!-- SECTOR 2: HEADLINE TICKER CONTROL -->
+            <section id="sector-headlines" class="admin-sector hidden space-y-6 animate-fade-in">
+                <div class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+                    <div>
+                        <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 02 • Top Ticker</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Latest Headlines Ticker Preview & Jump Control</h2>
+                        <p class="text-xs sm:text-sm text-[#4F392E] mt-1">
+                            Every published Notice and News item automatically appears in the top clickable headline bar on <code class="bg-[#F2E8DF] px-1.5 py-0.5 rounded">index.html</code>. Clicking a headline scrolls directly to that card and highlights it.
+                        </p>
+                    </div>
 
-                <div class="lg:col-span-2 bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm overflow-x-auto">
-                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4">Impact Stats Records</h3>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="border-b border-[#D4C3B3] text-[#6E5649] uppercase">
-                                <th class="py-2.5 px-2">Metric</th>
-                                <th class="py-2.5 px-2">Value</th>
-                                <th class="py-2.5 px-2">Order</th>
-                                <th class="py-2.5 px-2">Status</th>
-                                <th class="py-2.5 px-2 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="statsTableBody" class="divide-y divide-[#EFE5DC]"></tbody>
-                    </table>
+                    <div class="bg-[#231712] text-[#F6EFE8] rounded-2xl p-3.5 border border-[#8C583A] flex items-center gap-3 overflow-x-auto">
+                        <span class="shrink-0 px-3 py-1 rounded-lg bg-[#8C583A] text-white text-[11px] font-bold uppercase">Live Ticker</span>
+                        <div id="adminHeadlinePreviewChips" class="flex items-center gap-3 text-xs whitespace-nowrap"></div>
+                    </div>
+
+                    <div id="adminHeadlineList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </div>
             </section>
 
-            <!-- 3. EVENTS PANEL -->
-            <section id="panel-events" class="admin-panel hidden grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm">
-                    <h2 class="text-xl font-bold font-heading text-[#231712] mb-1" id="eventsFormTitle">Add / Edit Event</h2>
-                    <p class="text-xs text-[#6E5649] mb-4">Manage campaigns &amp; programs with automatic audit trail.</p>
-                    <form id="eventsForm" class="space-y-3">
-                        <input type="hidden" id="eventRowId">
+            <!-- SECTOR 3: SITE SECTIONS & STATS EDITOR -->
+            <section id="sector-site_sections" class="admin-sector hidden space-y-6 animate-fade-in">
+                <form id="siteSectionsForm" onsubmit="handleSiteSectionsSave(event)" class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
                         <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Title *</label>
-                            <input type="text" id="eventTitle" required placeholder="e.g. Winter Blanket Distribution" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 03 • Main Page Content</span>
+                            <h2 class="text-2xl font-bold font-heading text-[#231712]">Hero, Impact Counter, About & Donation Settings</h2>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Category</label>
-                                <input type="text" id="eventCategory" placeholder="Relief / Education" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Status</label>
-                                <select id="eventStatus" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                                    <option value="Upcoming">Upcoming</option>
-                                    <option value="Ongoing">Ongoing</option>
-                                    <option value="Completed">Completed</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Date</label>
-                                <input type="text" id="eventDate" placeholder="2026-12-05" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Time</label>
-                                <input type="text" id="eventTime" placeholder="10:00 AM" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Location</label>
-                                <input type="text" id="eventLocation" placeholder="Dhaka, Bangladesh" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Coordinator</label>
-                                <input type="text" id="eventCoordinator" placeholder="Volunteer Team" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Image URL</label>
-                            <input type="text" id="eventImageURL" placeholder="gallery2.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Description</label>
-                            <textarea id="eventDescription" rows="2" placeholder="Event details..." class="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm"></textarea>
-                        </div>
-                        <div class="flex gap-2 pt-2">
-                            <button type="submit" class="flex-1 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow transition">
-                                Save &amp; Log Change
-                            </button>
-                            <button type="button" onclick="resetEventsForm()" class="px-4 py-2.5 bg-[#EFE5DC] text-[#3B261D] font-bold rounded-xl text-xs border border-[#D4C3B3]">
-                                Clear
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-floppy-disk text-[#E6B88A]"></i>
+                            <span>Save Section Changes</span>
+                        </button>
+                    </div>
 
-                <div class="lg:col-span-2 bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm overflow-x-auto">
-                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4">Events Records</h3>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="border-b border-[#D4C3B3] text-[#6E5649] uppercase">
-                                <th class="py-2.5 px-2">Title</th>
-                                <th class="py-2.5 px-2">Date</th>
-                                <th class="py-2.5 px-2">Location</th>
-                                <th class="py-2.5 px-2">Status</th>
-                                <th class="py-2.5 px-2 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="eventsTableBody" class="divide-y divide-[#EFE5DC]"></tbody>
-                    </table>
+                    <div>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-[#5C3D2E] mb-3">Impact Counter Numbers</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="p-4 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3]">
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Families Supported</label>
+                                <input type="text" id="secFamiliesCount" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-sm font-bold">
+                            </div>
+                            <div class="p-4 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3]">
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Active Volunteers</label>
+                                <input type="text" id="secVolunteersCount" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-sm font-bold">
+                            </div>
+                            <div class="p-4 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3]">
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Successful Events</label>
+                                <input type="text" id="secEventsCount" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-sm font-bold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Headline</label>
+                            <input type="text" id="secHeroTitle" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-[#3B261D] mb-1">bKash / Nagad Donation Number</label>
+                            <input type="text" id="secDonationNumber" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Sub-description</label>
+                            <textarea id="secHeroSubtitle" rows="2" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-[#3B261D] mb-1">About Us Description</label>
+                            <textarea id="secAboutText" rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- SECTOR 4: TEAM & PANEL MANAGER -->
+            <section id="sector-team" class="admin-sector hidden space-y-6 animate-fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-4 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm h-fit">
+                        <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 04 • Panel</span>
+                        <h2 class="text-xl font-bold font-heading text-[#231712] mb-4">Add Team Member</h2>
+                        <form id="teamMemberForm" onsubmit="handleTeamAdd(event)" class="space-y-3.5 text-sm">
+                            <div>
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Full Name *</label>
+                                <input type="text" id="tmName" required placeholder="Member Name" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Designation / Role *</label>
+                                <input type="text" id="tmRole" required placeholder="e.g. Executive Member" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Photo Filename or URL</label>
+                                <input type="text" id="tmPhoto" placeholder="logo.png or member.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
+                            </div>
+                            <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow transition">
+                                Add & Log to Sheet
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-8 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm">
+                        <h2 class="text-xl font-bold font-heading text-[#231712] mb-4">Shikhor Leadership & Panel Roster</h2>
+                        <div id="adminTeamList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+                    </div>
                 </div>
             </section>
 
-            <!-- 4. FUNDING PANEL -->
-            <section id="panel-funding" class="admin-panel hidden grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm">
-                    <h2 class="text-xl font-bold font-heading text-[#231712] mb-1" id="fundingFormTitle">Add / Edit Funding Entry</h2>
-                    <p class="text-xs text-[#6E5649] mb-4">Track donations in BDT and automatically log every change.</p>
-                    <form id="fundingForm" class="space-y-3">
-                        <input type="hidden" id="fundingRowId">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Date *</label>
-                                <input type="text" id="fundingDate" required placeholder="24/11/2026" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Amount (BDT) *</label>
-                                <input type="number" id="fundingAmount" required min="0" step="any" placeholder="1000" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
+            <!-- SECTOR 5: CHANGE & DELETE AUDIT PROOF LOGS -->
+            <section id="sector-audit_logs" class="admin-sector hidden space-y-6 animate-fade-in">
+                <div class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Donor Name *</label>
-                            <input type="text" id="fundingDonor" required placeholder="Anonymous / Donor Name" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 05 • Spreadsheet Proof</span>
+                            <h2 class="text-2xl font-bold font-heading text-[#231712]">What Was Added, Changed, or Removed</h2>
+                            <p class="text-xs sm:text-sm text-[#4F392E] mt-1">
+                                Every action taken from this panel logs the exact sector, action type (ADDED / UPDATED / REMOVED), item details, date, and time to your Google Sheet.
+                            </p>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Payment Method</label>
-                                <select id="fundingMethod" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                                    <option value="bKash">bKash</option>
-                                    <option value="Nagad">Nagad</option>
-                                    <option value="Bank">Bank</option>
-                                    <option value="Cash">Cash</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Status</label>
-                                <select id="fundingStatus" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                                    <option value="Verified">Verified</option>
-                                    <option value="Pending">Pending</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Campaign / Purpose</label>
-                            <input type="text" id="fundingCampaign" placeholder="Winter Relief / Education" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Contact / Phone</label>
-                                <input type="text" id="fundingPhone" placeholder="+880..." class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">TrxID / Reference</label>
-                                <input type="text" id="fundingTrx" placeholder="TRX12345" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Notes</label>
-                            <input type="text" id="fundingNotes" placeholder="Optional remarks" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                        </div>
-                        <div class="flex gap-2 pt-2">
-                            <button type="submit" class="flex-1 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow transition">
-                                Save &amp; Log Change
-                            </button>
-                            <button type="button" onclick="resetFundingForm()" class="px-4 py-2.5 bg-[#EFE5DC] text-[#3B261D] font-bold rounded-xl text-xs border border-[#D4C3B3]">
-                                Clear
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                        <button type="button" onclick="clearLocalAuditView()" class="px-3.5 py-2 rounded-xl bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                            Clear Local View
+                        </button>
+                    </div>
 
-                <div class="lg:col-span-2 bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm overflow-x-auto">
-                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4">Funding Ledger</h3>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="border-b border-[#D4C3B3] text-[#6E5649] uppercase">
-                                <th class="py-2.5 px-2">Date</th>
-                                <th class="py-2.5 px-2">Donor</th>
-                                <th class="py-2.5 px-2">Method</th>
-                                <th class="py-2.5 px-2">Amount</th>
-                                <th class="py-2.5 px-2">Status</th>
-                                <th class="py-2.5 px-2 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fundingTableBody" class="divide-y divide-[#EFE5DC]"></tbody>
-                    </table>
+                    <div class="overflow-x-auto rounded-2xl border border-[#D4C3B3]">
+                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                            <thead class="bg-[#3B261D] text-[#E6B88A] uppercase text-[11px] tracking-wider">
+                                <tr>
+                                    <th class="py-3 px-4">Date & Time</th>
+                                    <th class="py-3 px-4">Sector</th>
+                                    <th class="py-3 px-4">Change Type</th>
+                                    <th class="py-3 px-4">Details (What Changed / Removed)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogTableBody" class="divide-y divide-[#E5D7C9] bg-[#FDFBF9]"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
-            <!-- 5. TEAM PANEL -->
-            <section id="panel-team" class="admin-panel hidden grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm">
-                    <h2 class="text-xl font-bold font-heading text-[#231712] mb-1" id="teamFormTitle">Add / Edit Team Member</h2>
-                    <p class="text-xs text-[#6E5649] mb-4">Update panel members &amp; log every edit to the spreadsheet.</p>
-                    <form id="teamForm" class="space-y-3">
-                        <input type="hidden" id="teamRowId">
+            <!-- SECTOR 6: VISITOR DEVICE LOGS -->
+            <section id="sector-visitor_logs" class="admin-sector hidden space-y-6 animate-fade-in">
+                <div class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Full Name *</label>
-                            <input type="text" id="teamName" required placeholder="Full Name" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 06 • Public Traffic</span>
+                            <h2 class="text-2xl font-bold font-heading text-[#231712]">Visitor Device, Entry & Exit Logs</h2>
+                            <p class="text-xs sm:text-sm text-[#4F392E] mt-1">
+                                Tracks public visitors entering and leaving the website without requiring login—showing device type, OS, browser, screen size, and timestamp.
+                            </p>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Designation *</label>
-                            <input type="text" id="teamDesignation" required placeholder="e.g. Executive Member" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Department / Role</label>
-                                <input type="text" id="teamDept" placeholder="Executive Body" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Photo URL</label>
-                                <input type="text" id="teamPhoto" placeholder="member.jpg" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Phone</label>
-                                <input type="text" id="teamPhone" placeholder="+880..." class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Email</label>
-                                <input type="email" id="teamEmail" placeholder="name@example.com" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Blood</label>
-                                <input type="text" id="teamBlood" placeholder="O+" class="w-full px-3 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Join Date</label>
-                                <input type="text" id="teamJoinDate" placeholder="2026-11-24" class="w-full px-3 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Status</label>
-                                <select id="teamStatus" class="w-full px-2 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Bio / Remarks</label>
-                            <input type="text" id="teamBio" placeholder="Optional remarks" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                        </div>
-                        <div class="flex gap-2 pt-2">
-                            <button type="submit" class="flex-1 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow transition">
-                                Save &amp; Log Change
-                            </button>
-                            <button type="button" onclick="resetTeamForm()" class="px-4 py-2.5 bg-[#EFE5DC] text-[#3B261D] font-bold rounded-xl text-xs border border-[#D4C3B3]">
-                                Clear
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                        <button type="button" onclick="syncAllWithSheet(true)" class="px-4 py-2 rounded-xl bg-[#3B261D] text-white text-xs font-bold">
+                            Pull Latest Sheet Logs
+                        </button>
+                    </div>
 
-                <div class="lg:col-span-2 bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm overflow-x-auto">
-                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4">Team &amp; Panel Directory</h3>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="border-b border-[#D4C3B3] text-[#6E5649] uppercase">
-                                <th class="py-2.5 px-2">Name</th>
-                                <th class="py-2.5 px-2">Designation</th>
-                                <th class="py-2.5 px-2">Department</th>
-                                <th class="py-2.5 px-2">Status</th>
-                                <th class="py-2.5 px-2 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="teamTableBody" class="divide-y divide-[#EFE5DC]"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- 6. GALLERY PANEL -->
-            <section id="panel-gallery" class="admin-panel hidden grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm">
-                    <h2 class="text-xl font-bold font-heading text-[#231712] mb-1" id="galleryFormTitle">Add / Edit Gallery Photo</h2>
-                    <p class="text-xs text-[#6E5649] mb-4">Manage gallery items and log every modification automatically.</p>
-                    <form id="galleryForm" class="space-y-3">
-                        <input type="hidden" id="galleryRowId">
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Title *</label>
-                            <input type="text" id="galleryTitle" required placeholder="e.g. Winter Relief Camp" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Category</label>
-                                <input type="text" id="galleryCategory" placeholder="Community Support" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Image URL *</label>
-                                <input type="text" id="galleryImageURL" required placeholder="gallery1.jpg" class="w-full px-3 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Date</label>
-                                <input type="text" id="galleryDate" placeholder="2026-11-24" class="w-full px-3 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Featured</label>
-                                <select id="galleryFeatured" class="w-full px-2 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Order</label>
-                                <input type="number" id="galleryOrder" value="1" class="w-full px-3 py-2 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Status</label>
-                            <select id="galleryStatus" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D4C3B3] text-sm">
-                                <option value="Active">Active</option>
-                                <option value="Hidden">Hidden</option>
-                            </select>
-                        </div>
-                        <div class="flex gap-2 pt-2">
-                            <button type="submit" class="flex-1 py-2.5 bg-[#3B261D] hover:bg-[#231712] text-white font-bold rounded-xl text-xs shadow transition">
-                                Save &amp; Log Change
-                            </button>
-                            <button type="button" onclick="resetGalleryForm()" class="px-4 py-2.5 bg-[#EFE5DC] text-[#3B261D] font-bold rounded-xl text-xs border border-[#D4C3B3]">
-                                Clear
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="lg:col-span-2 bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm overflow-x-auto">
-                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4">Gallery Items</h3>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="border-b border-[#D4C3B3] text-[#6E5649] uppercase">
-                                <th class="py-2.5 px-2">Title</th>
-                                <th class="py-2.5 px-2">Category</th>
-                                <th class="py-2.5 px-2">Image</th>
-                                <th class="py-2.5 px-2">Order</th>
-                                <th class="py-2.5 px-2 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="galleryTableBody" class="divide-y divide-[#EFE5DC]"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- 7. CHANGE HISTORY & VIEWERS PANEL -->
-            <section id="panel-audit" class="admin-panel hidden space-y-6">
-                <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm overflow-x-auto">
-                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-1">Admin Change Audit Log (Sent to Google Sheet)</h3>
-                    <p class="text-xs text-[#6E5649] mb-4">Shows exact section, record ID, action type, and before/after field changes recorded from this admin panel.</p>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="border-b border-[#D4C3B3] text-[#6E5649] uppercase">
-                                <th class="py-2.5 px-2">Time</th>
-                                <th class="py-2.5 px-2">Section</th>
-                                <th class="py-2.5 px-2">Action</th>
-                                <th class="py-2.5 px-2">Target</th>
-                                <th class="py-2.5 px-2">Change Summary (Before → After)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="auditLogTableBody" class="divide-y divide-[#EFE5DC]"></tbody>
-                    </table>
-                </div>
-
-                <div class="bg-[#FDFBF9] p-6 rounded-3xl border border-[#D4C3B3] shadow-sm overflow-x-auto">
-                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-1">Recent Viewer Visits</h3>
-                    <p class="text-xs text-[#6E5649] mb-4">Viewer visits recorded from index.html into the spreadsheet.</p>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="border-b border-[#D4C3B3] text-[#6E5649] uppercase">
-                                <th class="py-2.5 px-2">Date</th>
-                                <th class="py-2.5 px-2">Time</th>
-                                <th class="py-2.5 px-2">Status</th>
-                                <th class="py-2.5 px-2">Device &amp; Screen</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentVisitsTableBody" class="divide-y divide-[#EFE5DC]"></tbody>
-                    </table>
+                    <div class="overflow-x-auto rounded-2xl border border-[#D4C3B3]">
+                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                            <thead class="bg-[#3B261D] text-[#E6B88A] uppercase text-[11px] tracking-wider">
+                                <tr>
+                                    <th class="py-3 px-4">Timestamp</th>
+                                    <th class="py-3 px-4">Visitor / Status</th>
+                                    <th class="py-3 px-4">Device & Browser Info</th>
+                                </tr>
+                            </thead>
+                            <tbody id="visitorLogTableBody" class="divide-y divide-[#E5D7C9] bg-[#FDFBF9]"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
         </main>
+
+        <!-- FOOTER -->
+        <footer class="bg-[#231712] text-[#D4C3B3] py-6 border-t border-[#5C3D2E] text-center text-xs">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <span>Shikhor Foundation Admin Panel • Rooted in Humanity, Growing with Compassion</span>
+                <span class="text-[#A68F80]">&copy; 2026 Shikhor Foundation</span>
+            </div>
+        </footer>
+
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdQGWhr4C-EZWpiD30MJFSLr-zQUY00PX6HyzlGDuFo3jVdVDe9LfvmuHYrre2WRva/exec";
-        const ADMIN_USERNAME = "shikhor@bd";
-        const ADMIN_PASSCODE = "Shikhor_foundation_bd";
-        const STORAGE_KEY = "shikhor_admin_cache_v1";
-        const AUDIT_STORAGE_KEY = "shikhor_admin_audit_v1";
-
-        let state = {
-            news: [],
-            stats: [],
-            events: [],
-            funding: [],
-            team: [],
-            gallery: [],
-            visits: []
+        const ADMIN_AUTH = {
+            username: "shikhor@bd",
+            password: "Shikhor_foundation_bd",
+            sessionKey: "shikhor_admin_authenticated_session_v1"
         };
 
-        let sessionAuditLogs = JSON.parse(localStorage.getItem(AUDIT_STORAGE_KEY) || "[]");
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdQGWhr4C-EZWpiD30MJFSLr-zQUY00PX6HyzlGDuFo3jVdVDe9LfvmuHYrre2WRva/exec";
 
-        function cleanVal(val, fallback = "") {
-            if (val === undefined || val === null) return fallback;
-            const s = String(val).trim();
-            if (!s || s.toLowerCase() === "undefined" || s.toLowerCase() === "null") return fallback;
-            return s;
+        const STORAGE_KEYS = {
+            items: "shikhor_admin_notice_news_v1",
+            sections: "shikhor_admin_site_sections_v1",
+            team: "shikhor_admin_team_v1",
+            audit: "shikhor_admin_audit_logs_v1",
+            visitors: "shikhor_admin_visitor_logs_v1"
+        };
+
+        const DEFAULT_ITEMS = [
+            {
+                id: "item-notice-1",
+                category: "Notice",
+                status: "Published",
+                date: "Nov 25, 2026",
+                title: "Volunteer & Community Drive",
+                banner: "gallery1.jpg",
+                summary: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live.",
+                fullContent: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live. Interested volunteers and supporters can stay tuned for schedule updates, field locations, and registration details."
+            },
+            {
+                id: "item-news-1",
+                category: "News",
+                status: "Published",
+                date: "Nov 25, 2026",
+                title: "Standing Together for Communities",
+                banner: "gallery2.jpg",
+                summary: "Recent news stories, relief updates, and ground reports from Shikhor Foundation.",
+                fullContent: "Recent news stories, relief updates, and ground reports from Shikhor Foundation are featured here. Every initiative is driven by compassion, community participation, and transparent action to support families in need."
+            }
+        ];
+
+        const DEFAULT_SECTIONS = {
+            familiesCount: "100+",
+            volunteersCount: "50+",
+            eventsCount: "10+",
+            heroTitle: "A little kindness can grow into a better tomorrow.",
+            heroSubtitle: "Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.",
+            aboutText: "Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.",
+            donationNumber: "+8801956631465"
+        };
+
+        const DEFAULT_TEAM = [
+            { id: "tm-1", name: "Md. Shewise Al Islam Zarif", role: "Founder & CEO / President", photo: "zarif.jpg" },
+            { id: "tm-2", name: "Ahsan Zaman", role: "Vice President", photo: "ahsan.jpg" },
+            { id: "tm-3", name: "Nafew Khalil", role: "Vice President of Program Organisation", photo: "nafew.jpg" },
+            { id: "tm-4", name: "Md. Shakhawat Hossain Sayem", role: "Head Of Administration & Marketing", photo: "shakhawat.jpg" },
+            { id: "tm-5", name: "MD. Minhajul Islam", role: "Head of Accounts & Finance", photo: "minhajul.jpg" },
+            { id: "tm-6", name: "Faymul Islam Shafi", role: "Head Of Volunteer", photo: "shafi.jpg" },
+            { id: "tm-7", name: "Rikto Ruddur Lyric", role: "Asst. Head Of Marketing", photo: "rikto.png" }
+        ];
+
+        let state = {
+            items: [],
+            sections: { ...DEFAULT_SECTIONS },
+            team: [],
+            auditLogs: [],
+            visitorLogs: [],
+            activeSector: "notices_news",
+            nnFilter: "all"
+        };
+
+        function togglePasswordVisibility() {
+            const input = document.getElementById("adminPasswordInput");
+            const icon = document.getElementById("passwordEyeIcon");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.className = "fa-solid fa-eye-slash";
+            } else {
+                input.type = "password";
+                icon.className = "fa-solid fa-eye";
+            }
         }
 
-        function esc(str) {
+        function setAuthView(isAuthenticated) {
+            document.getElementById("adminLoginScreen").classList.toggle("hidden", isAuthenticated);
+            document.getElementById("adminDashboardApp").classList.toggle("hidden", !isAuthenticated);
+            if (isAuthenticated) {
+                loadLocalState();
+                renderAll();
+                syncAllWithSheet(false);
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const userVal = document.getElementById("adminUsernameInput").value.trim();
+            const passVal = document.getElementById("adminPasswordInput").value;
+            const errEl = document.getElementById("loginErrorMsg");
+
+            if (userVal === ADMIN_AUTH.username && passVal === ADMIN_AUTH.password) {
+                errEl.classList.add("hidden");
+                sessionStorage.setItem(ADMIN_AUTH.sessionKey, "1");
+                setAuthView(true);
+                showToast("Welcome Back", "Logged in to Shikhor Foundation Admin Panel.");
+            } else {
+                errEl.classList.remove("hidden");
+            }
+        }
+
+        function handleAdminLogout() {
+            sessionStorage.removeItem(ADMIN_AUTH.sessionKey);
+            document.getElementById("adminLoginForm").reset();
+            setAuthView(false);
+            showToast("Logged Out", "Admin session closed.");
+        }
+
+        function escapeHtml(str) {
             return String(str || "")
                 .replace(/&/g, "&amp;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;")
                 .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
         }
 
-        function showBanner(msg, isError = false) {
-            const b = document.getElementById("statusBanner");
-            b.classList.remove("hidden", "bg-green-100", "text-green-900", "border-green-300", "bg-red-100", "text-red-900", "border-red-300");
-            if (isError) {
-                b.classList.add("bg-red-100", "text-red-900", "border-red-300");
-            } else {
-                b.classList.add("bg-green-100", "text-green-900", "border-green-300");
+        function formatNowBD() {
+            return new Date().toLocaleString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            });
+        }
+
+        function showToast(title, message, isError = false) {
+            const toast = document.getElementById("toastBanner");
+            const icon = document.getElementById("toastIcon");
+            document.getElementById("toastTitle").textContent = title;
+            document.getElementById("toastMessage").textContent = message;
+            icon.className = isError
+                ? "fa-solid fa-triangle-exclamation text-amber-400 mt-0.5 text-base"
+                : "fa-solid fa-circle-check text-[#E6B88A] mt-0.5 text-base";
+            toast.classList.remove("hidden");
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(hideToast, 3600);
+        }
+
+        function hideToast() {
+            document.getElementById("toastBanner").classList.add("hidden");
+        }
+
+        function loadLocalState() {
+            try {
+                const rawItems = localStorage.getItem(STORAGE_KEYS.items);
+                state.items = rawItems ? JSON.parse(rawItems) : [...DEFAULT_ITEMS];
+
+                const rawSections = localStorage.getItem(STORAGE_KEYS.sections);
+                state.sections = rawSections ? { ...DEFAULT_SECTIONS, ...JSON.parse(rawSections) } : { ...DEFAULT_SECTIONS };
+
+                const rawTeam = localStorage.getItem(STORAGE_KEYS.team);
+                state.team = rawTeam ? JSON.parse(rawTeam) : [...DEFAULT_TEAM];
+
+                const rawAudit = localStorage.getItem(STORAGE_KEYS.audit);
+                state.auditLogs = rawAudit ? JSON.parse(rawAudit) : [];
+
+                const rawVisitors = localStorage.getItem(STORAGE_KEYS.visitors);
+                state.visitorLogs = rawVisitors ? JSON.parse(rawVisitors) : [];
+            } catch (e) {
+                state.items = [...DEFAULT_ITEMS];
+                state.sections = { ...DEFAULT_SECTIONS };
+                state.team = [...DEFAULT_TEAM];
+                state.auditLogs = [];
+                state.visitorLogs = [];
             }
-            b.innerHTML = `<span>${esc(msg)}</span><button onclick="this.parentElement.classList.add('hidden')" class="text-xs underline ml-4">Dismiss</button>`;
         }
 
-        // Auth Gate
-        document.getElementById("adminUnlockForm").addEventListener("submit", function(e) {
+        function saveLocalState() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.items, JSON.stringify(state.items));
+                localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(state.sections));
+                localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
+                localStorage.setItem(STORAGE_KEYS.audit, JSON.stringify(state.auditLogs));
+                localStorage.setItem(STORAGE_KEYS.visitors, JSON.stringify(state.visitorLogs));
+            } catch (e) {}
+        }
+
+        function postToSheet(payload) {
+            if (!GOOGLE_SCRIPT_URL) return;
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).catch(() => {});
+        }
+
+        function recordChangeAndSync(sectorName, changeType, detailsText, extraPayload = {}) {
+            const timestamp = formatNowBD();
+            const entry = {
+                id: "aud-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
+                timestamp,
+                sector: sectorName,
+                changeType,
+                details: detailsText
+            };
+
+            state.auditLogs.unshift(entry);
+            if (state.auditLogs.length > 200) state.auditLogs.pop();
+
+            saveLocalState();
+            updateDashboardCounts();
+            renderAuditTable();
+
+            postToSheet({
+                action: "logAdminChange",
+                adminUser: ADMIN_AUTH.username,
+                sector: sectorName,
+                changeType,
+                details: detailsText,
+                timestamp,
+                allItems: state.items,
+                sections: state.sections,
+                team: state.team,
+                ...extraPayload
+            });
+
+            document.getElementById("lastSyncTimeLabel").textContent = `Last synced: ${timestamp}`;
+        }
+
+        function switchSector(sectorKey) {
+            state.activeSector = sectorKey;
+            document.querySelectorAll(".admin-sector").forEach(sec => {
+                sec.classList.toggle("hidden", sec.id !== `sector-${sectorKey}`);
+            });
+            document.querySelectorAll(".sector-tab").forEach(btn => {
+                const active = btn.getAttribute("data-sector-tab") === sectorKey;
+                btn.className = active
+                    ? "sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#3B261D] text-white shadow"
+                    : "sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]";
+            });
+        }
+
+        function updateDashboardCounts() {
+            const published = state.items.filter(i => String(i.status || "Published").toLowerCase() !== "draft");
+            const newsCount = published.filter(i => {
+                const c = String(i.category || "").toLowerCase();
+                return c === "news" || c === "press release";
+            }).length;
+            const noticeCount = published.length - newsCount;
+
+            document.getElementById("statNoticeCount").textContent = noticeCount;
+            document.getElementById("statNewsCount").textContent = newsCount;
+            document.getElementById("statAuditCount").textContent = state.auditLogs.length;
+            document.getElementById("statVisitorCount").textContent = state.visitorLogs.length;
+        }
+
+        function setNnFilter(filterVal) {
+            state.nnFilter = filterVal;
+            ["all", "Notice", "News"].forEach(k => {
+                const btn = document.getElementById(`filter-${k}`);
+                if (!btn) return;
+                btn.className = k === filterVal
+                    ? "nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#3B261D] text-white"
+                    : "nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F2E8DF] text-[#3B261D]";
+            });
+            renderNoticeNewsList();
+        }
+
+        function resetNoticeNewsForm() {
+            document.getElementById("nnEditId").value = "";
+            document.getElementById("nnCategory").value = "Notice";
+            document.getElementById("nnStatus").value = "Published";
+            document.getElementById("nnDate").value = formatNowBD();
+            document.getElementById("nnBanner").value = "";
+            document.getElementById("nnTitle").value = "";
+            document.getElementById("nnSummary").value = "";
+            document.getElementById("nnFullContent").value = "";
+            document.getElementById("nnFormHeading").textContent = "Add New Notice or News";
+            document.getElementById("nnSubmitBtn").innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-[#E6B88A]"></i><span>Publish & Save to Spreadsheet</span>`;
+        }
+
+        function editNoticeNewsItem(id) {
+            const found = state.items.find(i => i.id === id);
+            if (!found) return;
+
+            document.getElementById("nnEditId").value = found.id;
+            document.getElementById("nnCategory").value = found.category || "Notice";
+            document.getElementById("nnStatus").value = found.status || "Published";
+            document.getElementById("nnDate").value = found.date || formatNowBD();
+            document.getElementById("nnBanner").value = found.banner || "";
+            document.getElementById("nnTitle").value = found.title || "";
+            document.getElementById("nnSummary").value = found.summary || "";
+            document.getElementById("nnFullContent").value = found.fullContent || "";
+            document.getElementById("nnFormHeading").textContent = "Edit Notice / News";
+            document.getElementById("nnSubmitBtn").innerHTML = `<i class="fa-solid fa-pen-to-square text-[#E6B88A]"></i><span>Update & Sync to Spreadsheet</span>`;
+            switchSector("notices_news");
+            window.scrollTo({ top: 180, behavior: "smooth" });
+        }
+
+        function handleNoticeNewsSubmit(e) {
             e.preventDefault();
-            const op = document.getElementById("adminOperatorName").value.trim() || ADMIN_USERNAME;
-            const pass = document.getElementById("adminPasscodeInput").value;
-            const errEl = document.getElementById("adminAuthError");
-            if (op !== ADMIN_USERNAME || pass !== ADMIN_PASSCODE) {
-                errEl.textContent = "Invalid username or passcode.";
-                errEl.classList.remove("hidden");
+            const editId = document.getElementById("nnEditId").value.trim();
+            const category = document.getElementById("nnCategory").value;
+            const status = document.getElementById("nnStatus").value;
+            const date = document.getElementById("nnDate").value.trim() || formatNowBD();
+            const title = document.getElementById("nnTitle").value.trim();
+            const summary = document.getElementById("nnSummary").value.trim() || title;
+            const fullContent = document.getElementById("nnFullContent").value.trim() || summary;
+            const defaultImg = (category.toLowerCase() === "news" || category.toLowerCase() === "press release") ? "gallery2.jpg" : "gallery1.jpg";
+            const banner = document.getElementById("nnBanner").value.trim() || defaultImg;
+
+            if (!title) return;
+
+            if (editId) {
+                const idx = state.items.findIndex(i => i.id === editId);
+                if (idx !== -1) {
+                    const prevTitle = state.items[idx].title;
+                    state.items[idx] = {
+                        ...state.items[idx],
+                        category,
+                        status,
+                        date,
+                        title,
+                        summary,
+                        fullContent,
+                        banner
+                    };
+                    recordChangeAndSync(
+                        "Notice & News",
+                        "UPDATED",
+                        `Edited [${category}] "${prevTitle}" -> "${title}" (${status})`
+                    );
+                    showToast("Updated & Synced", `"${title}" saved to spreadsheet and live site.`);
+                }
+            } else {
+                const newItem = {
+                    id: "item-" + Date.now(),
+                    category,
+                    status,
+                    date,
+                    title,
+                    banner,
+                    summary,
+                    fullContent
+                };
+                state.items.unshift(newItem);
+                recordChangeAndSync(
+                    "Notice & News",
+                    "ADDED",
+                    `Uploaded new [${category}] "${title}" (${status})`
+                );
+                showToast("Published & Synced", `New ${category} "${title}" added and logged.`);
+            }
+
+            resetNoticeNewsForm();
+            renderAll();
+        }
+
+        function deleteNoticeNewsItem(id) {
+            const target = state.items.find(i => i.id === id);
+            if (!target) return;
+            if (!confirm(`Remove "${target.title}"? This will also be recorded in the spreadsheet.`)) return;
+
+            state.items = state.items.filter(i => i.id !== id);
+            recordChangeAndSync(
+                "Notice & News",
+                "REMOVED",
+                `Deleted [${target.category}] "${target.title}"`
+            );
+            showToast("Removed & Logged", `"${target.title}" removed and recorded in sheet.`);
+            renderAll();
+        }
+
+        function renderNoticeNewsList() {
+            const listEl = document.getElementById("adminNoticeNewsList");
+            const filtered = state.items.filter(item => {
+                if (state.nnFilter === "all") return true;
+                if (state.nnFilter === "News") {
+                    const c = String(item.category || "").toLowerCase();
+                    return c === "news" || c === "press release";
+                }
+                return String(item.category || "").toLowerCase() === "notice";
+            });
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="p-8 text-center rounded-2xl bg-[#F6EFE8] border border-dashed border-[#C4AE99] text-xs text-[#6E5649]">No items in this view yet. Add a Notice or News from the form.</div>`;
                 return;
             }
-            errEl.classList.add("hidden");
-            sessionStorage.setItem("shikhor_admin_unlocked", "1");
-            sessionStorage.setItem("shikhor_admin_operator", ADMIN_USERNAME);
-            enterAdminApp(ADMIN_USERNAME);
-        });
 
-        function lockAdminPanel() {
-            sessionStorage.removeItem("shikhor_admin_unlocked");
-            document.getElementById("adminApp").classList.add("hidden");
-            document.getElementById("adminLockScreen").classList.remove("hidden");
+            listEl.innerHTML = filtered.map(item => {
+                const isNews = String(item.category || "").toLowerCase().includes("news") || String(item.category || "").toLowerCase().includes("press");
+                return `
+                    <div class="p-4 rounded-2xl bg-[#F6EFE8] border border-[#D4C3B3] flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover-lift">
+                        <div class="flex items-start gap-3.5">
+                            <img src="${escapeHtml(item.banner || (isNews ? 'gallery2.jpg' : 'gallery1.jpg'))}" onerror="this.src='${isNews ? 'gallery2.jpg' : 'gallery1.jpg'}'" alt="${escapeHtml(item.title)}" class="w-16 h-16 rounded-xl object-cover border border-[#C4AE99] shrink-0 bg-[#EFE5DC]">
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                                    <span class="px-2 py-0.5 rounded ${isNews ? 'bg-[#8C583A] text-white' : 'bg-[#3B261D] text-[#E6B88A]'}">${escapeHtml(item.category || 'Notice')}</span>
+                                    <span class="px-2 py-0.5 rounded bg-[#FDFBF9] border border-[#D4C3B3] text-[#4F392E]">${escapeHtml(item.status || 'Published')}</span>
+                                    <span class="text-[#6E5649]">${escapeHtml(item.date || '')}</span>
+                                </div>
+                                <h3 class="font-bold font-heading text-base text-[#231712] mt-1">${escapeHtml(item.title)}</h3>
+                                <p class="text-xs text-[#4F392E] line-clamp-1 mt-0.5">${escapeHtml(item.summary || item.fullContent || '')}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+                            <button type="button" onclick="editNoticeNewsItem('${escapeHtml(item.id)}')" class="px-3 py-1.5 rounded-lg bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                                <i class="fa-solid fa-pen mr-1"></i> Edit
+                            </button>
+                            <button type="button" onclick="deleteNoticeNewsItem('${escapeHtml(item.id)}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition">
+                                <i class="fa-solid fa-trash mr-1"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
         }
 
-        function enterAdminApp(opName) {
-            document.getElementById("adminLockScreen").classList.add("hidden");
-            document.getElementById("adminApp").classList.remove("hidden");
-            document.getElementById("operatorNameDisplay").textContent = opName;
-            loadSeedOrCache();
-            renderAll();
-            refreshAllFromSheet();
-        }
+        function renderHeadlinesSector() {
+            const published = state.items.filter(i => String(i.status || "Published").toLowerCase() !== "draft");
+            const previewChips = document.getElementById("adminHeadlinePreviewChips");
+            const listEl = document.getElementById("adminHeadlineList");
 
-        window.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("adminOperatorName").value = ADMIN_USERNAME;
-            if (sessionStorage.getItem("shikhor_admin_unlocked") === "1") {
-                const op = ADMIN_USERNAME;
-                document.getElementById("adminOperatorName").value = op;
-                enterAdminApp(op);
+            if (published.length === 0) {
+                previewChips.innerHTML = `<span class="text-[#D4C3B3]">No published headlines</span>`;
+                listEl.innerHTML = `<p class="text-xs text-[#6E5649]">Publish a Notice or News item to populate the headline bar.</p>`;
+                return;
             }
-        });
 
-        function loadSeedOrCache() {
-            const cached = localStorage.getItem(STORAGE_KEY);
-            if (cached) {
-                try {
-                    const parsed = JSON.parse(cached);
-                    state = { ...state, ...parsed };
-                    return;
-                } catch (_) {}
-            }
-            state.news = [{
-                ID: "NEWS_WELCOME_1",
-                Headline: "Shikhor Foundation Expands Community Care & Live Dispatch Desk",
-                Category: "Live Update",
-                DateTime: "24 Nov 2026 • Live Desk",
-                IsLive: "Yes",
-                ImageURL: "gallery1.jpg",
-                Summary: "Our volunteer network is actively coordinating local assistance, winter drives, and educational outreach with full transparency.",
-                Content: "Shikhor Foundation continues to stand beside families and students across communities."
-            }];
-            state.stats = [
-                { ID: "STAT_1", "Metric Name": "Families Supported", Value: "100+", "Unit / Label": "Families", Category: "Impact", "Display Order": 1, Status: "Active" },
-                { ID: "STAT_2", "Metric Name": "Active Volunteers", Value: "50+", "Unit / Label": "Volunteers", Category: "Impact", "Display Order": 2, Status: "Active" },
-                { ID: "STAT_3", "Metric Name": "Successful Events", Value: "10+", "Unit / Label": "Events", Category: "Impact", "Display Order": 3, Status: "Active" }
-            ];
+            previewChips.innerHTML = published.map(p => `
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#3B261D] text-[#E6B88A]">
+                    <strong class="text-[10px] uppercase">${escapeHtml(p.category)}</strong>
+                    <span>${escapeHtml(p.title)}</span>
+                </span>
+            `).join("");
+
+            listEl.innerHTML = published.map((p, idx) => `
+                <div class="p-4 rounded-2xl bg-[#F6EFE8] border border-[#D4C3B3] flex items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase text-[#8C583A]">#${idx + 1} • ${escapeHtml(p.category)}</span>
+                        <h4 class="font-bold text-sm text-[#231712] mt-0.5">${escapeHtml(p.title)}</h4>
+                    </div>
+                    <button type="button" onclick="editNoticeNewsItem('${escapeHtml(p.id)}')" class="px-3 py-1.5 rounded-lg bg-[#3B261D] text-white text-xs font-bold shrink-0">
+                        Edit Headline
+                    </button>
+                </div>
+            `).join("");
         }
 
-        function saveCache() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        function populateSectionsForm() {
+            document.getElementById("secFamiliesCount").value = state.sections.familiesCount || "";
+            document.getElementById("secVolunteersCount").value = state.sections.volunteersCount || "";
+            document.getElementById("secEventsCount").value = state.sections.eventsCount || "";
+            document.getElementById("secHeroTitle").value = state.sections.heroTitle || "";
+            document.getElementById("secHeroSubtitle").value = state.sections.heroSubtitle || "";
+            document.getElementById("secAboutText").value = state.sections.aboutText || "";
+            document.getElementById("secDonationNumber").value = state.sections.donationNumber || "";
         }
 
-        function switchAdminTab(tabName) {
-            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-            document.getElementById(`tab-${tabName}`).classList.add("active");
-            document.querySelectorAll(".admin-panel").forEach(p => p.classList.add("hidden"));
-            document.getElementById(`panel-${tabName}`).classList.remove("hidden");
-        }
-
-        // Compute exact field-by-field diff for Change Log
-        function buildChangeDetails(oldObj, newObj) {
-            if (!oldObj) {
-                const pairs = Object.entries(newObj || {})
-                    .filter(([_, v]) => cleanVal(v) !== "")
-                    .map(([k, v]) => `${k}: "${cleanVal(v)}"`);
-                return `Created record (${pairs.join(", ")})`;
-            }
-            if (!newObj) {
-                const pairs = Object.entries(oldObj || {})
-                    .filter(([_, v]) => cleanVal(v) !== "")
-                    .map(([k, v]) => `${k}: "${cleanVal(v)}"`);
-                return `Deleted record (${pairs.join(", ")})`;
-            }
-            const diffs = [];
-            const keys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
-            keys.forEach(k => {
-                if (k === "ID" || k === "Member ID" || k === "Event ID" || k === "Transaction ID" || k === "Image ID") return;
-                const prevV = cleanVal(oldObj[k], "—");
-                const nextV = cleanVal(newObj[k], "—");
-                if (prevV !== nextV) {
-                    diffs.push(`${k}: "${prevV}" → "${nextV}"`);
-                }
-            });
-            return diffs.length ? diffs.join(" | ") : "Saved with no field changes";
-        }
-
-        // Send mutation + detailed change log entry to Google Sheet
-        function postSheetMutation(section, actionType, recordId, targetLabel, oldData, newData, collectionKey) {
-            const operator = sessionStorage.getItem("shikhor_admin_operator") || ADMIN_USERNAME;
-            const now = new Date();
-            const timestamp = now.toLocaleString("en-GB", { hour12: false });
-            const changeSummary = buildChangeDetails(oldData, newData);
-
-            const auditEntry = {
-                timestamp,
-                operator,
-                section,
-                action: actionType,
-                recordId,
-                target: targetLabel,
-                changeSummary,
-                beforeJson: oldData ? JSON.stringify(oldData) : "",
-                afterJson: newData ? JSON.stringify(newData) : ""
+        function handleSiteSectionsSave(e) {
+            e.preventDefault();
+            state.sections = {
+                familiesCount: document.getElementById("secFamiliesCount").value.trim() || "100+",
+                volunteersCount: document.getElementById("secVolunteersCount").value.trim() || "50+",
+                eventsCount: document.getElementById("secEventsCount").value.trim() || "10+",
+                heroTitle: document.getElementById("secHeroTitle").value.trim(),
+                heroSubtitle: document.getElementById("secHeroSubtitle").value.trim(),
+                aboutText: document.getElementById("secAboutText").value.trim(),
+                donationNumber: document.getElementById("secDonationNumber").value.trim() || "+8801956631465"
             };
 
-            sessionAuditLogs.unshift(auditEntry);
-            localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify(sessionAuditLogs.slice(0, 200)));
-
-            const payload = {
-                type: "admin_change",
-                actionType: actionType,          // CREATE / UPDATE / DELETE
-                section: section,                // News / Stats / Events / Funding / Team / Gallery
-                targetSheet: section,
-                recordId: recordId,
-                targetLabel: targetLabel,
-                changedBy: operator,
-                timestamp: timestamp,
-                changeSummary: changeSummary,
-                beforeData: oldData || null,
-                afterData: newData || null,
-                updatedCollection: state[collectionKey] || []
-            };
-
-            if (GOOGLE_SCRIPT_URL) {
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                }).catch(err => console.log("Sheet sync error:", err));
-            }
-
-            saveCache();
-            renderAll();
-            showBanner(`${actionType} in ${section} ("${targetLabel}") — Change logged for spreadsheet: ${changeSummary}`, false);
+            recordChangeAndSync(
+                "Site Sections & Stats",
+                "UPDATED",
+                `Updated stats (${state.sections.familiesCount} families, ${state.sections.volunteersCount} volunteers, ${state.sections.eventsCount} events) & section content`
+            );
+            showToast("Sections Saved", "Site section updates saved and synced to spreadsheet.");
         }
 
-        async function refreshAllFromSheet() {
-            if (!GOOGLE_SCRIPT_URL) return;
+        function handleTeamAdd(e) {
+            e.preventDefault();
+            const name = document.getElementById("tmName").value.trim();
+            const role = document.getElementById("tmRole").value.trim();
+            const photo = document.getElementById("tmPhoto").value.trim() || "logo.png";
+            if (!name || !role) return;
+
+            state.team.push({ id: "tm-" + Date.now(), name, role, photo });
+            document.getElementById("teamMemberForm").reset();
+
+            recordChangeAndSync(
+                "Team & Panel",
+                "ADDED",
+                `Added team member "${name}" (${role})`
+            );
+            showToast("Team Member Added", `"${name}" added and logged.`);
+            renderTeamList();
+        }
+
+        function deleteTeamMember(id) {
+            const member = state.team.find(m => m.id === id);
+            if (!member) return;
+            if (!confirm(`Remove ${member.name} from panel?`)) return;
+
+            state.team = state.team.filter(m => m.id !== id);
+            recordChangeAndSync(
+                "Team & Panel",
+                "REMOVED",
+                `Removed team member "${member.name}" (${member.role})`
+            );
+            showToast("Team Member Removed", `"${member.name}" removed and logged.`);
+            renderTeamList();
+        }
+
+        function renderTeamList() {
+            const el = document.getElementById("adminTeamList");
+            el.innerHTML = state.team.map(m => `
+                <div class="p-4 rounded-2xl bg-[#F6EFE8] border border-[#D4C3B3] text-center flex flex-col justify-between gap-3">
+                    <div>
+                        <img src="${escapeHtml(m.photo || 'logo.png')}" onerror="this.src='logo.png'" alt="${escapeHtml(m.name)}" class="w-16 h-16 rounded-2xl object-cover mx-auto border border-[#B88655] mb-2 bg-[#FDFBF9]">
+                        <h4 class="font-bold font-heading text-sm text-[#231712]">${escapeHtml(m.name)}</h4>
+                        <p class="text-[11px] font-semibold text-[#8C583A] mt-0.5">${escapeHtml(m.role)}</p>
+                    </div>
+                    <button type="button" onclick="deleteTeamMember('${escapeHtml(m.id)}')" class="w-full py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[11px] font-bold transition">
+                        Remove Member
+                    </button>
+                </div>
+            `).join("");
+        }
+
+        function renderAuditTable() {
+            const tbody = document.getElementById("auditLogTableBody");
+            if (state.auditLogs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-8 px-4 text-center text-[#6E5649] text-xs">No changes recorded yet. Add, edit, or delete an item to see live proof here and in your spreadsheet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = state.auditLogs.map(log => {
+                const badgeColor = log.changeType === "REMOVED"
+                    ? "bg-red-100 text-red-800 border-red-200"
+                    : log.changeType === "UPDATED"
+                    ? "bg-amber-100 text-amber-900 border-amber-200"
+                    : "bg-emerald-100 text-emerald-800 border-emerald-200";
+                return `
+                    <tr class="hover:bg-[#F6EFE8]/60">
+                        <td class="py-3 px-4 text-xs text-[#5C3D2E] whitespace-nowrap">${escapeHtml(log.timestamp)}</td>
+                        <td class="py-3 px-4 font-bold text-xs text-[#231712] whitespace-nowrap">${escapeHtml(log.sector)}</td>
+                        <td class="py-3 px-4 whitespace-nowrap">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border ${badgeColor}">${escapeHtml(log.changeType)}</span>
+                        </td>
+                        <td class="py-3 px-4 text-xs text-[#3B261D]">${escapeHtml(log.details)}</td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        function renderVisitorTable() {
+            const tbody = document.getElementById("visitorLogTableBody");
+            if (!Array.isArray(state.visitorLogs) || state.visitorLogs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="py-8 px-4 text-center text-[#6E5649] text-xs">Visitor logs from your Google Sheet will appear here when synced.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = state.visitorLogs.slice(0, 100).map(v => {
+                const timeVal = v["Timestamp"] || v["timestamp"] || v["Date"] || "";
+                const statusVal = v["Status"] || v["status"] || v["Type"] || "Public Visitor";
+                const devVal = v["Device Info"] || v["deviceInfo"] || v["Device"] || "";
+                return `
+                    <tr class="hover:bg-[#F6EFE8]/60">
+                        <td class="py-3 px-4 text-xs text-[#5C3D2E] whitespace-nowrap">${escapeHtml(timeVal)}</td>
+                        <td class="py-3 px-4 text-xs font-bold text-[#231712]">${escapeHtml(statusVal)}</td>
+                        <td class="py-3 px-4 text-xs text-[#3B261D]">${escapeHtml(devVal)}</td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        async function syncAllWithSheet(showFeedback = false) {
+            const spin = document.getElementById("syncSpinIcon");
+            if (spin) spin.classList.add("fa-spin");
+
             try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&t=${Date.now()}`);
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAdminData&t=${Date.now()}`);
                 const data = await res.json();
-                if (!data) return;
-                if (Array.isArray(data.news)) state.news = data.news;
-                if (Array.isArray(data.stats)) state.stats = data.stats;
-                if (Array.isArray(data.events)) state.events = data.events;
-                if (Array.isArray(data.funding)) state.funding = data.funding;
-                if (Array.isArray(data.team)) state.team = data.team;
-                if (Array.isArray(data.gallery)) state.gallery = data.gallery;
-                if (Array.isArray(data.visits)) state.visits = data.visits;
-                saveCache();
-                renderAll();
-            } catch (_) {
-                // Keep local state if endpoint doesn't return JSON yet
+                if (data && data.success) {
+                    if (Array.isArray(data.notice) && data.notice.length > 0) {
+                        state.items = data.notice.map((row, i) => ({
+                            id: row["Notice ID"] || row["id"] || ("sheet-item-" + i),
+                            category: row["Category"] || "Notice",
+                            status: row["Status"] || "Published",
+                            date: row["Publish Date"] || "",
+                            title: row["Headline / Title"] || row["Title"] || "Untitled",
+                            banner: row["Image URL"] || row["Banner"] || "",
+                            summary: row["Summary"] || "",
+                            fullContent: row["Full Content"] || row["Content"] || row["Summary"] || ""
+                        }));
+                    }
+                    if (Array.isArray(data.visitors) && data.visitors.length > 0) {
+                        state.visitorLogs = data.visitors;
+                    }
+                    if (Array.isArray(data.auditLogs) && data.auditLogs.length > 0) {
+                        state.auditLogs = data.auditLogs.map((r, i) => ({
+                            id: "sheet-aud-" + i,
+                            timestamp: r["Timestamp"] || r["Date"] || "",
+                            sector: r["Sector"] || "General",
+                            changeType: r["Change Type"] || r["Action"] || "LOG",
+                            details: r["Details"] || ""
+                        }));
+                    }
+                    saveLocalState();
+                    renderAll();
+                    document.getElementById("lastSyncTimeLabel").textContent = `Last synced: ${formatNowBD()}`;
+                    if (showFeedback) showToast("Synced with Sheet", "Latest spreadsheet data loaded.");
+                } else if (showFeedback) {
+                    showToast("Local & Sheet Ready", "Local changes are saved; deploy updated Apps Script for full readback.");
+                }
+            } catch (err) {
+                if (showFeedback) showToast("Offline / Local Cache Active", "Changes are saved locally and queued via no-cors POST.", true);
+            } finally {
+                if (spin) spin.classList.remove("fa-spin");
             }
+        }
+
+        function clearLocalAuditView() {
+            if (!confirm("Clear local audit table view? (Spreadsheet records remain intact)")) return;
+            state.auditLogs = [];
+            saveLocalState();
+            renderAuditTable();
+            updateDashboardCounts();
         }
 
         function renderAll() {
-            renderKPIs();
-            renderNewsTable();
-            renderStatsTable();
-            renderEventsTable();
-            renderFundingTable();
-            renderTeamTable();
-            renderGalleryTable();
-            renderAuditAndVisits();
+            updateDashboardCounts();
+            renderNoticeNewsList();
+            renderHeadlinesSector();
+            populateSectionsForm();
+            renderTeamList();
+            renderAuditTable();
+            renderVisitorTable();
         }
 
-        function renderKPIs() {
-            document.getElementById("kpiVisits").textContent = state.visits.length ? state.visits.length : "82+";
-            document.getElementById("kpiNews").textContent = state.news.length;
-            const totalFunding = state.funding.reduce((sum, item) => sum + (Number(cleanVal(item["Amount (BDT)"] || item.Amount || item.amount, 0)) || 0), 0);
-            document.getElementById("kpiFunding").textContent = `৳${totalFunding.toLocaleString()}`;
-            document.getElementById("kpiSessionLogs").textContent = sessionAuditLogs.length;
-        }
-
-        // NEWS CRUD
-        document.getElementById("newsForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const existingId = document.getElementById("newsRowId").value;
-            const isEdit = Boolean(existingId);
-            const oldItem = isEdit ? state.news.find(n => cleanVal(n.ID || n.id) === existingId) : null;
-
-            const record = {
-                ID: isEdit ? existingId : `NEWS_${Date.now()}`,
-                Headline: document.getElementById("newsHeadline").value.trim(),
-                Category: document.getElementById("newsCategory").value,
-                DateTime: document.getElementById("newsDateTime").value.trim() || new Date().toLocaleString("en-GB", { hour12: false }),
-                IsLive: document.getElementById("newsIsLive").value,
-                ImageURL: document.getElementById("newsImageURL").value.trim(),
-                Summary: document.getElementById("newsSummary").value.trim(),
-                Content: document.getElementById("newsContent").value.trim()
-            };
-
-            if (isEdit) {
-                state.news = state.news.map(n => cleanVal(n.ID || n.id) === existingId ? record : n);
-            } else {
-                state.news.unshift(record);
-            }
-
-            resetNewsForm();
-            postSheetMutation("News", isEdit ? "UPDATE" : "CREATE", record.ID, record.Headline, oldItem, record, "news");
+        window.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("scriptEndpointPreview").textContent = GOOGLE_SCRIPT_URL;
+            document.getElementById("nnDate").value = formatNowBD();
+            const isLoggedIn = sessionStorage.getItem(ADMIN_AUTH.sessionKey) === "1";
+            setAuthView(isLoggedIn);
         });
-
-        function editNews(id) {
-            const item = state.news.find(n => cleanVal(n.ID || n.id) === id);
-            if (!item) return;
-            document.getElementById("newsRowId").value = cleanVal(item.ID || item.id);
-            document.getElementById("newsHeadline").value = cleanVal(item.Headline || item.headline || item.Title);
-            document.getElementById("newsCategory").value = cleanVal(item.Category || item.category, "Other News");
-            document.getElementById("newsIsLive").value = cleanVal(item.IsLive || item.islive, "No");
-            document.getElementById("newsDateTime").value = cleanVal(item.DateTime || item.datetime || item.Date);
-            document.getElementById("newsImageURL").value = cleanVal(item.ImageURL || item.image);
-            document.getElementById("newsSummary").value = cleanVal(item.Summary || item.summary);
-            document.getElementById("newsContent").value = cleanVal(item.Content || item.content);
-            document.getElementById("newsFormTitle").textContent = "Edit News Entry";
-        }
-
-        function deleteNews(id) {
-            const item = state.news.find(n => cleanVal(n.ID || n.id) === id);
-            if (!item) return;
-            state.news = state.news.filter(n => cleanVal(n.ID || n.id) !== id);
-            postSheetMutation("News", "DELETE", id, cleanVal(item.Headline || item.title, id), item, null, "news");
-        }
-
-        function resetNewsForm() {
-            document.getElementById("newsForm").reset();
-            document.getElementById("newsRowId").value = "";
-            document.getElementById("newsFormTitle").textContent = "Add / Edit News";
-        }
-
-        function renderNewsTable() {
-            const tbody = document.getElementById("newsTableBody");
-            if (!state.news.length) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-[#6E5649]">No news entries yet.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.news.map(item => {
-                const id = cleanVal(item.ID || item.id);
-                const headline = cleanVal(item.Headline || item.headline || item.Title, "Untitled");
-                const cat = cleanVal(item.Category || item.category, "Other News");
-                const isLive = cleanVal(item.IsLive || item.islive, "No");
-                const dt = cleanVal(item.DateTime || item.datetime || item.Date, "—");
-                return `
-                    <tr>
-                        <td class="py-2.5 px-2 font-semibold">${esc(headline)}</td>
-                        <td class="py-2.5 px-2">${esc(cat)}</td>
-                        <td class="py-2.5 px-2">${esc(isLive)}</td>
-                        <td class="py-2.5 px-2 text-[#6E5649]">${esc(dt)}</td>
-                        <td class="py-2.5 px-2 text-right whitespace-nowrap">
-                            <button onclick="editNews('${esc(id)}')" class="px-2.5 py-1 bg-[#EFE5DC] hover:bg-[#E2D3C5] rounded-lg font-bold mr-1">Edit</button>
-                            <button onclick="deleteNews('${esc(id)}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg font-bold">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        // STATS CRUD
-        document.getElementById("statsForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const existingId = document.getElementById("statsRowId").value;
-            const isEdit = Boolean(existingId);
-            const oldItem = isEdit ? state.stats.find(s => cleanVal(s.ID || s.id) === existingId) : null;
-
-            const record = {
-                ID: isEdit ? existingId : `STAT_${Date.now()}`,
-                "Metric Name": document.getElementById("statMetricName").value.trim(),
-                Value: document.getElementById("statValue").value.trim(),
-                "Unit / Label": document.getElementById("statUnit").value.trim(),
-                Category: document.getElementById("statCategory").value.trim() || "Impact",
-                "Display Order": Number(document.getElementById("statOrder").value || 1),
-                Status: document.getElementById("statStatus").value
-            };
-
-            if (isEdit) {
-                state.stats = state.stats.map(s => cleanVal(s.ID || s.id) === existingId ? record : s);
-            } else {
-                state.stats.push(record);
-            }
-
-            resetStatsForm();
-            postSheetMutation("Stats", isEdit ? "UPDATE" : "CREATE", record.ID, record["Metric Name"], oldItem, record, "stats");
-        });
-
-        function editStats(id) {
-            const item = state.stats.find(s => cleanVal(s.ID || s.id) === id);
-            if (!item) return;
-            document.getElementById("statsRowId").value = cleanVal(item.ID || item.id);
-            document.getElementById("statMetricName").value = cleanVal(item["Metric Name"] || item.MetricName);
-            document.getElementById("statValue").value = cleanVal(item.Value || item.value);
-            document.getElementById("statUnit").value = cleanVal(item["Unit / Label"] || item.unit);
-            document.getElementById("statCategory").value = cleanVal(item.Category || item.category, "Impact");
-            document.getElementById("statOrder").value = cleanVal(item["Display Order"] || item.DisplayOrder, 1);
-            document.getElementById("statStatus").value = cleanVal(item.Status || item.status, "Active");
-            document.getElementById("statsFormTitle").textContent = "Edit Impact Stat";
-        }
-
-        function deleteStats(id) {
-            const item = state.stats.find(s => cleanVal(s.ID || s.id) === id);
-            if (!item) return;
-            state.stats = state.stats.filter(s => cleanVal(s.ID || s.id) !== id);
-            postSheetMutation("Stats", "DELETE", id, cleanVal(item["Metric Name"] || item.MetricName, id), item, null, "stats");
-        }
-
-        function resetStatsForm() {
-            document.getElementById("statsForm").reset();
-            document.getElementById("statsRowId").value = "";
-            document.getElementById("statsFormTitle").textContent = "Add / Edit Impact Stat";
-        }
-
-        function renderStatsTable() {
-            const tbody = document.getElementById("statsTableBody");
-            if (!state.stats.length) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-[#6E5649]">No stats configured yet.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.stats.map(item => {
-                const id = cleanVal(item.ID || item.id);
-                const name = cleanVal(item["Metric Name"] || item.MetricName, "Metric");
-                const val = cleanVal(item.Value || item.value, "0");
-                const ord = cleanVal(item["Display Order"] || item.DisplayOrder, "1");
-                const st = cleanVal(item.Status || item.status, "Active");
-                return `
-                    <tr>
-                        <td class="py-2.5 px-2 font-semibold">${esc(name)}</td>
-                        <td class="py-2.5 px-2 font-bold text-[#8C583A]">${esc(val)}</td>
-                        <td class="py-2.5 px-2">${esc(ord)}</td>
-                        <td class="py-2.5 px-2">${esc(st)}</td>
-                        <td class="py-2.5 px-2 text-right whitespace-nowrap">
-                            <button onclick="editStats('${esc(id)}')" class="px-2.5 py-1 bg-[#EFE5DC] hover:bg-[#E2D3C5] rounded-lg font-bold mr-1">Edit</button>
-                            <button onclick="deleteStats('${esc(id)}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg font-bold">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        // EVENTS CRUD
-        document.getElementById("eventsForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const existingId = document.getElementById("eventRowId").value;
-            const isEdit = Boolean(existingId);
-            const oldItem = isEdit ? state.events.find(ev => cleanVal(ev["Event ID"] || ev.EventID || ev.ID) === existingId) : null;
-
-            const record = {
-                "Event ID": isEdit ? existingId : `EVT_${Date.now()}`,
-                Title: document.getElementById("eventTitle").value.trim(),
-                Category: document.getElementById("eventCategory").value.trim(),
-                Date: document.getElementById("eventDate").value.trim(),
-                Time: document.getElementById("eventTime").value.trim(),
-                Location: document.getElementById("eventLocation").value.trim(),
-                Description: document.getElementById("eventDescription").value.trim(),
-                "Image URL": document.getElementById("eventImageURL").value.trim(),
-                Status: document.getElementById("eventStatus").value,
-                Coordinator: document.getElementById("eventCoordinator").value.trim()
-            };
-
-            if (isEdit) {
-                state.events = state.events.map(ev => cleanVal(ev["Event ID"] || ev.EventID || ev.ID) === existingId ? record : ev);
-            } else {
-                state.events.unshift(record);
-            }
-
-            resetEventsForm();
-            postSheetMutation("Events", isEdit ? "UPDATE" : "CREATE", record["Event ID"], record.Title, oldItem, record, "events");
-        });
-
-        function editEvent(id) {
-            const item = state.events.find(ev => cleanVal(ev["Event ID"] || ev.EventID || ev.ID) === id);
-            if (!item) return;
-            document.getElementById("eventRowId").value = cleanVal(item["Event ID"] || item.EventID || item.ID);
-            document.getElementById("eventTitle").value = cleanVal(item.Title || item.title);
-            document.getElementById("eventCategory").value = cleanVal(item.Category || item.category);
-            document.getElementById("eventDate").value = cleanVal(item.Date || item.date);
-            document.getElementById("eventTime").value = cleanVal(item.Time || item.time);
-            document.getElementById("eventLocation").value = cleanVal(item.Location || item.location);
-            document.getElementById("eventCoordinator").value = cleanVal(item.Coordinator || item.coordinator);
-            document.getElementById("eventImageURL").value = cleanVal(item["Image URL"] || item.ImageURL);
-            document.getElementById("eventStatus").value = cleanVal(item.Status || item.status, "Upcoming");
-            document.getElementById("eventDescription").value = cleanVal(item.Description || item.description);
-            document.getElementById("eventsFormTitle").textContent = "Edit Event";
-        }
-
-        function deleteEvent(id) {
-            const item = state.events.find(ev => cleanVal(ev["Event ID"] || ev.EventID || ev.ID) === id);
-            if (!item) return;
-            state.events = state.events.filter(ev => cleanVal(ev["Event ID"] || ev.EventID || ev.ID) !== id);
-            postSheetMutation("Events", "DELETE", id, cleanVal(item.Title || item.title, id), item, null, "events");
-        }
-
-        function resetEventsForm() {
-            document.getElementById("eventsForm").reset();
-            document.getElementById("eventRowId").value = "";
-            document.getElementById("eventsFormTitle").textContent = "Add / Edit Event";
-        }
-
-        function renderEventsTable() {
-            const tbody = document.getElementById("eventsTableBody");
-            if (!state.events.length) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-[#6E5649]">No events yet.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.events.map(item => {
-                const id = cleanVal(item["Event ID"] || item.EventID || item.ID);
-                const title = cleanVal(item.Title || item.title, "Event");
-                const dt = cleanVal(item.Date || item.date, "—");
-                const loc = cleanVal(item.Location || item.location, "—");
-                const st = cleanVal(item.Status || item.status, "Active");
-                return `
-                    <tr>
-                        <td class="py-2.5 px-2 font-semibold">${esc(title)}</td>
-                        <td class="py-2.5 px-2">${esc(dt)}</td>
-                        <td class="py-2.5 px-2">${esc(loc)}</td>
-                        <td class="py-2.5 px-2">${esc(st)}</td>
-                        <td class="py-2.5 px-2 text-right whitespace-nowrap">
-                            <button onclick="editEvent('${esc(id)}')" class="px-2.5 py-1 bg-[#EFE5DC] hover:bg-[#E2D3C5] rounded-lg font-bold mr-1">Edit</button>
-                            <button onclick="deleteEvent('${esc(id)}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg font-bold">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        // FUNDING CRUD
-        document.getElementById("fundingForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const existingId = document.getElementById("fundingRowId").value;
-            const isEdit = Boolean(existingId);
-            const oldItem = isEdit ? state.funding.find(f => cleanVal(f["Transaction ID"] || f.TransactionID || f.ID) === existingId) : null;
-
-            const record = {
-                "Transaction ID": isEdit ? existingId : `TXN_${Date.now()}`,
-                Date: document.getElementById("fundingDate").value.trim(),
-                "Donor Name": document.getElementById("fundingDonor").value.trim(),
-                "Contact / Phone": document.getElementById("fundingPhone").value.trim(),
-                "Payment Method": document.getElementById("fundingMethod").value,
-                "Amount (BDT)": Number(document.getElementById("fundingAmount").value || 0),
-                "Campaign / Purpose": document.getElementById("fundingCampaign").value.trim(),
-                "TrxID / Reference": document.getElementById("fundingTrx").value.trim(),
-                Status: document.getElementById("fundingStatus").value,
-                Notes: document.getElementById("fundingNotes").value.trim()
-            };
-
-            if (isEdit) {
-                state.funding = state.funding.map(f => cleanVal(f["Transaction ID"] || f.TransactionID || f.ID) === existingId ? record : f);
-            } else {
-                state.funding.unshift(record);
-            }
-
-            resetFundingForm();
-            postSheetMutation("Funding", isEdit ? "UPDATE" : "CREATE", record["Transaction ID"], `${record["Donor Name"]} (৳${record["Amount (BDT)"]})`, oldItem, record, "funding");
-        });
-
-        function editFunding(id) {
-            const item = state.funding.find(f => cleanVal(f["Transaction ID"] || f.TransactionID || f.ID) === id);
-            if (!item) return;
-            document.getElementById("fundingRowId").value = cleanVal(item["Transaction ID"] || item.TransactionID || item.ID);
-            document.getElementById("fundingDate").value = cleanVal(item.Date || item.date);
-            document.getElementById("fundingDonor").value = cleanVal(item["Donor Name"] || item.DonorName);
-            document.getElementById("fundingPhone").value = cleanVal(item["Contact / Phone"] || item.Phone);
-            document.getElementById("fundingMethod").value = cleanVal(item["Payment Method"] || item.Method, "bKash");
-            document.getElementById("fundingAmount").value = cleanVal(item["Amount (BDT)"] || item.Amount, 0);
-            document.getElementById("fundingCampaign").value = cleanVal(item["Campaign / Purpose"] || item.Campaign);
-            document.getElementById("fundingTrx").value = cleanVal(item["TrxID / Reference"] || item.TrxID);
-            document.getElementById("fundingStatus").value = cleanVal(item.Status || item.status, "Verified");
-            document.getElementById("fundingNotes").value = cleanVal(item.Notes || item.notes);
-            document.getElementById("fundingFormTitle").textContent = "Edit Funding Entry";
-        }
-
-        function deleteFunding(id) {
-            const item = state.funding.find(f => cleanVal(f["Transaction ID"] || f.TransactionID || f.ID) === id);
-            if (!item) return;
-            state.funding = state.funding.filter(f => cleanVal(f["Transaction ID"] || f.TransactionID || f.ID) !== id);
-            postSheetMutation("Funding", "DELETE", id, cleanVal(item["Donor Name"] || item.DonorName, id), item, null, "funding");
-        }
-
-        function resetFundingForm() {
-            document.getElementById("fundingForm").reset();
-            document.getElementById("fundingRowId").value = "";
-            document.getElementById("fundingFormTitle").textContent = "Add / Edit Funding Entry";
-        }
-
-        function renderFundingTable() {
-            const tbody = document.getElementById("fundingTableBody");
-            if (!state.funding.length) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-[#6E5649]">No funding entries yet.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.funding.map(item => {
-                const id = cleanVal(item["Transaction ID"] || item.TransactionID || item.ID);
-                const dt = cleanVal(item.Date || item.date, "—");
-                const donor = cleanVal(item["Donor Name"] || item.DonorName, "Donor");
-                const method = cleanVal(item["Payment Method"] || item.Method, "—");
-                const amt = Number(cleanVal(item["Amount (BDT)"] || item.Amount, 0) || 0).toLocaleString();
-                const st = cleanVal(item.Status || item.status, "Verified");
-                return `
-                    <tr>
-                        <td class="py-2.5 px-2">${esc(dt)}</td>
-                        <td class="py-2.5 px-2 font-semibold">${esc(donor)}</td>
-                        <td class="py-2.5 px-2">${esc(method)}</td>
-                        <td class="py-2.5 px-2 font-bold text-[#8C583A]">৳${esc(amt)}</td>
-                        <td class="py-2.5 px-2">${esc(st)}</td>
-                        <td class="py-2.5 px-2 text-right whitespace-nowrap">
-                            <button onclick="editFunding('${esc(id)}')" class="px-2.5 py-1 bg-[#EFE5DC] hover:bg-[#E2D3C5] rounded-lg font-bold mr-1">Edit</button>
-                            <button onclick="deleteFunding('${esc(id)}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg font-bold">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        // TEAM CRUD
-        document.getElementById("teamForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const existingId = document.getElementById("teamRowId").value;
-            const isEdit = Boolean(existingId);
-            const oldItem = isEdit ? state.team.find(m => cleanVal(m["Member ID"] || m.MemberID || m.ID) === existingId) : null;
-
-            const record = {
-                "Member ID": isEdit ? existingId : `MEM_${Date.now()}`,
-                "Full Name": document.getElementById("teamName").value.trim(),
-                Designation: document.getElementById("teamDesignation").value.trim(),
-                "Department / Role": document.getElementById("teamDept").value.trim(),
-                "Phone Number": document.getElementById("teamPhone").value.trim(),
-                "Email Address": document.getElementById("teamEmail").value.trim(),
-                "Blood Group": document.getElementById("teamBlood").value.trim(),
-                "Join Date": document.getElementById("teamJoinDate").value.trim(),
-                "Photo URL": document.getElementById("teamPhoto").value.trim(),
-                Status: document.getElementById("teamStatus").value,
-                "Bio / Remarks": document.getElementById("teamBio").value.trim()
-            };
-
-            if (isEdit) {
-                state.team = state.team.map(m => cleanVal(m["Member ID"] || m.MemberID || m.ID) === existingId ? record : m);
-            } else {
-                state.team.push(record);
-            }
-
-            resetTeamForm();
-            postSheetMutation("Team", isEdit ? "UPDATE" : "CREATE", record["Member ID"], record["Full Name"], oldItem, record, "team");
-        });
-
-        function editTeam(id) {
-            const item = state.team.find(m => cleanVal(m["Member ID"] || m.MemberID || m.ID) === id);
-            if (!item) return;
-            document.getElementById("teamRowId").value = cleanVal(item["Member ID"] || item.MemberID || item.ID);
-            document.getElementById("teamName").value = cleanVal(item["Full Name"] || item.FullName);
-            document.getElementById("teamDesignation").value = cleanVal(item.Designation || item.designation);
-            document.getElementById("teamDept").value = cleanVal(item["Department / Role"] || item.Department);
-            document.getElementById("teamPhone").value = cleanVal(item["Phone Number"] || item.Phone);
-            document.getElementById("teamEmail").value = cleanVal(item["Email Address"] || item.Email);
-            document.getElementById("teamBlood").value = cleanVal(item["Blood Group"] || item.BloodGroup);
-            document.getElementById("teamJoinDate").value = cleanVal(item["Join Date"] || item.JoinDate);
-            document.getElementById("teamPhoto").value = cleanVal(item["Photo URL"] || item.PhotoURL);
-            document.getElementById("teamStatus").value = cleanVal(item.Status || item.status, "Active");
-            document.getElementById("teamBio").value = cleanVal(item["Bio / Remarks"] || item.Bio);
-            document.getElementById("teamFormTitle").textContent = "Edit Team Member";
-        }
-
-        function deleteTeam(id) {
-            const item = state.team.find(m => cleanVal(m["Member ID"] || m.MemberID || m.ID) === id);
-            if (!item) return;
-            state.team = state.team.filter(m => cleanVal(m["Member ID"] || m.MemberID || m.ID) !== id);
-            postSheetMutation("Team", "DELETE", id, cleanVal(item["Full Name"] || item.FullName, id), item, null, "team");
-        }
-
-        function resetTeamForm() {
-            document.getElementById("teamForm").reset();
-            document.getElementById("teamRowId").value = "";
-            document.getElementById("teamFormTitle").textContent = "Add / Edit Team Member";
-        }
-
-        function renderTeamTable() {
-            const tbody = document.getElementById("teamTableBody");
-            if (!state.team.length) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-[#6E5649]">Sync sheet to load team directory or add a member.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.team.map(item => {
-                const id = cleanVal(item["Member ID"] || item.MemberID || item.ID);
-                const name = cleanVal(item["Full Name"] || item.FullName, "Member");
-                const desig = cleanVal(item.Designation || item.designation, "—");
-                const dept = cleanVal(item["Department / Role"] || item.Department, "—");
-                const st = cleanVal(item.Status || item.status, "Active");
-                return `
-                    <tr>
-                        <td class="py-2.5 px-2 font-semibold">${esc(name)}</td>
-                        <td class="py-2.5 px-2">${esc(desig)}</td>
-                        <td class="py-2.5 px-2">${esc(dept)}</td>
-                        <td class="py-2.5 px-2">${esc(st)}</td>
-                        <td class="py-2.5 px-2 text-right whitespace-nowrap">
-                            <button onclick="editTeam('${esc(id)}')" class="px-2.5 py-1 bg-[#EFE5DC] hover:bg-[#E2D3C5] rounded-lg font-bold mr-1">Edit</button>
-                            <button onclick="deleteTeam('${esc(id)}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg font-bold">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        // GALLERY CRUD
-        document.getElementById("galleryForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const existingId = document.getElementById("galleryRowId").value;
-            const isEdit = Boolean(existingId);
-            const oldItem = isEdit ? state.gallery.find(g => cleanVal(g["Image ID"] || g.ImageID || g.ID) === existingId) : null;
-
-            const record = {
-                "Image ID": isEdit ? existingId : `GAL_${Date.now()}`,
-                Title: document.getElementById("galleryTitle").value.trim(),
-                Category: document.getElementById("galleryCategory").value.trim(),
-                "Image URL": document.getElementById("galleryImageURL").value.trim(),
-                Date: document.getElementById("galleryDate").value.trim(),
-                Featured: document.getElementById("galleryFeatured").value,
-                "Display Order": Number(document.getElementById("galleryOrder").value || 1),
-                Status: document.getElementById("galleryStatus").value
-            };
-
-            if (isEdit) {
-                state.gallery = state.gallery.map(g => cleanVal(g["Image ID"] || g.ImageID || g.ID) === existingId ? record : g);
-            } else {
-                state.gallery.push(record);
-            }
-
-            resetGalleryForm();
-            postSheetMutation("Gallery", isEdit ? "UPDATE" : "CREATE", record["Image ID"], record.Title, oldItem, record, "gallery");
-        });
-
-        function editGallery(id) {
-            const item = state.gallery.find(g => cleanVal(g["Image ID"] || g.ImageID || g.ID) === id);
-            if (!item) return;
-            document.getElementById("galleryRowId").value = cleanVal(item["Image ID"] || item.ImageID || item.ID);
-            document.getElementById("galleryTitle").value = cleanVal(item.Title || item.title);
-            document.getElementById("galleryCategory").value = cleanVal(item.Category || item.category);
-            document.getElementById("galleryImageURL").value = cleanVal(item["Image URL"] || item.ImageURL);
-            document.getElementById("galleryDate").value = cleanVal(item.Date || item.date);
-            document.getElementById("galleryFeatured").value = cleanVal(item.Featured || item.featured, "Yes");
-            document.getElementById("galleryOrder").value = cleanVal(item["Display Order"] || item.DisplayOrder, 1);
-            document.getElementById("galleryStatus").value = cleanVal(item.Status || item.status, "Active");
-            document.getElementById("galleryFormTitle").textContent = "Edit Gallery Photo";
-        }
-
-        function deleteGallery(id) {
-            const item = state.gallery.find(g => cleanVal(g["Image ID"] || g.ImageID || g.ID) === id);
-            if (!item) return;
-            state.gallery = state.gallery.filter(g => cleanVal(g["Image ID"] || g.ImageID || g.ID) !== id);
-            postSheetMutation("Gallery", "DELETE", id, cleanVal(item.Title || item.title, id), item, null, "gallery");
-        }
-
-        function resetGalleryForm() {
-            document.getElementById("galleryForm").reset();
-            document.getElementById("galleryRowId").value = "";
-            document.getElementById("galleryFormTitle").textContent = "Add / Edit Gallery Photo";
-        }
-
-        function renderGalleryTable() {
-            const tbody = document.getElementById("galleryTableBody");
-            if (!state.gallery.length) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-[#6E5649]">Sync sheet to load gallery or add a photo.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.gallery.map(item => {
-                const id = cleanVal(item["Image ID"] || item.ImageID || item.ID);
-                const title = cleanVal(item.Title || item.title, "Photo");
-                const cat = cleanVal(item.Category || item.category, "—");
-                const img = cleanVal(item["Image URL"] || item.ImageURL, "—");
-                const ord = cleanVal(item["Display Order"] || item.DisplayOrder, "1");
-                return `
-                    <tr>
-                        <td class="py-2.5 px-2 font-semibold">${esc(title)}</td>
-                        <td class="py-2.5 px-2">${esc(cat)}</td>
-                        <td class="py-2.5 px-2">${esc(img)}</td>
-                        <td class="py-2.5 px-2">${esc(ord)}</td>
-                        <td class="py-2.5 px-2 text-right whitespace-nowrap">
-                            <button onclick="editGallery('${esc(id)}')" class="px-2.5 py-1 bg-[#EFE5DC] hover:bg-[#E2D3C5] rounded-lg font-bold mr-1">Edit</button>
-                            <button onclick="deleteGallery('${esc(id)}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg font-bold">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        function renderAuditAndVisits() {
-            const auditBody = document.getElementById("auditLogTableBody");
-            if (!sessionAuditLogs.length) {
-                auditBody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-[#6E5649]">Make any add, edit, or delete in the tabs above to see exact change logs here and in your sheet.</td></tr>`;
-            } else {
-                auditBody.innerHTML = sessionAuditLogs.map(log => `
-                    <tr>
-                        <td class="py-2.5 px-2 text-[#6E5649] whitespace-nowrap">${esc(log.timestamp)}</td>
-                        <td class="py-2.5 px-2 font-bold">${esc(log.section)}</td>
-                        <td class="py-2.5 px-2"><span class="px-2 py-0.5 rounded bg-[#EFE5DC] font-bold">${esc(log.action)}</span></td>
-                        <td class="py-2.5 px-2 font-semibold">${esc(log.target)}</td>
-                        <td class="py-2.5 px-2">${esc(log.changeSummary)}</td>
-                    </tr>
-                `).join("");
-            }
-
-            const visitsBody = document.getElementById("recentVisitsTableBody");
-            if (!state.visits.length) {
-                visitsBody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-[#6E5649]">Viewer visits are recorded directly into Website_Visits on the spreadsheet.</td></tr>`;
-            } else {
-                visitsBody.innerHTML = state.visits.slice(-15).reverse().map(v => `
-                    <tr>
-                        <td class="py-2.5 px-2">${esc(cleanVal(v.Date || v.date, "—"))}</td>
-                        <td class="py-2.5 px-2">${esc(cleanVal(v.Time || v.time, "—"))}</td>
-                        <td class="py-2.5 px-2 font-semibold">${esc(cleanVal(v["Visitor Status"] || v.status, "Viewer Visit"))}</td>
-                        <td class="py-2.5 px-2 text-[#6E5649]">${esc(cleanVal(v["Device & Screen Info"] || v.deviceInfo, "—"))}</td>
-                    </tr>
-                `).join("");
-            }
-        }
     </script>
 </body>
 </html>
