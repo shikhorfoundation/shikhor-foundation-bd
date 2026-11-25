@@ -90,6 +90,9 @@
                     <button type="button" onclick="pickImageFor('logo')" class="px-3 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold">
                         <i class="fa-solid fa-image text-[#8C583A]"></i> Logo
                     </button>
+                    <button type="button" onclick="syncFromGoogleSheetOnOpen(true)" class="px-3 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold">
+                        <i class="fa-solid fa-rotate text-[#8C583A]"></i> Sheet Sync
+                    </button>
                     <a href="index.html" target="_blank" class="px-3.5 py-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
                         Open Main Site ↗
                     </a>
@@ -410,6 +413,7 @@
                 populateSectionInputs();
                 switchSectionTab(currentTab);
                 renderAll();
+                syncFromGoogleSheetOnOpen(false);
             } else {
                 errEl.classList.remove("hidden");
             }
@@ -472,6 +476,43 @@
                     if (Array.isArray(parsedGw) && parsedGw.length > 0) state.groupWork = parsedGw;
                 }
             } catch (e) {}
+        }
+
+        async function syncFromGoogleSheetOnOpen(notifyUser = false) {
+            if (!GOOGLE_SCRIPT_URL) return;
+            try {
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`);
+                const data = await res.json();
+                if (!data || !data.success) return;
+
+                if (data.sections && Object.keys(data.sections).length > 0) {
+                    state.sections = { ...state.sections, ...data.sections };
+                }
+                if (Array.isArray(data.team) && data.team.length > 0) {
+                    state.team = data.team;
+                }
+                if (Array.isArray(data.groupWork) && data.groupWork.length > 0) {
+                    state.groupWork = data.groupWork;
+                }
+                if (Array.isArray(data.gallery) && data.gallery.length > 0) {
+                    state.gallery = data.gallery;
+                }
+                if (Array.isArray(data.notice) && data.notice.length > 0) {
+                    state.notice = data.notice;
+                }
+
+                localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(state.sections));
+                localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
+                localStorage.setItem(STORAGE_KEYS.groupWork, JSON.stringify(state.groupWork));
+                localStorage.setItem(STORAGE_KEYS.gallery, JSON.stringify(state.gallery));
+                localStorage.setItem(STORAGE_KEYS.notice, JSON.stringify(state.notice));
+
+                populateSectionInputs();
+                renderAll();
+                if (notifyUser) showToast("Synced latest data from Google Sheet!");
+            } catch (e) {
+                if (notifyUser) showToast("Could not reach Google Sheet right now.");
+            }
         }
 
         function populateSectionInputs() {
@@ -798,6 +839,7 @@
                 populateSectionInputs();
                 switchSectionTab(currentTab);
                 renderAll();
+                syncFromGoogleSheetOnOpen(false);
             }
         });
     </script>
