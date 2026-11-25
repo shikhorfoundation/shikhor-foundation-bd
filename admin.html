@@ -25,52 +25,35 @@
         <span id="toastMsg">Saved & synced!</span>
     </div>
 
-    <!-- TWO-STEP GATEWAY SCREEN (Step 1: Code -> Step 2: Password) -->
+    <!-- USERNAME & PASSWORD LOGIN INTERFACE -->
     <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="bg-[#FDFBF9] border-2 border-[#B88655] rounded-3xl p-8 max-w-md w-full shadow-2xl text-center">
+        <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="bg-[#FDFBF9] border-2 border-[#B88655] rounded-3xl p-8 max-w-md w-full shadow-2xl text-center">
             <div class="w-24 h-24 mx-auto rounded-2xl object-contain bg-[#EFE5DC] p-2.5 border border-[#C4AE99] mb-4 flex items-center justify-center">
                 <img id="gateLogoImg" src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-full h-full object-contain" alt="Shikhor Foundation Logo">
             </div>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-[#8C583A]">SHIKHOR CONTROL SYSTEM</span>
-            <h1 class="text-2xl font-extrabold font-heading text-[#231712] mt-1">Admin Access Gate</h1>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-[#8C583A]">SHIKHOR CONTROL SITE</span>
+            <h1 class="text-2xl font-extrabold font-heading text-[#231712] mt-1">Admin Sign In</h1>
+            <p class="text-xs text-[#5C3D2E] mt-1 mb-6">Enter your username and password to control the main website</p>
 
-            <!-- Step Indicators -->
-            <div class="flex items-center justify-center gap-2 my-5 text-xs font-bold">
-                <span id="stepBadge1" class="px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A]">1. Access Code</span>
-                <span class="text-[#B88655]">→</span>
-                <span id="stepBadge2" class="px-3 py-1 rounded-full bg-[#EFE5DC] text-[#6E5649]">2. Password</span>
-            </div>
-
-            <!-- STEP 1: CODE -->
-            <form id="codeStepForm" onsubmit="handleCodeSubmit(event)" class="text-left space-y-4">
+            <div class="text-left space-y-4 mb-5">
                 <div>
-                    <label class="block text-xs font-bold text-[#3B261D] mb-1.5">Enter Access Code</label>
-                    <input type="text" id="accessCodeInput" required autocomplete="off" placeholder="Enter access code" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
-                </div>
-                <p id="codeErrorMsg" class="hidden text-xs font-bold text-red-700">Invalid access code. Please try again.</p>
-                <button type="submit" class="w-full py-3 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white font-bold text-sm transition">
-                    Verify Code & Continue <i class="fa-solid fa-arrow-right ml-1"></i>
-                </button>
-            </form>
-
-            <!-- STEP 2: PASSWORD -->
-            <form id="passwordStepForm" onsubmit="handlePasswordSubmit(event)" class="hidden text-left space-y-4">
-                <div class="p-3 rounded-xl bg-[#F2E8DF] border border-[#D4C3B3] flex items-center justify-between text-xs">
-                    <span>Code Verified: <strong id="verifiedCodeLabel" class="text-[#3B261D]"></strong></span>
-                    <button type="button" onclick="backToCodeStep()" class="text-[#8C583A] font-bold underline bg-transparent border-0">Change</button>
+                    <label class="block text-xs font-bold text-[#3B261D] mb-1.5">Username</label>
+                    <input type="text" id="adminUsernameInput" required autocomplete="username" placeholder="Enter username" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-[#3B261D] mb-1.5">Enter Admin Password</label>
+                    <label class="block text-xs font-bold text-[#3B261D] mb-1.5">Password</label>
                     <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter password" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
                 </div>
-                <p id="passErrorMsg" class="hidden text-xs font-bold text-red-700">Incorrect password. Please try again.</p>
-                <button type="submit" class="w-full py-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white font-bold text-sm transition">
-                    Unlock Control Panel <i class="fa-solid fa-lock-open ml-1"></i>
-                </button>
-            </form>
+            </div>
+
+            <p id="loginErrorMsg" class="hidden text-xs font-bold text-red-700 mb-4">Invalid username or password. Please try again.</p>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white font-bold text-sm transition">
+                Sign In to Control Panel <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
 
             <a href="index.html" class="inline-block mt-6 text-xs font-bold text-[#8C583A] hover:underline">← Back to Main Website</a>
-        </div>
+        </form>
     </div>
 
     <!-- SEPARATE CONTROL WEBSITE DASHBOARD -->
@@ -83,7 +66,7 @@
                     </div>
                     <div>
                         <span class="font-bold font-heading text-base block leading-none">SHIKHOR CONTROL SITE</span>
-                        <span class="text-[10px] font-bold text-green-700 uppercase">Verified Session • Main Site Controller</span>
+                        <span class="text-[10px] font-bold text-green-700 uppercase">shikhor@bd • Main Site Controller</span>
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
@@ -284,7 +267,7 @@
 
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec";
-        const ACCESS_CODE = "shikhor@bd";
+        const AUTH_USER = "shikhor@bd";
         const AUTH_PASS = "Shikhor_Foundation_Bd";
 
         const STORAGE_KEYS = {
@@ -374,37 +357,13 @@
             window._toastTimer = setTimeout(() => box.classList.add("hidden"), 2500);
         }
 
-        function handleCodeSubmit(e) {
+        function handleAdminLogin(e) {
             e.preventDefault();
-            const codeVal = document.getElementById("accessCodeInput").value.trim();
-            const errEl = document.getElementById("codeErrorMsg");
-            if (codeVal === ACCESS_CODE) {
-                errEl.classList.add("hidden");
-                document.getElementById("verifiedCodeLabel").textContent = codeVal;
-                document.getElementById("codeStepForm").classList.add("hidden");
-                document.getElementById("passwordStepForm").classList.remove("hidden");
-                document.getElementById("stepBadge1").className = "px-3 py-1 rounded-full bg-green-700 text-white";
-                document.getElementById("stepBadge2").className = "px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A]";
-                document.getElementById("adminPasswordInput").focus();
-            } else {
-                errEl.classList.remove("hidden");
-            }
-        }
+            const u = document.getElementById("adminUsernameInput").value.trim();
+            const p = document.getElementById("adminPasswordInput").value;
+            const errEl = document.getElementById("loginErrorMsg");
 
-        function backToCodeStep() {
-            document.getElementById("passwordStepForm").classList.add("hidden");
-            document.getElementById("codeStepForm").classList.remove("hidden");
-            document.getElementById("passErrorMsg").classList.add("hidden");
-            document.getElementById("adminPasswordInput").value = "";
-            document.getElementById("stepBadge1").className = "px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A]";
-            document.getElementById("stepBadge2").className = "px-3 py-1 rounded-full bg-[#EFE5DC] text-[#6E5649]";
-        }
-
-        function handlePasswordSubmit(e) {
-            e.preventDefault();
-            const passVal = document.getElementById("adminPasswordInput").value;
-            const errEl = document.getElementById("passErrorMsg");
-            if (passVal === AUTH_PASS) {
+            if (u === AUTH_USER && p === AUTH_PASS) {
                 errEl.classList.add("hidden");
                 sessionStorage.setItem("shikhor_admin_authed", "1");
                 document.getElementById("lockScreen").classList.add("hidden");
@@ -423,9 +382,7 @@
             sessionStorage.removeItem("shikhor_admin_authed");
             document.getElementById("adminDashboard").classList.add("hidden");
             document.getElementById("lockScreen").classList.remove("hidden");
-            document.getElementById("accessCodeInput").value = "";
             document.getElementById("adminPasswordInput").value = "";
-            backToCodeStep();
         }
 
         function switchSectionTab(tabName) {
