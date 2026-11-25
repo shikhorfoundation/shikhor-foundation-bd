@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikhor Foundation | Admin Control Center</title>
-    <link rel="icon" type="image/png" sizes="512x512" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+    <title>Shikhor Foundation | Admin Control Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,11 +12,11 @@
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
 
         .hover-lift {
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
         }
         .hover-lift:hover {
             transform: translateY(-3px);
-            box-shadow: 0 14px 26px -8px rgba(35, 23, 18, 0.18);
+            box-shadow: 0 14px 24px -10px rgba(35, 23, 18, 0.18);
         }
 
         @keyframes fadeIn {
@@ -29,189 +28,160 @@
         }
     </style>
 </head>
-<body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white min-h-screen flex flex-col">
+<body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white min-h-screen">
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toastBanner" class="fixed top-5 right-5 z-50 hidden max-w-sm bg-[#231712] text-[#F6EFE8] border border-[#B88655] rounded-2xl shadow-2xl px-4 py-3.5 flex items-start gap-3 animate-fade-in">
+    <div id="toastBanner" class="fixed bottom-6 right-6 z-50 hidden max-w-sm bg-[#231712] text-[#F6EFE8] border border-[#8C583A] rounded-2xl shadow-2xl px-4 py-3.5 flex items-start gap-3 animate-fade-in">
         <i id="toastIcon" class="fa-solid fa-circle-check text-[#E6B88A] mt-0.5 text-base"></i>
-        <div class="flex-1 text-xs leading-relaxed">
-            <p id="toastTitle" class="font-bold text-white uppercase tracking-wider text-[11px]">Synced</p>
-            <p id="toastMessage" class="text-[#E8D9CB] mt-0.5"></p>
+        <div class="text-xs leading-relaxed flex-1">
+            <p id="toastTitle" class="font-bold text-white"></p>
+            <p id="toastMessage" class="text-[#D4C3B3] mt-0.5"></p>
         </div>
-        <button type="button" onclick="hideToast()" class="text-[#D4C3B3] hover:text-white">
+        <button type="button" onclick="hideToast()" class="text-[#A68F80] hover:text-white text-sm">
             <i class="fa-solid fa-xmark"></i>
         </button>
     </div>
 
     <!-- ADMIN LOGIN SCREEN -->
-    <div id="adminLoginScreen" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8]">
-        <div class="w-full max-w-md bg-[#FDFBF9] rounded-3xl border-2 border-[#B88655] shadow-2xl p-7 sm:p-9 animate-fade-in">
+    <div id="adminLoginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#231712] via-[#3B261D] to-[#5C3D2E]">
+        <div class="bg-[#FDFBF9] text-[#231712] max-w-md w-full rounded-3xl p-7 sm:p-9 shadow-2xl border-2 border-[#B88655] animate-fade-in">
             <div class="text-center mb-7">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#EFE5DC] border border-[#C4AE99] p-2 shadow-md flex items-center justify-center">
-                    <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
+                <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-[#EFE5DC] border-2 border-[#8C583A] p-2 shadow-md flex items-center justify-center overflow-hidden">
+                    <img src="logo.png" alt="Shikhor Foundation Logo" onerror="this.style.display='none'" class="w-full h-full object-contain">
                 </div>
-                <span class="inline-block px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-widest mb-2">
-                    Restricted Access
-                </span>
-                <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712]">Admin Sign In</h1>
-                <p class="text-xs text-[#5C3D2E] mt-1.5">Enter your authorized credentials to access Shikhor Foundation Admin Workspace.</p>
+                <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A] block">Shikhor Foundation</span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">Admin Portal</h1>
+                <p class="text-xs text-[#5C3D2E] mt-1.5">Sign in to manage notices, news, headlines, sections, team & logs.</p>
             </div>
 
-            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 text-sm">
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4">
                 <div>
-                    <label for="adminUsernameInput" class="block text-xs font-bold text-[#3B261D] mb-1.5">Username</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1.5">Admin ID / Username</label>
                     <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A] text-xs">
-                            <i class="fa-solid fa-user"></i>
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A]">
+                            <i class="fa-solid fa-user-shield"></i>
                         </span>
-                        <input type="text" id="adminUsernameInput" required autocomplete="username" placeholder="Enter admin username" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                        <input type="text" id="adminUsernameInput" required autocomplete="username" placeholder="Enter admin ID" class="w-full pl-10 pr-4 py-3 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm text-[#231712] focus:outline-none focus:border-[#8C583A]">
                     </div>
                 </div>
 
                 <div>
-                    <label for="adminPasswordInput" class="block text-xs font-bold text-[#3B261D] mb-1.5">Password</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1.5">Password</label>
                     <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A] text-xs">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A]">
                             <i class="fa-solid fa-lock"></i>
                         </span>
-                        <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter admin password" class="w-full pl-10 pr-11 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6E5649] hover:text-[#231712] text-xs" title="Show/Hide Password">
+                        <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter password" class="w-full pl-10 pr-11 py-3 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6E5649] hover:text-[#231712]" title="Show/Hide Password">
                             <i id="passwordEyeIcon" class="fa-solid fa-eye"></i>
                         </button>
                     </div>
                 </div>
 
-                <p id="loginErrorMsg" class="hidden text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5">
-                    Invalid username or password. Please try again.
-                </p>
+                <div id="loginErrorMsg" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>Invalid Admin ID or Password. Please try again.</span>
+                </div>
 
-                <button type="submit" class="w-full py-3 px-5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold uppercase tracking-wider shadow-lg transition flex items-center justify-center gap-2 mt-2">
-                    <span>Unlock Admin Panel</span>
-                    <i class="fa-solid fa-arrow-right text-[#E6B88A]"></i>
+                <button type="submit" class="w-full py-3.5 px-5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white font-bold text-sm shadow-lg transition flex items-center justify-center gap-2">
+                    <span>Login to Admin Panel</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket text-[#E6B88A]"></i>
                 </button>
             </form>
 
-            <div class="mt-6 pt-4 border-t border-[#EFE5DC] text-center">
-                <a href="index.html" class="text-xs font-bold text-[#8C583A] hover:underline inline-flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Main Website
+            <div class="mt-6 pt-5 border-t border-[#E5D7C9] flex items-center justify-between text-xs">
+                <a href="index.html" class="text-[#5C3D2E] hover:text-[#231712] font-semibold inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Website
                 </a>
+                <span class="text-[#8C583A] font-medium">Session Protected</span>
             </div>
         </div>
     </div>
 
-    <!-- PROTECTED ADMIN WORKSPACE -->
-    <div id="adminDashboardApp" class="hidden flex-1 flex flex-col">
+    <!-- AUTHENTICATED ADMIN DASHBOARD -->
+    <div id="adminDashboardApp" class="hidden min-h-screen flex flex-col">
 
-        <!-- TOP HEADER -->
-        <header class="sticky top-0 z-40 bg-[#FDFBF9]/95 backdrop-blur-md border-b border-[#D4C3B3] shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-                <a href="#top" class="flex items-center gap-3 group">
-                    <div class="w-11 h-11 bg-[#EFE5DC] rounded-2xl flex items-center justify-center shadow-sm border border-[#C4AE99] p-1 overflow-hidden">
-                        <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
+        <!-- TOP ADMIN HEADER -->
+        <header class="sticky top-0 z-40 bg-[#231712] text-[#F6EFE8] border-b border-[#5C3D2E] shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-[#FDFBF9] p-1.5 border border-[#B88655] flex items-center justify-center overflow-hidden shrink-0">
+                        <img src="logo.png" alt="Logo" onerror="this.style.display='none'" class="w-full h-full object-contain">
                     </div>
                     <div>
-                        <span class="text-xl font-bold font-heading tracking-tight text-[#231712] block leading-none">SHIKHOR</span>
-                        <span class="text-[10px] tracking-widest text-[#8C583A] font-bold uppercase mt-1 block">ADMIN WORKSPACE</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg sm:text-xl font-bold font-heading tracking-tight text-white">SHIKHOR ADMIN</span>
+                            <span class="hidden sm:inline-block px-2 py-0.5 rounded-md bg-[#8C583A] text-white text-[10px] font-bold uppercase tracking-wider">Control Center</span>
+                        </div>
+                        <p id="lastSyncTimeLabel" class="text-[11px] text-[#D4C3B3]">Spreadsheet Sync Ready</p>
                     </div>
-                </a>
-
-                <div class="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFE5DC] border border-[#D4C3B3] text-xs font-semibold text-[#3B261D]">
-                    <span class="w-2.5 h-2.5 rounded-full bg-green-600 animate-pulse"></span>
-                    <span>Sheet Sync Active</span>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="syncAllWithSheet(true)" class="px-3.5 py-2.5 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition flex items-center gap-1.5">
-                        <i id="syncSpinIcon" class="fa-solid fa-rotate text-[#8C583A]"></i>
-                        <span class="hidden sm:inline">Refresh & Sync</span>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button type="button" onclick="syncAllWithSheet(true)" class="px-3 py-2 rounded-xl bg-[#3B261D] hover:bg-[#5C3D2E] text-[#E6B88A] border border-[#8C583A]/60 text-xs font-bold transition flex items-center gap-1.5" title="Sync with Google Sheet">
+                        <i id="syncSpinIcon" class="fa-solid fa-rotate"></i>
+                        <span class="hidden md:inline">Sync Sheet</span>
                     </button>
-                    <a href="index.html" target="_blank" class="px-3.5 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
-                        <span class="hidden sm:inline">View Live Site</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                    <a href="index.html" target="_blank" class="px-3 py-2 rounded-xl bg-[#3B261D] hover:bg-[#5C3D2E] text-white border border-[#8C583A]/60 text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-up-right-from-square text-[#E6B88A]"></i>
+                        <span class="hidden sm:inline">View Site</span>
                     </a>
-                    <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition flex items-center gap-1.5" title="Logout">
+                    <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-2 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center gap-1.5">
                         <i class="fa-solid fa-right-from-bracket"></i>
-                        <span class="hidden sm:inline">Logout</span>
+                        <span>Logout</span>
                     </button>
                 </div>
             </div>
         </header>
 
         <!-- MAIN CONTENT -->
-        <main id="top" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-            <!-- HERO BANNER & QUICK STATS -->
-            <section class="bg-gradient-to-r from-[#3B261D] via-[#4A3025] to-[#231712] text-[#F6EFE8] rounded-3xl p-6 sm:p-8 border border-[#8C583A] shadow-xl">
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                    <div>
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#5C3D2E] text-[#E6B88A] text-[11px] font-bold uppercase tracking-widest mb-3">
-                            <i class="fa-solid fa-sliders"></i> Centralized Sheet & Site Control
-                        </span>
-                        <h1 class="text-2xl sm:text-4xl font-extrabold font-heading text-white leading-tight">
-                            Shikhor Foundation Admin Panel
-                        </h1>
-                        <p class="text-xs sm:text-sm text-[#E8D9CB] mt-2 max-w-2xl leading-relaxed">
-                            Manage Notices, News, Headlines, Site Sections, Team Panel, Audit Logs, and Visitor Device Logs in dedicated sectors—every add, edit, or delete is recorded in your Google Sheet and synced with the live site.
-                        </p>
-                    </div>
-
-                    <!-- Connection Status Box -->
-                    <div class="bg-[#231712]/80 border border-[#8C583A]/60 rounded-2xl p-4 min-w-[260px] space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-[#D4C3B3]">Apps Script Endpoint</span>
-                            <span class="px-2 py-0.5 rounded bg-green-900/70 text-green-300 font-bold text-[10px] uppercase">Connected</span>
-                        </div>
-                        <p id="scriptEndpointPreview" class="text-[11px] text-[#E6B88A] truncate font-mono"></p>
-                        <p id="lastSyncTimeLabel" class="text-[11px] text-[#A68F80]">Last synced: Just now</p>
-                    </div>
+            <!-- OVERVIEW STATS -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift">
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published Notices</p>
+                    <h3 id="statNoticeCount" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">0</h3>
                 </div>
-
-                <!-- 4 TOP SUMMARY CARDS -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-7">
-                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published Notices</p>
-                        <h3 id="statNoticeCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
-                    </div>
-                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published News</p>
-                        <h3 id="statNewsCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
-                    </div>
-                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Change Audit Entries</p>
-                        <h3 id="statAuditCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
-                    </div>
-                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Visitor Device Logs</p>
-                        <h3 id="statVisitorCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
-                    </div>
+                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift">
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published News</p>
+                    <h3 id="statNewsCount" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">0</h3>
                 </div>
-            </section>
+                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift">
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Change Audit Logs</p>
+                    <h3 id="statAuditCount" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">0</h3>
+                </div>
+                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift">
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Visitor Logs</p>
+                    <h3 id="statVisitorCount" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">0</h3>
+                </div>
+            </div>
 
-            <!-- DEDICATED SECTOR NAVIGATION TABS -->
-            <div class="bg-[#FDFBF9] p-2.5 rounded-2xl border border-[#D4C3B3] shadow-sm flex flex-wrap gap-2">
-                <button type="button" data-sector-tab="notices_news" onclick="switchSector('notices_news')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#3B261D] text-white shadow">
+            <!-- SECTOR NAVIGATION TABS -->
+            <div class="bg-[#FDFBF9] p-3 rounded-2xl border border-[#D4C3B3] shadow-sm flex flex-wrap items-center gap-2">
+                <button type="button" onclick="switchSector('notices_news')" data-sector-tab="notices_news" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#3B261D] text-white shadow">
                     <i class="fa-solid fa-bullhorn"></i>
-                    <span>Notice & News</span>
+                    <span>1. Notice & News</span>
                 </button>
-                <button type="button" data-sector-tab="headlines" onclick="switchSector('headlines')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                <button type="button" onclick="switchSector('headlines')" data-sector-tab="headlines" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
                     <i class="fa-solid fa-bolt"></i>
-                    <span>Headline Ticker</span>
+                    <span>2. Headlines Ticker</span>
                 </button>
-                <button type="button" data-sector-tab="site_sections" onclick="switchSector('site_sections')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    <span>Site Sections & Stats</span>
+                <button type="button" onclick="switchSector('site_sections')" data-sector-tab="site_sections" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>3. Site Sections & Stats</span>
                 </button>
-                <button type="button" data-sector-tab="team" onclick="switchSector('team')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                <button type="button" onclick="switchSector('team')" data-sector-tab="team" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
                     <i class="fa-solid fa-users"></i>
-                    <span>Team & Panel</span>
+                    <span>4. Team & Panel</span>
                 </button>
-                <button type="button" data-sector-tab="audit_logs" onclick="switchSector('audit_logs')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-clipboard-list"></i>
-                    <span>Change & Delete Proof</span>
+                <button type="button" onclick="switchSector('audit_logs')" data-sector-tab="audit_logs" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <span>5. Change Proof Logs</span>
                 </button>
-                <button type="button" data-sector-tab="visitor_logs" onclick="switchSector('visitor_logs')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-mobile-screen"></i>
-                    <span>Visitor Devices</span>
+                <button type="button" onclick="switchSector('visitor_logs')" data-sector-tab="visitor_logs" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>6. Visitor Logs</span>
                 </button>
             </div>
 
@@ -248,15 +218,30 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Publish Date & Time</label>
-                                    <input type="text" id="nnDate" placeholder="e.g. Nov 25, 2026" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                            <div>
+                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Publish Date & Time</label>
+                                <input type="text" id="nnDate" placeholder="e.g. Nov 25, 2026" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                            </div>
+
+                            <!-- DIRECT PC / PHONE IMAGE UPLOAD BOX -->
+                            <div class="p-3.5 rounded-2xl bg-[#F2E8DF] border border-[#C4AE99] space-y-2.5">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs font-bold text-[#3B261D]">Cover / Banner Image</label>
+                                    <span id="nnUploadStatus" class="text-[11px] font-bold text-[#8C583A]">Ready</span>
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Banner / Cover Image URL</label>
-                                    <input type="text" id="nnBanner" placeholder="gallery2.jpg or https://..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
+
+                                <input type="file" id="nnImageFileInput" accept="image/*" class="hidden" onchange="handleDirectImagePick(event, 'nnBanner', 'nnImagePreview', 'nnUploadStatus')">
+
+                                <button type="button" onclick="document.getElementById('nnImageFileInput').click()" class="w-full py-2.5 px-4 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                    <span>Upload Image from PC / Phone</span>
+                                </button>
+
+                                <div id="nnPreviewWrap" class="hidden rounded-xl overflow-hidden border border-[#C4AE99] bg-[#FDFBF9] h-32 relative">
+                                    <img id="nnImagePreview" src="" alt="Preview" class="w-full h-full object-cover">
                                 </div>
+
+                                <input type="text" id="nnBanner" oninput="updatePreviewFromUrl('nnBanner', 'nnImagePreview', 'nnPreviewWrap')" placeholder="Or paste image URL (auto-filled on upload)" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-xs text-[#231712] focus:outline-none focus:border-[#8C583A]">
                             </div>
 
                             <div>
@@ -294,7 +279,7 @@
                             </div>
                         </div>
 
-                        <div id="adminNoticeNewsList" class="space-y-3.5 max-h-[620px] overflow-y-auto pr-1"></div>
+                        <div id="adminNoticeNewsList" class="space-y-3.5 max-h-[680px] overflow-y-auto pr-1"></div>
                     </div>
                 </div>
             </section>
@@ -387,10 +372,24 @@
                                 <label class="block text-xs font-bold text-[#3B261D] mb-1">Designation / Role *</label>
                                 <input type="text" id="tmRole" required placeholder="e.g. Executive Member" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Photo Filename or URL</label>
-                                <input type="text" id="tmPhoto" placeholder="logo.png or member.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
+
+                            <!-- DIRECT TEAM PHOTO UPLOAD -->
+                            <div class="p-3 rounded-2xl bg-[#F2E8DF] border border-[#C4AE99] space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs font-bold text-[#3B261D]">Member Photo</label>
+                                    <span id="tmUploadStatus" class="text-[11px] font-bold text-[#8C583A]">Ready</span>
+                                </div>
+                                <input type="file" id="tmImageFileInput" accept="image/*" class="hidden" onchange="handleDirectImagePick(event, 'tmPhoto', 'tmImagePreview', 'tmUploadStatus')">
+                                <button type="button" onclick="document.getElementById('tmImageFileInput').click()" class="w-full py-2 px-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                    <span>Upload Photo from PC / Phone</span>
+                                </button>
+                                <div id="tmPreviewWrap" class="hidden w-16 h-16 mx-auto rounded-xl overflow-hidden border border-[#C4AE99] bg-[#FDFBF9]">
+                                    <img id="tmImagePreview" src="" alt="Member Preview" class="w-full h-full object-cover">
+                                </div>
+                                <input type="text" id="tmPhoto" oninput="updatePreviewFromUrl('tmPhoto', 'tmImagePreview', 'tmPreviewWrap')" placeholder="Or paste photo URL" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-xs">
                             </div>
+
                             <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow transition">
                                 Add & Log to Sheet
                             </button>
@@ -548,6 +547,100 @@
             activeSector: "notices_news",
             nnFilter: "all"
         };
+
+        function compressImageFile(file, maxWidth = 1280, quality = 0.82) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxWidth) {
+                            h = Math.round((h * maxWidth) / w);
+                            w = maxWidth;
+                        }
+                        const canvas = document.createElement("canvas");
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, w, h);
+                        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+                        const base64Data = dataUrl.split(",")[1];
+                        resolve({ dataUrl, base64Data, mimeType: "image/jpeg" });
+                    };
+                    img.onerror = reject;
+                    img.src = ev.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleDirectImagePick(event, targetUrlInputId, previewImgId, statusBadgeId) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const statusEl = document.getElementById(statusBadgeId);
+            const urlInput = document.getElementById(targetUrlInputId);
+            const previewImg = document.getElementById(previewImgId);
+            const previewWrap = previewImg ? previewImg.parentElement : null;
+
+            try {
+                if (statusEl) statusEl.textContent = "Uploading to Drive...";
+                const { dataUrl, base64Data, mimeType } = await compressImageFile(file);
+
+                if (previewImg && previewWrap) {
+                    previewImg.src = dataUrl;
+                    previewWrap.classList.remove("hidden");
+                }
+
+                const res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: "uploadImage",
+                        fileName: file.name,
+                        mimeType: mimeType,
+                        base64Data: base64Data
+                    })
+                });
+
+                const result = await res.json();
+                if (result && result.success && result.imageUrl) {
+                    urlInput.value = result.imageUrl;
+                    if (previewImg) previewImg.src = result.imageUrl;
+                    if (statusEl) statusEl.textContent = "Uploaded to Drive ✓";
+                    showToast("Image Uploaded", `"${file.name}" saved to Google Drive automatically!`);
+                } else {
+                    throw new Error(result.error || "Upload failed");
+                }
+            } catch (err) {
+                try {
+                    const { dataUrl } = await compressImageFile(file, 900, 0.72);
+                    urlInput.value = dataUrl;
+                    if (statusEl) statusEl.textContent = "Attached Locally ✓";
+                    showToast("Image Attached", `"${file.name}" attached! Deploy updated Apps Script for Drive links.`, true);
+                } catch (e2) {
+                    if (statusEl) statusEl.textContent = "Error";
+                    showToast("Upload Error", "Could not process selected image.", true);
+                }
+            } finally {
+                event.target.value = "";
+            }
+        }
+
+        function updatePreviewFromUrl(inputId, imgId, wrapId) {
+            const val = document.getElementById(inputId).value.trim();
+            const img = document.getElementById(imgId);
+            const wrap = document.getElementById(wrapId);
+            if (val) {
+                img.src = val;
+                wrap.classList.remove("hidden");
+            } else {
+                wrap.classList.add("hidden");
+            }
+        }
 
         function togglePasswordVisibility() {
             const input = document.getElementById("adminPasswordInput");
@@ -774,6 +867,8 @@
             document.getElementById("nnTitle").value = "";
             document.getElementById("nnSummary").value = "";
             document.getElementById("nnFullContent").value = "";
+            document.getElementById("nnUploadStatus").textContent = "Ready";
+            document.getElementById("nnPreviewWrap").classList.add("hidden");
             document.getElementById("nnFormHeading").textContent = "Add New Notice or News";
             document.getElementById("nnSubmitBtn").innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-[#E6B88A]"></i><span>Publish & Save to Spreadsheet</span>`;
         }
@@ -790,6 +885,7 @@
             document.getElementById("nnTitle").value = found.title || "";
             document.getElementById("nnSummary").value = found.summary || "";
             document.getElementById("nnFullContent").value = found.fullContent || "";
+            updatePreviewFromUrl("nnBanner", "nnImagePreview", "nnPreviewWrap");
             document.getElementById("nnFormHeading").textContent = "Edit Notice / News";
             document.getElementById("nnSubmitBtn").innerHTML = `<i class="fa-solid fa-pen-to-square text-[#E6B88A]"></i><span>Update & Sync to Spreadsheet</span>`;
             switchSector("notices_news");
@@ -985,6 +1081,8 @@
 
             state.team.push({ id: "tm-" + Date.now(), name, role, photo });
             document.getElementById("teamMemberForm").reset();
+            document.getElementById("tmUploadStatus").textContent = "Ready";
+            document.getElementById("tmPreviewWrap").classList.add("hidden");
 
             recordChangeAndSync(
                 "Team & Panel",
@@ -1138,7 +1236,6 @@
         }
 
         window.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("scriptEndpointPreview").textContent = GOOGLE_SCRIPT_URL;
             document.getElementById("nnDate").value = formatNowBD();
             const isLoggedIn = sessionStorage.getItem(ADMIN_AUTH.sessionKey) === "1";
             setAuthView(isLoggedIn);
