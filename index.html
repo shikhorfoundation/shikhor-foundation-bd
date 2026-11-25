@@ -9,9 +9,9 @@
     <meta property="og:site_name" content="Shikhor Foundation">
     <meta property="og:title" content="Shikhor Foundation | Together for a Better Tomorrow">
 
-    <link rel="icon" type="image/png" sizes="512x512" href="logo.png">
-    <link rel="shortcut icon" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
+    <link id="faviconLink" rel="icon" type="image/png" sizes="512x512" href="./logo.png">
+    <link rel="shortcut icon" href="./logo.png">
+    <link rel="apple-touch-icon" href="./logo.png">
 
     <script id="tailwindCdn" src="https://cdn.tailwindcss.com" onerror="loadTailwindFallback()"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';">
@@ -208,7 +208,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                 <a href="#" class="flex items-center gap-3 group">
                     <div class="w-11 h-11 bg-[#EFE5DC] rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition overflow-hidden border border-[#C4AE99] p-1">
-                        <img src="./logo.png" alt="Shikhor Foundation Logo" onerror="handleImgError(this, './gallery1.jpg')" class="w-full h-full object-contain">
+                        <img id="headerLogoImg" src="./logo.png" alt="Shikhor Foundation Logo" onerror="handleImgError(this, './gallery1.jpg')" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <span class="text-xl font-bold font-heading tracking-tight text-[#231712] block leading-none">SHIKHOR</span>
@@ -233,6 +233,10 @@
                         <i class="fa-solid fa-hands-helping"></i>
                         <span>Join Volunteer</span>
                     </a>
+                    <a href="admin.html" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold rounded-xl transition">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Admin</span>
+                    </a>
                     <button type="button" onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] border border-[#D4C3B3]">
                         <i class="fa-solid fa-bars"></i>
                     </button>
@@ -249,6 +253,7 @@
                 <a href="#donation" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Donation</a>
                 <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
                 <a href="#contact" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Contact</a>
+                <a href="admin.html" class="block py-1 text-[#8C583A]">Admin Panel</a>
                 <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
             </div>
         </header>
@@ -271,16 +276,6 @@
                             <span class="px-2 py-0.5 rounded bg-[#5C3D2E] text-white text-[10px] font-bold uppercase">News</span>
                             <span>Standing Together for Communities — Latest Ground Reports</span>
                         </button>
-                        <span class="text-[#8C583A]">•</span>
-                        <button type="button" onclick="jumpToHighlight('notice-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
-                            <span class="px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase">Notice</span>
-                            <span>Volunteer & Community Drive — Official Announcements</span>
-                        </button>
-                        <span class="text-[#8C583A]">•</span>
-                        <button type="button" onclick="jumpToHighlight('news-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
-                            <span class="px-2 py-0.5 rounded bg-[#5C3D2E] text-white text-[10px] font-bold uppercase">News</span>
-                            <span>Standing Together for Communities — Latest Ground Reports</span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -290,7 +285,7 @@
         <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-20 lg:py-28 overflow-hidden border-b border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                 <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-[#FDFBF9] shadow-2xl border-4 border-[#B88655] flex items-center justify-center overflow-hidden p-2.5 transform transition hover:scale-105">
-                    <img src="./logo.png" alt="Shikhor Foundation Logo" onerror="handleImgError(this, './gallery1.jpg')" class="w-full h-full object-contain">
+                    <img id="heroLogoImg" src="./logo.png" alt="Shikhor Foundation Logo" onerror="handleImgError(this, './gallery1.jpg')" class="w-full h-full object-contain">
                 </div>
 
                 <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#3B261D] text-[#F6EFE8] text-xs font-bold mb-6 tracking-widest shadow-md">
@@ -323,7 +318,7 @@
 
                 <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
-                        <h3 id="liveFamiliesCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
+                        <h3 id="liveFamiliesCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Families Supported</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
@@ -539,17 +534,17 @@
                 <div class="bg-[#FDFBF9] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
                     <div class="text-center">
                         <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#8C583A] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="./zarif.jpg" alt="Md. Shewise Al Islam Zarif" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
+                            <img id="liveFounderImg" src="./zarif.jpg" alt="Md. Shewise Al Islam Zarif" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
                         </div>
-                        <h3 class="text-xl font-bold font-heading text-[#231712]">Md. Shewise Al Islam Zarif</h3>
-                        <p class="text-sm font-bold text-[#8C583A] mt-1">Founder & CEO / President</p>
+                        <h3 id="liveFounderName" class="text-xl font-bold font-heading text-[#231712]">Md. Shewise Al Islam Zarif</h3>
+                        <p id="liveFounderRole" class="text-sm font-bold text-[#8C583A] mt-1">Founder & CEO / President</p>
                     </div>
                     <div class="md:col-span-2">
                         <span class="text-xs uppercase font-bold text-[#5C3D2E] tracking-wider block mb-2">Message from the Founder</span>
-                        <blockquote class="text-[#3B261D] italic text-base leading-relaxed mb-4">
+                        <blockquote id="liveFounderQuote" class="text-[#3B261D] italic text-base leading-relaxed mb-4">
                             "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow."
                         </blockquote>
-                        <p class="text-xs font-semibold text-[#6E5649]">— Md. Shewise Al Islam Zarif</p>
+                        <p id="liveFounderSign" class="text-xs font-semibold text-[#6E5649]">— Md. Shewise Al Islam Zarif</p>
                     </div>
                 </div>
 
@@ -581,62 +576,6 @@
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Rikto Ruddur Lyric</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Marketing</p>
-                    </div>
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="./minhajul.jpg" alt="MD. Minhajul Islam" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">MD. Minhajul Islam</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts & Finance</p>
-                    </div>
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="./shafi.jpg" alt="Faymul Islam Shafi" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Faymul Islam Shafi</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Volunteer</p>
-                    </div>
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="./alif.jpg" alt="Alif" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Alif</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
-                    </div>
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="./arafat.jpg" alt="Arafat" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Arafat</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
-                    </div>
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="./mayasha.jpg" alt="Mayasha" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Mayasha</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
-                    </div>
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="./raiyanul.jpg" alt="Raiyanul" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Raiyanul</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
-                    </div>
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="./sayed.jpg" alt="Sayed" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Sayed</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
-                    </div>
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="./wahid.jpg" alt="Wahid" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Wahid</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
                     </div>
                 </div>
             </div>
@@ -701,7 +640,7 @@
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Moments of Humanity</h2>
                     <p class="mt-4 text-[#4F392E] text-sm">Click any photo to view full screen. Every picture tells a story of hope.</p>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="liveGalleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div onclick="openLightbox('./gallery1.jpg', 'Community Support Activity')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
                         <img src="./gallery1.jpg" alt="Community Support Activity" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                     </div>
@@ -728,7 +667,7 @@
                 <div>
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 bg-[#FDFBF9] rounded-2xl flex items-center justify-center border border-[#8C583A] overflow-hidden p-1">
-                            <img src="./logo.png" alt="Shikhor Foundation Logo" onerror="handleImgError(this, './gallery1.jpg')" class="w-full h-full object-contain">
+                            <img id="footerLogoImg" src="./logo.png" alt="Shikhor Foundation Logo" onerror="handleImgError(this, './gallery1.jpg')" class="w-full h-full object-contain">
                         </div>
                         <span class="text-lg font-bold font-heading tracking-tight">SHIKHOR FOUNDATION</span>
                     </div>
@@ -819,33 +758,6 @@
             if (!imgEl || imgEl.dataset.fallbackApplied) return;
             imgEl.dataset.fallbackApplied = "1";
             imgEl.src = fallbackSrc || "./logo.png";
-        }
-
-        const PHOTO_BY_NAME = {
-            "ahsan": "./ahsan.jpg",
-            "nafew": "./nafew.jpg",
-            "shakhawat": "./shakhawat.jpg",
-            "rikto": "./rikto.png",
-            "minhajul": "./minhajul.jpg",
-            "shafi": "./shafi.jpg",
-            "alif": "./alif.jpg",
-            "arafat": "./arafat.jpg",
-            "mayasha": "./mayasha.jpg",
-            "raiyanul": "./raiyanul.jpg",
-            "sayed": "./sayed.jpg",
-            "wahid": "./wahid.jpg",
-            "zarif": "./zarif.jpg"
-        };
-
-        function resolveMemberPhoto(name, rawPhoto) {
-            const cleaned = String(rawPhoto || "").trim();
-            if (/^(https?:\/\/|data:image\/)/i.test(cleaned)) return cleaned;
-            const lowerName = String(name || "").toLowerCase();
-            for (const key of Object.keys(PHOTO_BY_NAME)) {
-                if (lowerName.includes(key)) return PHOTO_BY_NAME[key];
-            }
-            if (cleaned) return cleaned.startsWith("./") ? cleaned : `./${cleaned}`;
-            return "./logo.png";
         }
 
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec";
@@ -1043,11 +955,71 @@
                 document.getElementById("bkashDialLink").href = `tel:*247*#${sec.donationNumber}#`;
                 document.getElementById("nagadDialLink").href = `tel:*167*#${sec.donationNumber}#`;
             }
+            if (sec.logoUrl) {
+                const logoSrc = sanitizeUrl(sec.logoUrl, "./logo.png");
+                ["headerLogoImg", "heroLogoImg", "footerLogoImg"].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.dataset.fallbackApplied = "";
+                        el.src = logoSrc;
+                    }
+                });
+                const fav = document.getElementById("faviconLink");
+                if (fav) fav.href = logoSrc;
+            }
+            if (sec.founderName) {
+                document.getElementById("liveFounderName").textContent = sec.founderName;
+                document.getElementById("liveFounderSign").textContent = `— ${sec.founderName}`;
+            }
+            if (sec.founderRole) document.getElementById("liveFounderRole").textContent = sec.founderRole;
+            if (sec.founderQuote) document.getElementById("liveFounderQuote").textContent = `"${sec.founderQuote.replace(/^"+|"+$/g, '')}"`;
+            if (sec.founderPhoto) {
+                const fImg = document.getElementById("liveFounderImg");
+                if (fImg) {
+                    fImg.dataset.fallbackApplied = "";
+                    fImg.src = sanitizeUrl(sec.founderPhoto, "./zarif.jpg");
+                }
+            }
+        }
+
+        function renderLiveGallery(galleryList) {
+            const grid = document.getElementById("liveGalleryGrid");
+            if (!grid || !Array.isArray(galleryList) || galleryList.length === 0) return;
+
+            grid.innerHTML = galleryList.map((item, i) => {
+                const src = sanitizeUrl(item.image || item.url || item.src || item.photo, "./gallery1.jpg");
+                const caption = item.caption || item.title || `Moment ${i + 1}`;
+                return `
+                    <div onclick="openLightbox('${escapeHtml(src)}', '${escapeHtml(caption)}')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                        <img src="${escapeHtml(src)}" alt="${escapeHtml(caption)}" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                `;
+            }).join("");
         }
 
         function renderLiveTeam(teamList) {
             const grid = document.getElementById("livePanelGrid");
             if (!grid || !Array.isArray(teamList) || teamList.length === 0) return;
+
+            const founderObj = teamList.find(m => {
+                const role = String(m["Designation / Role"] || m.role || "").toLowerCase();
+                return role.includes("founder") || role.includes("ceo");
+            });
+            if (founderObj) {
+                const fName = founderObj["Full Name"] || founderObj.name;
+                const fRole = founderObj["Designation / Role"] || founderObj.role;
+                const fPhoto = sanitizeUrl(founderObj["Photo URL"] || founderObj.photo, "./zarif.jpg");
+                if (fName) {
+                    document.getElementById("liveFounderName").textContent = fName;
+                    document.getElementById("liveFounderSign").textContent = `— ${fName}`;
+                }
+                if (fRole) document.getElementById("liveFounderRole").textContent = fRole;
+                const fImg = document.getElementById("liveFounderImg");
+                if (fImg) {
+                    fImg.dataset.fallbackApplied = "";
+                    fImg.src = fPhoto;
+                }
+            }
 
             const panelMembers = teamList.filter(m => {
                 const role = String(m["Designation / Role"] || m.role || "").toLowerCase();
@@ -1059,7 +1031,7 @@
             grid.innerHTML = panelMembers.map(m => {
                 const name = m["Full Name"] || m.name || "Member";
                 const role = m["Designation / Role"] || m.role || "Panel Member";
-                const photo = resolveMemberPhoto(name, m["Photo URL"] || m.photo);
+                const photo = sanitizeUrl(m["Photo URL"] || m.photo, "./logo.png");
                 return `
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
                         <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
@@ -1198,6 +1170,9 @@
 
                 const localTeam = localStorage.getItem("shikhor_admin_team_v1");
                 if (localTeam) renderLiveTeam(JSON.parse(localTeam));
+
+                const localGallery = localStorage.getItem("shikhor_admin_gallery_v1");
+                if (localGallery) renderLiveGallery(JSON.parse(localGallery));
             } catch (e) {}
         }
 
@@ -1217,6 +1192,9 @@
                     if (Array.isArray(data.team) && data.team.length > 0) {
                         renderLiveTeam(data.team);
                     }
+                    if (Array.isArray(data.gallery) && data.gallery.length > 0) {
+                        renderLiveGallery(data.gallery);
+                    }
                 }
             } catch (err) {}
         }
@@ -1231,7 +1209,8 @@
             if (
                 e.key === "shikhor_admin_notice_news_v1" ||
                 e.key === "shikhor_admin_site_sections_v1" ||
-                e.key === "shikhor_admin_team_v1"
+                e.key === "shikhor_admin_team_v1" ||
+                e.key === "shikhor_admin_gallery_v1"
             ) {
                 loadLocalFallbackFromAdmin();
             }
