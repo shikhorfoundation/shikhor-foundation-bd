@@ -3,547 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikhor Foundation | Admin Control Panel</title>
+    <title>Shikhor Foundation | Auto Photo Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; }
+        body { font-family: 'Outfit', sans-serif; background: #F6EFE8; color: #231712; }
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
-
-        .hover-lift {
-            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
-        }
-        .hover-lift:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 24px -10px rgba(35, 23, 18, 0.18);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white min-h-screen">
+<body class="min-h-screen">
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toastBanner" class="fixed bottom-6 right-6 z-50 hidden max-w-sm bg-[#231712] text-[#F6EFE8] border border-[#8C583A] rounded-2xl shadow-2xl px-4 py-3.5 flex items-start gap-3 animate-fade-in">
-        <i id="toastIcon" class="fa-solid fa-circle-check text-[#E6B88A] mt-0.5 text-base"></i>
-        <div class="text-xs leading-relaxed flex-1">
-            <p id="toastTitle" class="font-bold text-white"></p>
-            <p id="toastMessage" class="text-[#D4C3B3] mt-0.5"></p>
-        </div>
-        <button type="button" onclick="hideToast()" class="text-[#A68F80] hover:text-white text-sm">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
+    <!-- Hidden Universal File Explorer Input -->
+    <input type="file" id="autoFilePicker" accept="image/*" class="hidden">
+
+    <!-- Toast Notification -->
+    <div id="toastBox" class="hidden fixed bottom-5 right-5 z-50 bg-[#231712] text-[#E6B88A] border border-[#8C583A] px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2.5">
+        <i class="fa-solid fa-circle-check text-green-400 text-base"></i>
+        <span id="toastMsg">Updated automatically!</span>
     </div>
 
-    <!-- ADMIN LOGIN SCREEN -->
-    <div id="adminLoginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#231712] via-[#3B261D] to-[#5C3D2E]">
-        <div class="bg-[#FDFBF9] text-[#231712] max-w-md w-full rounded-3xl p-7 sm:p-9 shadow-2xl border-2 border-[#B88655] animate-fade-in">
-            <div class="text-center mb-7">
-                <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-[#EFE5DC] border-2 border-[#8C583A] p-2 shadow-md flex items-center justify-center overflow-hidden">
-                    <img src="logo.png" alt="Shikhor Foundation Logo" onerror="this.style.display='none'" class="w-full h-full object-contain">
+    <!-- LOGIN SCREEN (Username & Password Only) -->
+    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4">
+        <form onsubmit="handleAdminLogin(event)" class="bg-[#FDFBF9] border-2 border-[#B88655] rounded-3xl p-8 max-w-md w-full shadow-2xl text-center">
+            <img src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-20 h-20 mx-auto rounded-2xl object-contain bg-[#EFE5DC] p-2 border border-[#D4C3B3] mb-4">
+            <h1 class="text-2xl font-extrabold font-heading text-[#231712]">Shikhor Auto Admin</h1>
+            <p class="text-xs text-[#5C3D2E] mt-1 mb-6">Sign in with your admin credentials</p>
+
+            <div class="text-left space-y-3 mb-5">
+                <div>
+                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Username</label>
+                    <input type="text" id="adminUsernameInput" required autocomplete="username" placeholder="Enter username" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
                 </div>
-                <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A] block">Shikhor Foundation</span>
-                <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">Admin Portal</h1>
-                <p class="text-xs text-[#5C3D2E] mt-1.5">Sign in to manage notices, news, headlines, sections, team & logs.</p>
+                <div>
+                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Password</label>
+                    <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter password" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
+                </div>
             </div>
 
-            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1.5">Admin ID / Username</label>
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A]">
-                            <i class="fa-solid fa-user-shield"></i>
-                        </span>
-                        <input type="text" id="adminUsernameInput" required autocomplete="username" placeholder="Enter admin ID" class="w-full pl-10 pr-4 py-3 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                    </div>
-                </div>
+            <p id="loginErrorMsg" class="hidden text-xs font-bold text-red-700 mb-3">Invalid username or password.</p>
 
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3B261D] mb-1.5">Password</label>
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A]">
-                            <i class="fa-solid fa-lock"></i>
-                        </span>
-                        <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter password" class="w-full pl-10 pr-11 py-3 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6E5649] hover:text-[#231712]" title="Show/Hide Password">
-                            <i id="passwordEyeIcon" class="fa-solid fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="loginErrorMsg" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <span>Invalid Admin ID or Password. Please try again.</span>
-                </div>
-
-                <button type="submit" class="w-full py-3.5 px-5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white font-bold text-sm shadow-lg transition flex items-center justify-center gap-2">
-                    <span>Login to Admin Panel</span>
-                    <i class="fa-solid fa-arrow-right-to-bracket text-[#E6B88A]"></i>
-                </button>
-            </form>
-
-            <div class="mt-6 pt-5 border-t border-[#E5D7C9] flex items-center justify-between text-xs">
-                <a href="index.html" class="text-[#5C3D2E] hover:text-[#231712] font-semibold inline-flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Website
-                </a>
-                <span class="text-[#8C583A] font-medium">Session Protected</span>
-            </div>
-        </div>
+            <button type="submit" class="w-full py-3 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white font-bold text-sm transition">
+                Sign In <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+            <a href="index.html" class="inline-block mt-4 text-xs font-bold text-[#8C583A] hover:underline">← Back to Website</a>
+        </form>
     </div>
 
-    <!-- AUTHENTICATED ADMIN DASHBOARD -->
-    <div id="adminDashboardApp" class="hidden min-h-screen flex flex-col">
-
-        <header class="sticky top-0 z-40 bg-[#231712] text-[#F6EFE8] border-b border-[#5C3D2E] shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="hidden">
+        <header class="sticky top-0 z-30 bg-[#FDFBF9] border-b border-[#D4C3B3] shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-2xl bg-[#FDFBF9] p-1.5 border border-[#B88655] flex items-center justify-center overflow-hidden shrink-0">
-                        <img src="logo.png" alt="Logo" onerror="this.style.display='none'" class="w-full h-full object-contain">
-                    </div>
+                    <img id="admLogoPreview" src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-9 h-9 rounded-xl object-contain bg-[#EFE5DC] p-1 border border-[#C4AE99]">
                     <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-lg sm:text-xl font-bold font-heading tracking-tight text-white">SHIKHOR ADMIN</span>
-                            <span class="hidden sm:inline-block px-2 py-0.5 rounded-md bg-[#8C583A] text-white text-[10px] font-bold uppercase tracking-wider">Control Center</span>
-                        </div>
-                        <p id="lastSyncTimeLabel" class="text-[11px] text-[#D4C3B3]">Spreadsheet Sync Ready</p>
+                        <span class="font-bold font-heading text-base block leading-none">SHIKHOR AUTO ADMIN</span>
+                        <span class="text-[10px] font-bold text-green-700 uppercase">shikhor@bd • Auto-Sync Active</span>
                     </div>
                 </div>
-
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <button type="button" onclick="syncAllWithSheet(true)" class="px-3 py-2 rounded-xl bg-[#3B261D] hover:bg-[#5C3D2E] text-[#E6B88A] border border-[#8C583A]/60 text-xs font-bold transition flex items-center gap-1.5" title="Sync with Google Sheet">
-                        <i id="syncSpinIcon" class="fa-solid fa-rotate"></i>
-                        <span class="hidden md:inline">Sync Sheet</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="pickImageFor('logo')" class="px-3 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold">
+                        <i class="fa-solid fa-image text-[#8C583A]"></i> Change Logo
                     </button>
-                    <a href="index.html" target="_blank" class="px-3 py-2 rounded-xl bg-[#3B261D] hover:bg-[#5C3D2E] text-white border border-[#8C583A]/60 text-xs font-bold transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-up-right-from-square text-[#E6B88A]"></i>
-                        <span class="hidden sm:inline">View Site</span>
+                    <a href="index.html" target="_blank" class="px-3.5 py-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                        View Live Site ↗
                     </a>
-                    <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-2 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <span>Logout</span>
+                    <button type="button" onclick="logoutAdmin()" class="px-3 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold">
+                        Logout
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-10">
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published Notices</p>
-                    <h3 id="statNoticeCount" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">0</h3>
-                </div>
-                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published News</p>
-                    <h3 id="statNewsCount" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">0</h3>
-                </div>
-                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Change Audit Logs</p>
-                    <h3 id="statAuditCount" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">0</h3>
-                </div>
-                <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Visitor Logs</p>
-                    <h3 id="statVisitorCount" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">0</h3>
-                </div>
-            </div>
-
-            <div class="bg-[#FDFBF9] p-3 rounded-2xl border border-[#D4C3B3] shadow-sm flex flex-wrap items-center gap-2">
-                <button type="button" onclick="switchSector('notices_news')" data-sector-tab="notices_news" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#3B261D] text-white shadow">
-                    <i class="fa-solid fa-bullhorn"></i>
-                    <span>1. Notice & News</span>
-                </button>
-                <button type="button" onclick="switchSector('headlines')" data-sector-tab="headlines" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-bolt"></i>
-                    <span>2. Headlines Ticker</span>
-                </button>
-                <button type="button" onclick="switchSector('site_sections')" data-sector-tab="site_sections" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-sliders"></i>
-                    <span>3. Site Sections & Stats</span>
-                </button>
-                <button type="button" onclick="switchSector('team')" data-sector-tab="team" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-users"></i>
-                    <span>4. Team & Panel</span>
-                </button>
-                <button type="button" onclick="switchSector('audit_logs')" data-sector-tab="audit_logs" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-clipboard-check"></i>
-                    <span>5. Change Proof Logs</span>
-                </button>
-                <button type="button" onclick="switchSector('visitor_logs')" data-sector-tab="visitor_logs" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>6. Visitor Logs</span>
-                </button>
-            </div>
-
-            <!-- SECTOR 1: NOTICE & NEWS MANAGER -->
-            <section id="sector-notices_news" class="admin-sector space-y-6 animate-fade-in">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-5 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm h-fit">
-                        <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 01 • Publish</span>
-                                <h2 id="nnFormHeading" class="text-xl font-bold font-heading text-[#231712]">Add New Notice or News</h2>
-                            </div>
-                            <button type="button" onclick="resetNoticeNewsForm()" class="text-xs font-bold text-[#8C583A] hover:underline">Reset</button>
-                        </div>
-
-                        <form id="noticeNewsForm" onsubmit="handleNoticeNewsSubmit(event)" class="space-y-4 text-xs sm:text-sm">
-                            <input type="hidden" id="nnEditId" value="">
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Category</label>
-                                    <select id="nnCategory" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] font-medium focus:outline-none focus:border-[#8C583A]">
-                                        <option value="Notice">Notice</option>
-                                        <option value="News">News</option>
-                                        <option value="Press Release">Press Release</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Status</label>
-                                    <select id="nnStatus" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] font-medium focus:outline-none focus:border-[#8C583A]">
-                                        <option value="Published">Published (Live)</option>
-                                        <option value="Draft">Draft</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Publish Date & Time</label>
-                                <input type="text" id="nnDate" placeholder="e.g. Nov 25, 2026" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                            </div>
-
-                            <!-- INSTANT AUTO-SUBMIT ADD IMAGES BOX -->
-                            <div class="p-3.5 rounded-2xl bg-[#F2E8DF] border border-[#C4AE99] space-y-2.5">
-                                <div class="flex items-center justify-between">
-                                    <label class="text-xs font-bold text-[#3B261D]">Add Images (Instant Auto-Submit)</label>
-                                    <span id="nnUploadStatus" class="text-[11px] font-bold text-[#8C583A]">Ready</span>
-                                </div>
-
-                                <input type="file" id="nnImageFileInput" accept="image/*" class="hidden" onchange="handleAutoSubmitImage(event, 'nn')">
-
-                                <button type="button" id="nnUploadBtn" onclick="document.getElementById('nnImageFileInput').click()" class="w-full py-3 px-4 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-images"></i>
-                                    <span>Add Images (Pick Any File & Auto-Submit)</span>
-                                </button>
-                                <p class="text-[11px] text-[#5C3D2E]">Select any photo from PC or phone — no file renaming needed, auto-submits right away.</p>
-
-                                <div id="nnPreviewWrap" class="hidden rounded-xl overflow-hidden border border-[#C4AE99] bg-[#FDFBF9] h-32 relative">
-                                    <img id="nnImagePreview" src="" alt="Preview" class="w-full h-full object-cover">
-                                </div>
-
-                                <input type="text" id="nnBanner" oninput="updatePreviewFromUrl('nnBanner', 'nnImagePreview', 'nnPreviewWrap')" placeholder="Image URL auto-fills on pick" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-xs text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Headline / Title *</label>
-                                <input type="text" id="nnTitle" required placeholder="Enter notice or news headline..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Short Summary</label>
-                                <textarea id="nnSummary" rows="2" placeholder="Short card preview summary..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]"></textarea>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Full News / Notice Details (Shown on View)</label>
-                                <textarea id="nnFullContent" rows="4" placeholder="Write the complete story or notice details shown when a visitor clicks View News / View Notice..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]"></textarea>
-                            </div>
-
-                            <button type="submit" id="nnSubmitBtn" class="w-full py-3 px-5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-cloud-arrow-up text-[#E6B88A]"></i>
-                                <span>Publish & Save to Spreadsheet</span>
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="lg:col-span-7 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm">
-                        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                            <div>
-                                <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Live Items</span>
-                                <h2 class="text-xl font-bold font-heading text-[#231712]">Active Notices & News</h2>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button type="button" onclick="setNnFilter('all')" id="filter-all" class="nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#3B261D] text-white">All</button>
-                                <button type="button" onclick="setNnFilter('Notice')" id="filter-Notice" class="nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F2E8DF] text-[#3B261D]">Notices</button>
-                                <button type="button" onclick="setNnFilter('News')" id="filter-News" class="nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F2E8DF] text-[#3B261D]">News</button>
-                            </div>
-                        </div>
-
-                        <div id="adminNoticeNewsList" class="space-y-3.5 max-h-[680px] overflow-y-auto pr-1"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTOR 2: HEADLINE TICKER CONTROL -->
-            <section id="sector-headlines" class="admin-sector hidden space-y-6 animate-fade-in">
-                <div class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+            <!-- 1. GALLERY AUTO UPLOAD -->
+            <section class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <div>
-                        <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 02 • Top Ticker</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Latest Headlines Ticker Preview & Jump Control</h2>
-                        <p class="text-xs sm:text-sm text-[#4F392E] mt-1">
-                            Every published Notice and News item automatically appears in the top clickable headline bar on <code class="bg-[#F2E8DF] px-1.5 py-0.5 rounded">index.html</code>. Clicking a headline scrolls directly to that card and highlights it.
-                        </p>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">GALLERY</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Upload Gallery Pictures</h2>
+                        <p class="text-xs text-[#5C3D2E]">Click "Upload Picture" — select any file with any name. It appears automatically.</p>
                     </div>
-
-                    <div class="bg-[#231712] text-[#F6EFE8] rounded-2xl p-3.5 border border-[#8C583A] flex items-center gap-3 overflow-x-auto">
-                        <span class="shrink-0 px-3 py-1 rounded-lg bg-[#8C583A] text-white text-[11px] font-bold uppercase">Live Ticker</span>
-                        <div id="adminHeadlinePreviewChips" class="flex items-center gap-3 text-xs whitespace-nowrap"></div>
-                    </div>
-
-                    <div id="adminHeadlineList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    <button type="button" onclick="pickImageFor('new-gallery')" class="px-5 py-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open"></i> Upload Picture
+                    </button>
                 </div>
+                <div id="adminGalleryList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
             </section>
 
-            <!-- SECTOR 3: SITE SECTIONS & STATS EDITOR -->
-            <section id="sector-site_sections" class="admin-sector hidden space-y-6 animate-fade-in">
-                <form id="siteSectionsForm" onsubmit="handleSiteSectionsSave(event)" class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
-                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
-                        <div>
-                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 03 • Main Page Content</span>
-                            <h2 class="text-2xl font-bold font-heading text-[#231712]">Hero, Impact Counter, About & Donation Settings</h2>
-                        </div>
-                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow-md transition flex items-center gap-2">
-                            <i class="fa-solid fa-floppy-disk text-[#E6B88A]"></i>
-                            <span>Save Section Changes</span>
-                        </button>
-                    </div>
-
+            <!-- 2. FOUNDER & TEAM AUTO PHOTO UPLOAD -->
+            <section class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <div>
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-[#5C3D2E] mb-3">Impact Counter Numbers</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="p-4 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3]">
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Families Supported</label>
-                                <input type="text" id="secFamiliesCount" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-sm font-bold">
-                            </div>
-                            <div class="p-4 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3]">
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Active Volunteers</label>
-                                <input type="text" id="secVolunteersCount" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-sm font-bold">
-                            </div>
-                            <div class="p-4 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3]">
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Successful Events</label>
-                                <input type="text" id="secEventsCount" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-sm font-bold">
-                            </div>
-                        </div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">LEADERSHIP & TEAM</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Founder & Panel Member Photos</h2>
+                        <p class="text-xs text-[#5C3D2E]">Tap "Upload Picture" on any member card to replace their photo instantly.</p>
                     </div>
+                    <button type="button" onclick="addNewMember()" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                        <i class="fa-solid fa-plus mr-1"></i> Add Member
+                    </button>
+                </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Headline</label>
-                            <input type="text" id="secHeroTitle" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">bKash / Nagad Donation Number</label>
-                            <input type="text" id="secDonationNumber" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Sub-description</label>
-                            <textarea id="secHeroSubtitle" rows="2" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">About Us Description</label>
-                            <textarea id="secAboutText" rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm"></textarea>
-                        </div>
-                    </div>
-                </form>
+                <div id="adminFounderCard" class="bg-[#F2E8DF] rounded-2xl p-5 border border-[#C4AE99] mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"></div>
+                <div id="adminTeamGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
             </section>
 
-            <!-- SECTOR 4: TEAM & PANEL MANAGER -->
-            <section id="sector-team" class="admin-sector hidden space-y-6 animate-fade-in">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-4 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm h-fit">
-                        <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 04 • Panel</span>
-                        <h2 class="text-xl font-bold font-heading text-[#231712] mb-4">Add Team Member</h2>
-                        <form id="teamMemberForm" onsubmit="handleTeamAdd(event)" class="space-y-3.5 text-sm">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Full Name *</label>
-                                <input type="text" id="tmName" required placeholder="Member Name" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Designation / Role *</label>
-                                <input type="text" id="tmRole" required placeholder="e.g. Executive Member" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
-                            </div>
-
-                            <div class="p-3 rounded-2xl bg-[#F2E8DF] border border-[#C4AE99] space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <label class="text-xs font-bold text-[#3B261D]">Add Images (Auto-Submit)</label>
-                                    <span id="tmUploadStatus" class="text-[11px] font-bold text-[#8C583A]">Ready</span>
-                                </div>
-                                <input type="file" id="tmImageFileInput" accept="image/*" class="hidden" onchange="handleAutoSubmitImage(event, 'tm')">
-                                <button type="button" id="tmUploadBtn" onclick="document.getElementById('tmImageFileInput').click()" class="w-full py-2.5 px-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-images"></i>
-                                    <span>Add Images (Pick & Auto-Submit)</span>
-                                </button>
-                                <div id="tmPreviewWrap" class="hidden w-16 h-16 mx-auto rounded-xl overflow-hidden border border-[#C4AE99] bg-[#FDFBF9]">
-                                    <img id="tmImagePreview" src="" alt="Member Preview" class="w-full h-full object-cover">
-                                </div>
-                                <input type="text" id="tmPhoto" oninput="updatePreviewFromUrl('tmPhoto', 'tmImagePreview', 'tmPreviewWrap')" placeholder="Photo URL auto-fills on pick" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-xs">
-                            </div>
-
-                            <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow transition">
-                                Add & Log to Sheet
-                            </button>
-                        </form>
+            <!-- 3. NOTICE & NEWS AUTO BANNER UPLOAD -->
+            <section class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">NOTICE & NEWS</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Notices & News with Auto Photo</h2>
                     </div>
-
-                    <div class="lg:col-span-8 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm">
-                        <h2 class="text-xl font-bold font-heading text-[#231712] mb-4">Shikhor Leadership & Panel Roster</h2>
-                        <div id="adminTeamList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
-                    </div>
+                    <button type="button" onclick="addNewNoticeOrNews()" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                        <i class="fa-solid fa-plus mr-1"></i> Add Notice / News
+                    </button>
                 </div>
-            </section>
-
-            <!-- SECTOR 5: CHANGE & DELETE AUDIT PROOF LOGS -->
-            <section id="sector-audit_logs" class="admin-sector hidden space-y-6 animate-fade-in">
-                <div class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-5">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 05 • Spreadsheet Proof</span>
-                            <h2 class="text-2xl font-bold font-heading text-[#231712]">What Was Added, Changed, or Removed</h2>
-                            <p class="text-xs sm:text-sm text-[#4F392E] mt-1">
-                                Every action taken from this panel logs the exact sector, action type (ADDED / UPDATED / REMOVED), item details, date, and time to your Google Sheet.
-                            </p>
-                        </div>
-                        <button type="button" onclick="clearLocalAuditView()" class="px-3.5 py-2 rounded-xl bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                            Clear Local View
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto rounded-2xl border border-[#D4C3B3]">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead class="bg-[#3B261D] text-[#E6B88A] uppercase text-[11px] tracking-wider">
-                                <tr>
-                                    <th class="py-3 px-4">Date & Time</th>
-                                    <th class="py-3 px-4">Sector</th>
-                                    <th class="py-3 px-4">Change Type</th>
-                                    <th class="py-3 px-4">Details (What Changed / Removed)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="auditLogTableBody" class="divide-y divide-[#E5D7C9] bg-[#FDFBF9]"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTOR 6: VISITOR DEVICE LOGS -->
-            <section id="sector-visitor_logs" class="admin-sector hidden space-y-6 animate-fade-in">
-                <div class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-5">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 06 • Public Traffic</span>
-                            <h2 class="text-2xl font-bold font-heading text-[#231712]">Visitor Device, Entry & Exit Logs</h2>
-                            <p class="text-xs sm:text-sm text-[#4F392E] mt-1">
-                                Tracks public visitors entering and leaving the website without requiring login—showing device type, OS, browser, screen size, and timestamp.
-                            </p>
-                        </div>
-                        <button type="button" onclick="syncAllWithSheet(true)" class="px-4 py-2 rounded-xl bg-[#3B261D] text-white text-xs font-bold">
-                            Pull Latest Sheet Logs
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto rounded-2xl border border-[#D4C3B3]">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead class="bg-[#3B261D] text-[#E6B88A] uppercase text-[11px] tracking-wider">
-                                <tr>
-                                    <th class="py-3 px-4">Timestamp</th>
-                                    <th class="py-3 px-4">Visitor / Status</th>
-                                    <th class="py-3 px-4">Device & Browser Info</th>
-                                </tr>
-                            </thead>
-                            <tbody id="visitorLogTableBody" class="divide-y divide-[#E5D7C9] bg-[#FDFBF9]"></tbody>
-                        </table>
-                    </div>
-                </div>
+                <div id="adminNoticeNewsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
             </section>
 
         </main>
-
-        <footer class="bg-[#231712] text-[#D4C3B3] py-6 border-t border-[#5C3D2E] text-center text-xs">
-            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-                <span>Shikhor Foundation Admin Panel • Rooted in Humanity, Growing with Compassion</span>
-                <span class="text-[#A68F80]">&copy; 2026 Shikhor Foundation</span>
-            </div>
-        </footer>
-
     </div>
 
     <script>
-        const ADMIN_AUTH = {
-            username: "shikhor@bd",
-            password: "Shikhor_foundation_bd",
-            sessionKey: "shikhor_admin_authenticated_session_v1"
-        };
-
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec";
+        const AUTH_USER = "shikhor@bd";
+        const AUTH_PASS = "Shikhor_Foundation_Bd";
 
         const STORAGE_KEYS = {
-            items: "shikhor_admin_notice_news_v1",
             sections: "shikhor_admin_site_sections_v1",
             team: "shikhor_admin_team_v1",
-            audit: "shikhor_admin_audit_logs_v1",
-            visitors: "shikhor_admin_visitor_logs_v1"
+            gallery: "shikhor_admin_gallery_v1",
+            notice: "shikhor_admin_notice_news_v1"
         };
-
-        const DEFAULT_ITEMS = [
-            {
-                id: "item-notice-1",
-                category: "Notice",
-                status: "Published",
-                date: "Nov 25, 2026",
-                title: "Volunteer & Community Drive",
-                banner: "gallery1.jpg",
-                summary: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live.",
-                fullContent: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live. Interested volunteers and supporters can stay tuned for schedule updates, field locations, and registration details."
-            },
-            {
-                id: "item-news-1",
-                category: "News",
-                status: "Published",
-                date: "Nov 25, 2026",
-                title: "Standing Together for Communities",
-                banner: "gallery2.jpg",
-                summary: "Recent news stories, relief updates, and ground reports from Shikhor Foundation.",
-                fullContent: "Recent news stories, relief updates, and ground reports from Shikhor Foundation are featured here. Every initiative is driven by compassion, community participation, and transparent action to support families in need."
-            }
-        ];
-
-        const DEFAULT_SECTIONS = {
-            familiesCount: "100+",
-            volunteersCount: "50+",
-            eventsCount: "10+",
-            heroTitle: "A little kindness can grow into a better tomorrow.",
-            heroSubtitle: "Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.",
-            aboutText: "Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.",
-            donationNumber: "+8801956631465"
-        };
-
-        const DEFAULT_TEAM = [
-            { id: "tm-1", name: "Md. Shewise Al Islam Zarif", role: "Founder & CEO / President", photo: "zarif.jpg" },
-            { id: "tm-2", name: "Ahsan Zaman", role: "Vice President", photo: "ahsan.jpg" },
-            { id: "tm-3", name: "Nafew Khalil", role: "Vice President of Program Organisation", photo: "nafew.jpg" },
-            { id: "tm-4", name: "Md. Shakhawat Hossain Sayem", role: "Head Of Administration & Marketing", photo: "shakhawat.jpg" },
-            { id: "tm-5", name: "MD. Minhajul Islam", role: "Head of Accounts & Finance", photo: "minhajul.jpg" },
-            { id: "tm-6", name: "Faymul Islam Shafi", role: "Head Of Volunteer", photo: "shafi.jpg" },
-            { id: "tm-7", name: "Rikto Ruddur Lyric", role: "Asst. Head Of Marketing", photo: "rikto.png" }
-        ];
 
         let state = {
-            items: [],
-            sections: { ...DEFAULT_SECTIONS },
-            team: [],
-            auditLogs: [],
-            visitorLogs: [],
-            activeSector: "notices_news",
-            nnFilter: "all"
+            sections: {
+                logoUrl: "./logo.png",
+                founderName: "Md. Shewise Al Islam Zarif",
+                founderRole: "Founder & CEO / President",
+                founderQuote: "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow.",
+                founderPhoto: "./zarif.jpg"
+            },
+            team: [
+                { id: "tm-2", name: "Ahsan Zaman", role: "Vice President", photo: "./ahsan.jpg" },
+                { id: "tm-3", name: "Nafew Khalil", role: "Vice President of Program Organisation", photo: "./nafew.jpg" },
+                { id: "tm-4", name: "Md. Shakhawat Hossain Sayem", role: "Head Of Administration & Marketing", photo: "./shakhawat.jpg" },
+                { id: "tm-7", name: "Rikto Ruddur Lyric", role: "Asst. Head Of Marketing", photo: "./rikto.png" }
+            ],
+            gallery: [
+                { id: "gal-1", caption: "Community Support Activity", image: "./gallery1.jpg" }
+            ],
+            notice: [
+                {
+                    id: "item-notice-1",
+                    category: "Notice",
+                    status: "Published",
+                    date: "25 Nov 2026",
+                    title: "Volunteer & Community Drive",
+                    image: "./gallery1.jpg",
+                    summary: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live.",
+                    fullContent: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live. Interested volunteers and supporters can stay tuned for schedule updates, field locations, and registration details."
+                },
+                {
+                    id: "item-news-1",
+                    category: "News",
+                    status: "Published",
+                    date: "25 Nov 2026",
+                    title: "Standing Together for Communities",
+                    image: "./gallery1.jpg",
+                    summary: "Recent news stories, relief updates, and ground reports from Shikhor Foundation.",
+                    fullContent: "Recent news stories, relief updates, and ground reports from Shikhor Foundation are featured here. Every initiative is driven by compassion, community participation, and transparent action to support families in need."
+                }
+            ]
         };
 
-        function compressImageFile(file, maxWidth = 1200, quality = 0.8) {
+        let pendingUploadTarget = null;
+
+        function showToast(msg) {
+            const box = document.getElementById("toastBox");
+            document.getElementById("toastMsg").textContent = msg;
+            box.classList.remove("hidden");
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => box.classList.add("hidden"), 2500);
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById("adminUsernameInput").value.trim();
+            const p = document.getElementById("adminPasswordInput").value;
+            const errEl = document.getElementById("loginErrorMsg");
+
+            if (u === AUTH_USER && p === AUTH_PASS) {
+                errEl.classList.add("hidden");
+                sessionStorage.setItem("shikhor_admin_authed", "1");
+                document.getElementById("lockScreen").classList.add("hidden");
+                document.getElementById("adminDashboard").classList.remove("hidden");
+                loadState();
+                renderAll();
+            } else {
+                errEl.classList.remove("hidden");
+            }
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem("shikhor_admin_authed");
+            document.getElementById("adminDashboard").classList.add("hidden");
+            document.getElementById("lockScreen").classList.remove("hidden");
+            document.getElementById("adminPasswordInput").value = "";
+        }
+
+        function loadState() {
+            try {
+                const s = localStorage.getItem(STORAGE_KEYS.sections);
+                if (s) state.sections = { ...state.sections, ...JSON.parse(s) };
+
+                const t = localStorage.getItem(STORAGE_KEYS.team);
+                if (t) {
+                    const parsedT = JSON.parse(t);
+                    if (Array.isArray(parsedT) && parsedT.length > 0) {
+                        state.team = parsedT.map((m, idx) => ({
+                            id: m.id || m["Member ID"] || `tm-${idx + 1}`,
+                            name: m.name || m["Full Name"] || "Member",
+                            role: m.role || m["Designation / Role"] || "Panel Member",
+                            photo: m.photo || m["Photo URL"] || "./logo.png"
+                        }));
+                    }
+                }
+
+                const g = localStorage.getItem(STORAGE_KEYS.gallery);
+                if (g) {
+                    const parsedG = JSON.parse(g);
+                    if (Array.isArray(parsedG) && parsedG.length > 0) state.gallery = parsedG;
+                }
+
+                const n = localStorage.getItem(STORAGE_KEYS.notice);
+                if (n) {
+                    const parsedN = JSON.parse(n);
+                    if (Array.isArray(parsedN) && parsedN.length > 0) state.notice = parsedN;
+                }
+            } catch (e) {}
+        }
+
+        function autoSaveAndSync(syncType = "saveAll", extraPayload = {}) {
+            try {
+                localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(state.sections));
+                localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
+                localStorage.setItem(STORAGE_KEYS.gallery, JSON.stringify(state.gallery));
+                localStorage.setItem(STORAGE_KEYS.notice, JSON.stringify(state.notice));
+            } catch (e) {
+                showToast("Storage full — try a smaller photo!");
+            }
+
+            if (GOOGLE_SCRIPT_URL) {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: syncType,
+                        sections: state.sections,
+                        team: state.team,
+                        gallery: state.gallery,
+                        notice: state.notice,
+                        ...extraPayload
+                    })
+                }).catch(() => {});
+            }
+            showToast("Photo applied & synced automatically!");
+        }
+
+        function compressImageFile(file, maxWidth = 900, quality = 0.78) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
@@ -560,9 +292,7 @@
                         canvas.height = h;
                         const ctx = canvas.getContext("2d");
                         ctx.drawImage(img, 0, 0, w, h);
-                        const dataUrl = canvas.toDataURL("image/jpeg", quality);
-                        const base64Data = dataUrl.split(",")[1];
-                        resolve({ dataUrl, base64Data, mimeType: "image/jpeg" });
+                        resolve(canvas.toDataURL("image/jpeg", quality));
                     };
                     img.onerror = reject;
                     img.src = ev.target.result;
@@ -572,755 +302,174 @@
             });
         }
 
-        async function uploadImageToDriveOrLocal(file, statusEl, previewImg, previewWrap, urlInput) {
-            if (statusEl) statusEl.textContent = "Uploading...";
-            const { dataUrl, base64Data, mimeType } = await compressImageFile(file);
+        function pickImageFor(target) {
+            pendingUploadTarget = target;
+            const picker = document.getElementById("autoFilePicker");
+            picker.value = "";
+            picker.click();
+        }
 
-            if (previewImg && previewWrap) {
-                previewImg.src = dataUrl;
-                previewWrap.classList.remove("hidden");
-            }
+        document.getElementById("autoFilePicker").addEventListener("change", async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file || !pendingUploadTarget) return;
 
             try {
-                const res = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({
-                        action: "uploadImage",
-                        fileName: file.name,
-                        mimeType: mimeType,
-                        base64Data: base64Data
-                    })
-                });
-                const result = await res.json();
-                if (result && result.success && result.imageUrl) {
-                    urlInput.value = result.imageUrl;
-                    if (previewImg) previewImg.src = result.imageUrl;
-                    if (statusEl) statusEl.textContent = "Uploaded ✓";
-                    return result.imageUrl;
+                const dataUrl = await compressImageFile(file);
+                const target = pendingUploadTarget;
+                pendingUploadTarget = null;
+
+                if (target === "logo") {
+                    state.sections.logoUrl = dataUrl;
+                } else if (target === "founder") {
+                    state.sections.founderPhoto = dataUrl;
+                } else if (target === "new-gallery") {
+                    const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ") || "Gallery Photo";
+                    state.gallery.unshift({
+                        id: "gal-" + Date.now(),
+                        caption: cleanTitle,
+                        image: dataUrl
+                    });
+                } else if (target.startsWith("gallery:")) {
+                    const id = target.split(":")[1];
+                    const item = state.gallery.find(g => g.id === id);
+                    if (item) item.image = dataUrl;
+                } else if (target.startsWith("team:")) {
+                    const id = target.split(":")[1];
+                    const member = state.team.find(m => m.id === id);
+                    if (member) member.photo = dataUrl;
+                } else if (target.startsWith("notice:")) {
+                    const id = target.split(":")[1];
+                    const post = state.notice.find(n => n.id === id);
+                    if (post) post.image = dataUrl;
                 }
-            } catch (e) {}
 
-            const { dataUrl: localSmall } = await compressImageFile(file, 800, 0.7);
-            urlInput.value = localSmall;
-            if (previewImg) previewImg.src = localSmall;
-            if (statusEl) statusEl.textContent = "Attached ✓";
-            return localSmall;
-        }
-
-        async function handleAutoSubmitImage(event, scope) {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
-
-            if (scope === "nn") {
-                const btn = document.getElementById("nnUploadBtn");
-                const statusEl = document.getElementById("nnUploadStatus");
-                const urlInput = document.getElementById("nnBanner");
-                const previewImg = document.getElementById("nnImagePreview");
-                const previewWrap = document.getElementById("nnPreviewWrap");
-
-                btn.disabled = true;
-                try {
-                    const finalImg = await uploadImageToDriveOrLocal(file, statusEl, previewImg, previewWrap, urlInput);
-                    const category = document.getElementById("nnCategory").value || "News";
-                    const status = document.getElementById("nnStatus").value || "Published";
-                    const date = document.getElementById("nnDate").value.trim() || formatNowBD();
-                    const titleInput = document.getElementById("nnTitle");
-                    const autoTitle = titleInput.value.trim() || `${category} Update (${formatNowBD()})`;
-                    const summary = document.getElementById("nnSummary").value.trim() || autoTitle;
-                    const fullContent = document.getElementById("nnFullContent").value.trim() || summary;
-                    const editId = document.getElementById("nnEditId").value.trim();
-
-                    if (editId) {
-                        const idx = state.items.findIndex(i => i.id === editId);
-                        if (idx !== -1) {
-                            state.items[idx] = {
-                                ...state.items[idx],
-                                category,
-                                status,
-                                date,
-                                title: autoTitle,
-                                summary,
-                                fullContent,
-                                banner: finalImg
-                            };
-                            recordChangeAndSync("Notice & News", "UPDATED", `Auto-submitted image & updated [${category}] "${autoTitle}"`);
-                        }
-                    } else {
-                        state.items.unshift({
-                            id: "item-" + Date.now(),
-                            category,
-                            status,
-                            date,
-                            title: autoTitle,
-                            banner: finalImg,
-                            summary,
-                            fullContent
-                        });
-                        recordChangeAndSync("Notice & News", "ADDED", `Auto-submitted image & published [${category}] "${autoTitle}"`);
-                    }
-
-                    resetNoticeNewsForm();
-                    renderAll();
-                    showToast("Auto-Submitted!", `"${autoTitle}" is live and synced to your spreadsheet.`);
-                } finally {
-                    btn.disabled = false;
-                    event.target.value = "";
-                }
-            } else if (scope === "tm") {
-                const btn = document.getElementById("tmUploadBtn");
-                const statusEl = document.getElementById("tmUploadStatus");
-                const urlInput = document.getElementById("tmPhoto");
-                const previewImg = document.getElementById("tmImagePreview");
-                const previewWrap = document.getElementById("tmPreviewWrap");
-                const nameInput = document.getElementById("tmName");
-                const roleInput = document.getElementById("tmRole");
-
-                btn.disabled = true;
-                try {
-                    const finalImg = await uploadImageToDriveOrLocal(file, statusEl, previewImg, previewWrap, urlInput);
-                    const nameVal = nameInput.value.trim();
-                    const roleVal = roleInput.value.trim();
-
-                    if (nameVal && roleVal) {
-                        state.team.push({ id: "tm-" + Date.now(), name: nameVal, role: roleVal, photo: finalImg });
-                        document.getElementById("teamMemberForm").reset();
-                        statusEl.textContent = "Ready";
-                        previewWrap.classList.add("hidden");
-                        recordChangeAndSync("Team & Panel", "ADDED", `Auto-submitted photo & added "${nameVal}" (${roleVal})`);
-                        renderTeamList();
-                        showToast("Auto-Submitted!", `"${nameVal}" added to panel and synced.`);
-                    } else {
-                        showToast("Photo Attached", "Enter Full Name & Role to auto-save member.", false);
-                        if (!nameVal) nameInput.focus();
-                    }
-                } finally {
-                    btn.disabled = false;
-                    event.target.value = "";
-                }
-            }
-        }
-
-        function updatePreviewFromUrl(inputId, imgId, wrapId) {
-            const val = document.getElementById(inputId).value.trim();
-            const img = document.getElementById(imgId);
-            const wrap = document.getElementById(wrapId);
-            if (val) {
-                img.src = val;
-                wrap.classList.remove("hidden");
-            } else {
-                wrap.classList.add("hidden");
-            }
-        }
-
-        function togglePasswordVisibility() {
-            const input = document.getElementById("adminPasswordInput");
-            const icon = document.getElementById("passwordEyeIcon");
-            if (input.type === "password") {
-                input.type = "text";
-                icon.className = "fa-solid fa-eye-slash";
-            } else {
-                input.type = "password";
-                icon.className = "fa-solid fa-eye";
-            }
-        }
-
-        function setAuthView(isAuthenticated) {
-            document.getElementById("adminLoginScreen").classList.toggle("hidden", isAuthenticated);
-            document.getElementById("adminDashboardApp").classList.toggle("hidden", !isAuthenticated);
-            if (isAuthenticated) {
-                loadLocalState();
                 renderAll();
-                syncAllWithSheet(false);
-            }
-        }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const userVal = document.getElementById("adminUsernameInput").value.trim();
-            const passVal = document.getElementById("adminPasswordInput").value;
-            const errEl = document.getElementById("loginErrorMsg");
-
-            if (userVal === ADMIN_AUTH.username && passVal === ADMIN_AUTH.password) {
-                errEl.classList.add("hidden");
-                sessionStorage.setItem(ADMIN_AUTH.sessionKey, "1");
-                setAuthView(true);
-                showToast("Welcome Back", "Logged in for this browser session (auto-logout on browser close).");
-            } else {
-                errEl.classList.remove("hidden");
-            }
-        }
-
-        function handleAdminLogout() {
-            sessionStorage.removeItem(ADMIN_AUTH.sessionKey);
-            document.getElementById("adminLoginForm").reset();
-            setAuthView(false);
-            showToast("Logged Out", "Admin session closed.");
-        }
-
-        function autoLogoutOnBrowserClose() {
-            if (sessionStorage.getItem(ADMIN_AUTH.sessionKey) === "1") {
-                sessionStorage.removeItem(ADMIN_AUTH.sessionKey);
-                if (GOOGLE_SCRIPT_URL && navigator.sendBeacon) {
-                    const blob = new Blob([JSON.stringify({
-                        action: "logAdminLogout",
-                        adminUser: ADMIN_AUTH.username,
-                        timestamp: formatNowBD(),
-                        reason: "Browser / Tab Closed"
-                    })], { type: "text/plain;charset=UTF-8" });
-                    navigator.sendBeacon(GOOGLE_SCRIPT_URL, blob);
-                }
-            }
-        }
-
-        window.addEventListener("pagehide", autoLogoutOnBrowserClose);
-        window.addEventListener("beforeunload", autoLogoutOnBrowserClose);
-
-        function escapeHtml(str) {
-            return String(str || "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
-        }
-
-        function formatNowBD() {
-            return new Date().toLocaleString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            });
-        }
-
-        function showToast(title, message, isError = false) {
-            const toast = document.getElementById("toastBanner");
-            const icon = document.getElementById("toastIcon");
-            document.getElementById("toastTitle").textContent = title;
-            document.getElementById("toastMessage").textContent = message;
-            icon.className = isError
-                ? "fa-solid fa-triangle-exclamation text-amber-400 mt-0.5 text-base"
-                : "fa-solid fa-circle-check text-[#E6B88A] mt-0.5 text-base";
-            toast.classList.remove("hidden");
-            clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(hideToast, 3600);
-        }
-
-        function hideToast() {
-            document.getElementById("toastBanner").classList.add("hidden");
-        }
-
-        function loadLocalState() {
-            try {
-                const rawItems = localStorage.getItem(STORAGE_KEYS.items);
-                state.items = rawItems ? JSON.parse(rawItems) : [...DEFAULT_ITEMS];
-
-                const rawSections = localStorage.getItem(STORAGE_KEYS.sections);
-                state.sections = rawSections ? { ...DEFAULT_SECTIONS, ...JSON.parse(rawSections) } : { ...DEFAULT_SECTIONS };
-
-                const rawTeam = localStorage.getItem(STORAGE_KEYS.team);
-                state.team = rawTeam ? JSON.parse(rawTeam) : [...DEFAULT_TEAM];
-
-                const rawAudit = localStorage.getItem(STORAGE_KEYS.audit);
-                state.auditLogs = rawAudit ? JSON.parse(rawAudit) : [];
-
-                const rawVisitors = localStorage.getItem(STORAGE_KEYS.visitors);
-                state.visitorLogs = rawVisitors ? JSON.parse(rawVisitors) : [];
-            } catch (e) {
-                state.items = [...DEFAULT_ITEMS];
-                state.sections = { ...DEFAULT_SECTIONS };
-                state.team = [...DEFAULT_TEAM];
-                state.auditLogs = [];
-                state.visitorLogs = [];
-            }
-        }
-
-        function saveLocalState() {
-            try {
-                localStorage.setItem(STORAGE_KEYS.items, JSON.stringify(state.items));
-                localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(state.sections));
-                localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
-                localStorage.setItem(STORAGE_KEYS.audit, JSON.stringify(state.auditLogs));
-                localStorage.setItem(STORAGE_KEYS.visitors, JSON.stringify(state.visitorLogs));
-            } catch (e) {}
-        }
-
-        function postToSheet(payload) {
-            if (!GOOGLE_SCRIPT_URL) return;
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            }).catch(() => {});
-        }
-
-        function recordChangeAndSync(sectorName, changeType, detailsText, extraPayload = {}) {
-            const timestamp = formatNowBD();
-            const entry = {
-                id: "aud-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
-                timestamp,
-                sector: sectorName,
-                changeType,
-                details: detailsText
-            };
-
-            state.auditLogs.unshift(entry);
-            if (state.auditLogs.length > 200) state.auditLogs.pop();
-
-            saveLocalState();
-            updateDashboardCounts();
-            renderAuditTable();
-
-            postToSheet({
-                action: "logAdminChange",
-                adminUser: ADMIN_AUTH.username,
-                sector: sectorName,
-                changeType,
-                details: detailsText,
-                timestamp,
-                allItems: state.items,
-                sections: state.sections,
-                team: state.team,
-                ...extraPayload
-            });
-
-            document.getElementById("lastSyncTimeLabel").textContent = `Last synced: ${timestamp}`;
-        }
-
-        function switchSector(sectorKey) {
-            state.activeSector = sectorKey;
-            document.querySelectorAll(".admin-sector").forEach(sec => {
-                sec.classList.toggle("hidden", sec.id !== `sector-${sectorKey}`);
-            });
-            document.querySelectorAll(".sector-tab").forEach(btn => {
-                const active = btn.getAttribute("data-sector-tab") === sectorKey;
-                btn.className = active
-                    ? "sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#3B261D] text-white shadow"
-                    : "sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]";
-            });
-        }
-
-        function updateDashboardCounts() {
-            const published = state.items.filter(i => String(i.status || "Published").toLowerCase() !== "draft");
-            const newsCount = published.filter(i => {
-                const c = String(i.category || "").toLowerCase();
-                return c === "news" || c === "press release";
-            }).length;
-            const noticeCount = published.length - newsCount;
-
-            document.getElementById("statNoticeCount").textContent = noticeCount;
-            document.getElementById("statNewsCount").textContent = newsCount;
-            document.getElementById("statAuditCount").textContent = state.auditLogs.length;
-            document.getElementById("statVisitorCount").textContent = state.visitorLogs.length;
-        }
-
-        function setNnFilter(filterVal) {
-            state.nnFilter = filterVal;
-            ["all", "Notice", "News"].forEach(k => {
-                const btn = document.getElementById(`filter-${k}`);
-                if (!btn) return;
-                btn.className = k === filterVal
-                    ? "nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#3B261D] text-white"
-                    : "nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F2E8DF] text-[#3B261D]";
-            });
-            renderNoticeNewsList();
-        }
-
-        function resetNoticeNewsForm() {
-            document.getElementById("nnEditId").value = "";
-            document.getElementById("nnCategory").value = "Notice";
-            document.getElementById("nnStatus").value = "Published";
-            document.getElementById("nnDate").value = formatNowBD();
-            document.getElementById("nnBanner").value = "";
-            document.getElementById("nnTitle").value = "";
-            document.getElementById("nnSummary").value = "";
-            document.getElementById("nnFullContent").value = "";
-            document.getElementById("nnUploadStatus").textContent = "Ready";
-            document.getElementById("nnPreviewWrap").classList.add("hidden");
-            document.getElementById("nnFormHeading").textContent = "Add New Notice or News";
-            document.getElementById("nnSubmitBtn").innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-[#E6B88A]"></i><span>Publish & Save to Spreadsheet</span>`;
-        }
-
-        function editNoticeNewsItem(id) {
-            const found = state.items.find(i => i.id === id);
-            if (!found) return;
-
-            document.getElementById("nnEditId").value = found.id;
-            document.getElementById("nnCategory").value = found.category || "Notice";
-            document.getElementById("nnStatus").value = found.status || "Published";
-            document.getElementById("nnDate").value = found.date || formatNowBD();
-            document.getElementById("nnBanner").value = found.banner || "";
-            document.getElementById("nnTitle").value = found.title || "";
-            document.getElementById("nnSummary").value = found.summary || "";
-            document.getElementById("nnFullContent").value = found.fullContent || "";
-            updatePreviewFromUrl("nnBanner", "nnImagePreview", "nnPreviewWrap");
-            document.getElementById("nnFormHeading").textContent = "Edit Notice / News";
-            document.getElementById("nnSubmitBtn").innerHTML = `<i class="fa-solid fa-pen-to-square text-[#E6B88A]"></i><span>Update & Sync to Spreadsheet</span>`;
-            switchSector("notices_news");
-            window.scrollTo({ top: 180, behavior: "smooth" });
-        }
-
-        function handleNoticeNewsSubmit(e) {
-            e.preventDefault();
-            const editId = document.getElementById("nnEditId").value.trim();
-            const category = document.getElementById("nnCategory").value;
-            const status = document.getElementById("nnStatus").value;
-            const date = document.getElementById("nnDate").value.trim() || formatNowBD();
-            const title = document.getElementById("nnTitle").value.trim();
-            const summary = document.getElementById("nnSummary").value.trim() || title;
-            const fullContent = document.getElementById("nnFullContent").value.trim() || summary;
-            const defaultImg = (category.toLowerCase() === "news" || category.toLowerCase() === "press release") ? "gallery2.jpg" : "gallery1.jpg";
-            const banner = document.getElementById("nnBanner").value.trim() || defaultImg;
-
-            if (!title) return;
-
-            if (editId) {
-                const idx = state.items.findIndex(i => i.id === editId);
-                if (idx !== -1) {
-                    const prevTitle = state.items[idx].title;
-                    state.items[idx] = {
-                        ...state.items[idx],
-                        category,
-                        status,
-                        date,
-                        title,
-                        summary,
-                        fullContent,
-                        banner
-                    };
-                    recordChangeAndSync(
-                        "Notice & News",
-                        "UPDATED",
-                        `Edited [${category}] "${prevTitle}" -> "${title}" (${status})`
-                    );
-                    showToast("Updated & Synced", `"${title}" saved to spreadsheet and live site.`);
-                }
-            } else {
-                const newItem = {
-                    id: "item-" + Date.now(),
-                    category,
-                    status,
-                    date,
-                    title,
-                    banner,
-                    summary,
-                    fullContent
-                };
-                state.items.unshift(newItem);
-                recordChangeAndSync(
-                    "Notice & News",
-                    "ADDED",
-                    `Uploaded new [${category}] "${title}" (${status})`
-                );
-                showToast("Published & Synced", `New ${category} "${title}" added and logged.`);
-            }
-
-            resetNoticeNewsForm();
-            renderAll();
-        }
-
-        function deleteNoticeNewsItem(id) {
-            const target = state.items.find(i => i.id === id);
-            if (!target) return;
-            if (!confirm(`Remove "${target.title}"? This will also be recorded in the spreadsheet.`)) return;
-
-            state.items = state.items.filter(i => i.id !== id);
-            recordChangeAndSync(
-                "Notice & News",
-                "REMOVED",
-                `Deleted [${target.category}] "${target.title}"`
-            );
-            showToast("Removed & Logged", `"${target.title}" removed and recorded in sheet.`);
-            renderAll();
-        }
-
-        function renderNoticeNewsList() {
-            const listEl = document.getElementById("adminNoticeNewsList");
-            const filtered = state.items.filter(item => {
-                if (state.nnFilter === "all") return true;
-                if (state.nnFilter === "News") {
-                    const c = String(item.category || "").toLowerCase();
-                    return c === "news" || c === "press release";
-                }
-                return String(item.category || "").toLowerCase() === "notice";
-            });
-
-            if (filtered.length === 0) {
-                listEl.innerHTML = `<div class="p-8 text-center rounded-2xl bg-[#F6EFE8] border border-dashed border-[#C4AE99] text-xs text-[#6E5649]">No items in this view yet. Add a Notice or News from the form.</div>`;
-                return;
-            }
-
-            listEl.innerHTML = filtered.map(item => {
-                const isNews = String(item.category || "").toLowerCase().includes("news") || String(item.category || "").toLowerCase().includes("press");
-                return `
-                    <div class="p-4 rounded-2xl bg-[#F6EFE8] border border-[#D4C3B3] flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover-lift">
-                        <div class="flex items-start gap-3.5">
-                            <img src="${escapeHtml(item.banner || (isNews ? 'gallery2.jpg' : 'gallery1.jpg'))}" onerror="this.src='${isNews ? 'gallery2.jpg' : 'gallery1.jpg'}'" alt="${escapeHtml(item.title)}" class="w-16 h-16 rounded-xl object-cover border border-[#C4AE99] shrink-0 bg-[#EFE5DC]">
-                            <div>
-                                <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
-                                    <span class="px-2 py-0.5 rounded ${isNews ? 'bg-[#8C583A] text-white' : 'bg-[#3B261D] text-[#E6B88A]'}">${escapeHtml(item.category || 'Notice')}</span>
-                                    <span class="px-2 py-0.5 rounded bg-[#FDFBF9] border border-[#D4C3B3] text-[#4F392E]">${escapeHtml(item.status || 'Published')}</span>
-                                    <span class="text-[#6E5649]">${escapeHtml(item.date || '')}</span>
-                                </div>
-                                <h3 class="font-bold font-heading text-base text-[#231712] mt-1">${escapeHtml(item.title)}</h3>
-                                <p class="text-xs text-[#4F392E] line-clamp-1 mt-0.5">${escapeHtml(item.summary || item.fullContent || '')}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
-                            <button type="button" onclick="editNoticeNewsItem('${escapeHtml(item.id)}')" class="px-3 py-1.5 rounded-lg bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                                <i class="fa-solid fa-pen mr-1"></i> Edit
-                            </button>
-                            <button type="button" onclick="deleteNoticeNewsItem('${escapeHtml(item.id)}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition">
-                                <i class="fa-solid fa-trash mr-1"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join("");
-        }
-
-        function renderHeadlinesSector() {
-            const published = state.items.filter(i => String(i.status || "Published").toLowerCase() !== "draft");
-            const previewChips = document.getElementById("adminHeadlinePreviewChips");
-            const listEl = document.getElementById("adminHeadlineList");
-
-            if (published.length === 0) {
-                previewChips.innerHTML = `<span class="text-[#D4C3B3]">No published headlines</span>`;
-                listEl.innerHTML = `<p class="text-xs text-[#6E5649]">Publish a Notice or News item to populate the headline bar.</p>`;
-                return;
-            }
-
-            previewChips.innerHTML = published.map(p => `
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#3B261D] text-[#E6B88A]">
-                    <strong class="text-[10px] uppercase">${escapeHtml(p.category)}</strong>
-                    <span>${escapeHtml(p.title)}</span>
-                </span>
-            `).join("");
-
-            listEl.innerHTML = published.map((p, idx) => `
-                <div class="p-4 rounded-2xl bg-[#F6EFE8] border border-[#D4C3B3] flex items-center justify-between gap-3">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase text-[#8C583A]">#${idx + 1} • ${escapeHtml(p.category)}</span>
-                        <h4 class="font-bold text-sm text-[#231712] mt-0.5">${escapeHtml(p.title)}</h4>
-                    </div>
-                    <button type="button" onclick="editNoticeNewsItem('${escapeHtml(p.id)}')" class="px-3 py-1.5 rounded-lg bg-[#3B261D] text-white text-xs font-bold shrink-0">
-                        Edit Headline
-                    </button>
-                </div>
-            `).join("");
-        }
-
-        function populateSectionsForm() {
-            document.getElementById("secFamiliesCount").value = state.sections.familiesCount || "";
-            document.getElementById("secVolunteersCount").value = state.sections.volunteersCount || "";
-            document.getElementById("secEventsCount").value = state.sections.eventsCount || "";
-            document.getElementById("secHeroTitle").value = state.sections.heroTitle || "";
-            document.getElementById("secHeroSubtitle").value = state.sections.heroSubtitle || "";
-            document.getElementById("secAboutText").value = state.sections.aboutText || "";
-            document.getElementById("secDonationNumber").value = state.sections.donationNumber || "";
-        }
-
-        function handleSiteSectionsSave(e) {
-            e.preventDefault();
-            state.sections = {
-                familiesCount: document.getElementById("secFamiliesCount").value.trim() || "100+",
-                volunteersCount: document.getElementById("secVolunteersCount").value.trim() || "50+",
-                eventsCount: document.getElementById("secEventsCount").value.trim() || "10+",
-                heroTitle: document.getElementById("secHeroTitle").value.trim(),
-                heroSubtitle: document.getElementById("secHeroSubtitle").value.trim(),
-                aboutText: document.getElementById("secAboutText").value.trim(),
-                donationNumber: document.getElementById("secDonationNumber").value.trim() || "+8801956631465"
-            };
-
-            recordChangeAndSync(
-                "Site Sections & Stats",
-                "UPDATED",
-                `Updated stats (${state.sections.familiesCount} families, ${state.sections.volunteersCount} volunteers, ${state.sections.eventsCount} events) & section content`
-            );
-            showToast("Sections Saved", "Site section updates saved and synced to spreadsheet.");
-        }
-
-        function handleTeamAdd(e) {
-            e.preventDefault();
-            const name = document.getElementById("tmName").value.trim();
-            const role = document.getElementById("tmRole").value.trim();
-            const photo = document.getElementById("tmPhoto").value.trim() || "logo.png";
-            if (!name || !role) return;
-
-            state.team.push({ id: "tm-" + Date.now(), name, role, photo });
-            document.getElementById("teamMemberForm").reset();
-            document.getElementById("tmUploadStatus").textContent = "Ready";
-            document.getElementById("tmPreviewWrap").classList.add("hidden");
-
-            recordChangeAndSync(
-                "Team & Panel",
-                "ADDED",
-                `Added team member "${name}" (${role})`
-            );
-            showToast("Team Member Added", `"${name}" added and logged.`);
-            renderTeamList();
-        }
-
-        function deleteTeamMember(id) {
-            const member = state.team.find(m => m.id === id);
-            if (!member) return;
-            if (!confirm(`Remove ${member.name} from panel?`)) return;
-
-            state.team = state.team.filter(m => m.id !== id);
-            recordChangeAndSync(
-                "Team & Panel",
-                "REMOVED",
-                `Removed team member "${member.name}" (${member.role})`
-            );
-            showToast("Team Member Removed", `"${member.name}" removed and logged.`);
-            renderTeamList();
-        }
-
-        function renderTeamList() {
-            const el = document.getElementById("adminTeamList");
-            el.innerHTML = state.team.map(m => `
-                <div class="p-4 rounded-2xl bg-[#F6EFE8] border border-[#D4C3B3] text-center flex flex-col justify-between gap-3">
-                    <div>
-                        <img src="${escapeHtml(m.photo || 'logo.png')}" onerror="this.src='logo.png'" alt="${escapeHtml(m.name)}" class="w-16 h-16 rounded-2xl object-cover mx-auto border border-[#B88655] mb-2 bg-[#FDFBF9]">
-                        <h4 class="font-bold font-heading text-sm text-[#231712]">${escapeHtml(m.name)}</h4>
-                        <p class="text-[11px] font-semibold text-[#8C583A] mt-0.5">${escapeHtml(m.role)}</p>
-                    </div>
-                    <button type="button" onclick="deleteTeamMember('${escapeHtml(m.id)}')" class="w-full py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[11px] font-bold transition">
-                        Remove Member
-                    </button>
-                </div>
-            `).join("");
-        }
-
-        function renderAuditTable() {
-            const tbody = document.getElementById("auditLogTableBody");
-            if (state.auditLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-8 px-4 text-center text-[#6E5649] text-xs">No changes recorded yet. Add, edit, or delete an item to see live proof here and in your spreadsheet.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = state.auditLogs.map(log => {
-                const badgeColor = log.changeType === "REMOVED"
-                    ? "bg-red-100 text-red-800 border-red-200"
-                    : log.changeType === "UPDATED"
-                    ? "bg-amber-100 text-amber-900 border-amber-200"
-                    : "bg-emerald-100 text-emerald-800 border-emerald-200";
-                return `
-                    <tr class="hover:bg-[#F6EFE8]/60">
-                        <td class="py-3 px-4 text-xs text-[#5C3D2E] whitespace-nowrap">${escapeHtml(log.timestamp)}</td>
-                        <td class="py-3 px-4 font-bold text-xs text-[#231712] whitespace-nowrap">${escapeHtml(log.sector)}</td>
-                        <td class="py-3 px-4 whitespace-nowrap">
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border ${badgeColor}">${escapeHtml(log.changeType)}</span>
-                        </td>
-                        <td class="py-3 px-4 text-xs text-[#3B261D]">${escapeHtml(log.details)}</td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        function renderVisitorTable() {
-            const tbody = document.getElementById("visitorLogTableBody");
-            if (!Array.isArray(state.visitorLogs) || state.visitorLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="py-8 px-4 text-center text-[#6E5649] text-xs">Visitor logs from your Google Sheet will appear here when synced.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = state.visitorLogs.slice(0, 100).map(v => {
-                const timeVal = v["Timestamp"] || v["timestamp"] || v["Date"] || "";
-                const statusVal = v["Status"] || v["status"] || v["Type"] || "Public Visitor";
-                const devVal = v["Device Info"] || v["deviceInfo"] || v["Device"] || "";
-                return `
-                    <tr class="hover:bg-[#F6EFE8]/60">
-                        <td class="py-3 px-4 text-xs text-[#5C3D2E] whitespace-nowrap">${escapeHtml(timeVal)}</td>
-                        <td class="py-3 px-4 text-xs font-bold text-[#231712]">${escapeHtml(statusVal)}</td>
-                        <td class="py-3 px-4 text-xs text-[#3B261D]">${escapeHtml(devVal)}</td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        async function syncAllWithSheet(showFeedback = false) {
-            const spin = document.getElementById("syncSpinIcon");
-            if (spin) spin.classList.add("fa-spin");
-
-            try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAdminData&t=${Date.now()}`);
-                const data = await res.json();
-                if (data && data.success) {
-                    if (Array.isArray(data.notice) && data.notice.length > 0) {
-                        state.items = data.notice.map((row, i) => ({
-                            id: row["Notice ID"] || row["id"] || ("sheet-item-" + i),
-                            category: row["Category"] || "Notice",
-                            status: row["Status"] || "Published",
-                            date: row["Publish Date"] || "",
-                            title: row["Headline / Title"] || row["Title"] || "Untitled",
-                            banner: row["Image URL"] || row["Banner"] || "",
-                            summary: row["Summary"] || "",
-                            fullContent: row["Full Content"] || row["Content"] || row["Summary"] || ""
-                        }));
-                    }
-                    if (data.sections && typeof data.sections === "object") {
-                        state.sections = { ...DEFAULT_SECTIONS, ...data.sections };
-                    }
-                    if (Array.isArray(data.team) && data.team.length > 0) {
-                        state.team = data.team.map((m, i) => ({
-                            id: m["Member ID"] || m.id || ("tm-" + i),
-                            name: m["Full Name"] || m.name || "Member",
-                            role: m["Designation / Role"] || m.role || "Panel Member",
-                            photo: m["Photo URL"] || m.photo || "logo.png"
-                        }));
-                    }
-                    if (Array.isArray(data.visitors) && data.visitors.length > 0) {
-                        state.visitorLogs = data.visitors;
-                    }
-                    if (Array.isArray(data.auditLogs) && data.auditLogs.length > 0) {
-                        state.auditLogs = data.auditLogs.map((r, i) => ({
-                            id: r["Log ID"] || ("sheet-aud-" + i),
-                            timestamp: r["Timestamp"] || r["Date"] || "",
-                            sector: r["Sector"] || "General",
-                            changeType: r["Change Type"] || r["Action"] || "LOG",
-                            details: r["Details"] || ""
-                        }));
-                    }
-                    saveLocalState();
-                    renderAll();
-                    document.getElementById("lastSyncTimeLabel").textContent = `Last synced: ${formatNowBD()}`;
-                    if (showFeedback) showToast("Synced with Sheet", "Latest spreadsheet data loaded.");
-                } else if (showFeedback) {
-                    showToast("Local & Sheet Ready", "Local changes are saved; deploy updated Apps Script for full readback.");
-                }
+                autoSaveAndSync("saveAll");
             } catch (err) {
-                if (showFeedback) showToast("Offline / Local Cache Active", "Changes are saved locally and queued via no-cors POST.", true);
-            } finally {
-                if (spin) spin.classList.remove("fa-spin");
+                alert("Could not load this image file.");
             }
+        });
+
+        function addNewMember() {
+            const name = prompt("Member Name:");
+            if (!name || !name.trim()) return;
+            const role = prompt("Designation / Role:", "Panel Member") || "Panel Member";
+            const newId = "tm-" + Date.now();
+            state.team.push({ id: newId, name: name.trim(), role: role.trim(), photo: "./logo.png" });
+            renderAll();
+            autoSaveAndSync("saveAll");
+            pickImageFor("team:" + newId);
         }
 
-        function clearLocalAuditView() {
-            if (!confirm("Clear local audit table view? (Spreadsheet records remain intact)")) return;
-            state.auditLogs = [];
-            saveLocalState();
-            renderAuditTable();
-            updateDashboardCounts();
+        function removeMember(id) {
+            state.team = state.team.filter(m => m.id !== id);
+            renderAll();
+            autoSaveAndSync("saveAll");
+        }
+
+        function removeGalleryItem(id) {
+            state.gallery = state.gallery.filter(g => g.id !== id);
+            renderAll();
+            autoSaveAndSync("saveAll");
+        }
+
+        function addNewNoticeOrNews() {
+            const title = prompt("Headline / Title:");
+            if (!title || !title.trim()) return;
+            const catInput = prompt("Category (Notice or News):", "Notice");
+            const category = (catInput && catInput.trim().toLowerCase() === "news") ? "News" : "Notice";
+            const summary = prompt("Short Summary:", title.trim()) || title.trim();
+            const newId = "item-" + Date.now();
+            state.notice.unshift({
+                id: newId,
+                category,
+                status: "Published",
+                date: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+                title: title.trim(),
+                image: "./gallery1.jpg",
+                summary: summary.trim(),
+                fullContent: summary.trim()
+            });
+            renderAll();
+            autoSaveAndSync("saveAll");
+            pickImageFor("notice:" + newId);
         }
 
         function renderAll() {
-            updateDashboardCounts();
-            renderNoticeNewsList();
-            renderHeadlinesSector();
-            populateSectionsForm();
-            renderTeamList();
-            renderAuditTable();
-            renderVisitorTable();
+            document.getElementById("admLogoPreview").src = state.sections.logoUrl || "./logo.png";
+
+            document.getElementById("adminFounderCard").innerHTML = `
+                <div class="flex items-center gap-4">
+                    <img src="${state.sections.founderPhoto || './zarif.jpg'}" onerror="this.src='./logo.png'" class="w-20 h-20 rounded-2xl object-cover border-2 border-[#8C583A]">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A]">Founder</span>
+                        <h3 class="font-bold font-heading text-lg text-[#231712] mt-1">${state.sections.founderName}</h3>
+                        <p class="text-xs text-[#5C3D2E]">${state.sections.founderRole}</p>
+                    </div>
+                </div>
+                <button type="button" onclick="pickImageFor('founder')" class="px-4 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-camera"></i> Upload Picture
+                </button>
+            `;
+
+            document.getElementById("adminTeamGrid").innerHTML = state.team.map(m => `
+                <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] text-center flex flex-col justify-between">
+                    <div>
+                        <img src="${m.photo || './logo.png'}" onerror="this.src='./logo.png'" class="w-24 h-24 mx-auto rounded-2xl object-cover border-2 border-[#B88655] mb-3">
+                        <h4 class="font-bold font-heading text-sm text-[#231712]">${m.name}</h4>
+                        <p class="text-[11px] text-[#8C583A] font-semibold mb-3">${m.role}</p>
+                    </div>
+                    <div class="flex items-center justify-center gap-2">
+                        <button type="button" onclick="pickImageFor('team:${m.id}')" class="flex-1 py-2 px-3 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                            <i class="fa-solid fa-image mr-1"></i> Upload Picture
+                        </button>
+                        <button type="button" onclick="removeMember('${m.id}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold" title="Delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join("");
+
+            document.getElementById("adminGalleryList").innerHTML = state.gallery.map(g => `
+                <div class="bg-[#F2E8DF] rounded-2xl overflow-hidden border border-[#D4C3B3] flex flex-col justify-between">
+                    <img src="${g.image || './gallery1.jpg'}" onerror="this.src='./logo.png'" class="w-full h-40 object-cover">
+                    <div class="p-3 space-y-2">
+                        <p class="text-xs font-bold text-[#231712] truncate">${g.caption || "Gallery Photo"}</p>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="pickImageFor('gallery:${g.id}')" class="flex-1 py-2 px-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                                <i class="fa-solid fa-image mr-1"></i> Change Picture
+                            </button>
+                            <button type="button" onclick="removeGalleryItem('${g.id}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join("");
+
+            document.getElementById("adminNoticeNewsList").innerHTML = state.notice.map(n => `
+                <div class="bg-[#F2E8DF] rounded-2xl overflow-hidden border border-[#D4C3B3] flex flex-col justify-between">
+                    <img src="${n.image || './gallery1.jpg'}" onerror="this.src='./logo.png'" class="w-full h-36 object-cover">
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase text-[#8C583A]">${n.category} • ${n.date}</span>
+                            <h4 class="font-bold font-heading text-sm text-[#231712] mt-1 mb-3">${n.title}</h4>
+                        </div>
+                        <button type="button" onclick="pickImageFor('notice:${n.id}')" class="w-full py-2 px-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
+                            <i class="fa-solid fa-image mr-1"></i> Upload Picture
+                        </button>
+                    </div>
+                </div>
+            `).join("");
         }
 
         window.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("nnDate").value = formatNowBD();
-            const isLoggedIn = sessionStorage.getItem(ADMIN_AUTH.sessionKey) === "1";
-            setAuthView(isLoggedIn);
+            if (sessionStorage.getItem("shikhor_admin_authed") === "1") {
+                document.getElementById("lockScreen").classList.add("hidden");
+                document.getElementById("adminDashboard").classList.remove("hidden");
+                loadState();
+                renderAll();
+            }
         });
     </script>
 </body>
