@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikhor Foundation | Auto Photo Admin Panel</title>
+    <title>Shikhor Foundation | Control Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -11,117 +11,269 @@
         body { font-family: 'Outfit', sans-serif; background: #F6EFE8; color: #231712; }
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
         .hidden { display: none !important; }
+        .tab-active { background: #3B261D !important; color: #E6B88A !important; border-color: #3B261D !important; }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <!-- Hidden Universal File Explorer Input -->
+    <!-- Hidden File Picker -->
     <input type="file" id="autoFilePicker" accept="image/*" class="hidden">
 
     <!-- Toast Notification -->
     <div id="toastBox" class="hidden fixed bottom-5 right-5 z-50 bg-[#231712] text-[#E6B88A] border border-[#8C583A] px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2.5">
         <i class="fa-solid fa-circle-check text-green-400 text-base"></i>
-        <span id="toastMsg">Updated automatically!</span>
+        <span id="toastMsg">Saved & synced!</span>
     </div>
 
-    <!-- LOGIN SCREEN (Username & Password Only) -->
+    <!-- TWO-STEP GATEWAY SCREEN (Step 1: Code -> Step 2: Password) -->
     <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4">
-        <form onsubmit="handleAdminLogin(event)" class="bg-[#FDFBF9] border-2 border-[#B88655] rounded-3xl p-8 max-w-md w-full shadow-2xl text-center">
-            <img src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-20 h-20 mx-auto rounded-2xl object-contain bg-[#EFE5DC] p-2 border border-[#D4C3B3] mb-4">
-            <h1 class="text-2xl font-extrabold font-heading text-[#231712]">Shikhor Auto Admin</h1>
-            <p class="text-xs text-[#5C3D2E] mt-1 mb-6">Sign in with your admin credentials</p>
+        <div class="bg-[#FDFBF9] border-2 border-[#B88655] rounded-3xl p-8 max-w-md w-full shadow-2xl text-center">
+            <div class="w-24 h-24 mx-auto rounded-2xl object-contain bg-[#EFE5DC] p-2.5 border border-[#C4AE99] mb-4 flex items-center justify-center">
+                <img id="gateLogoImg" src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-full h-full object-contain" alt="Shikhor Foundation Logo">
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-[#8C583A]">SHIKHOR CONTROL SYSTEM</span>
+            <h1 class="text-2xl font-extrabold font-heading text-[#231712] mt-1">Admin Access Gate</h1>
 
-            <div class="text-left space-y-3 mb-5">
-                <div>
-                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Username</label>
-                    <input type="text" id="adminUsernameInput" required autocomplete="username" placeholder="Enter username" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Password</label>
-                    <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter password" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
-                </div>
+            <!-- Step Indicators -->
+            <div class="flex items-center justify-center gap-2 my-5 text-xs font-bold">
+                <span id="stepBadge1" class="px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A]">1. Access Code</span>
+                <span class="text-[#B88655]">→</span>
+                <span id="stepBadge2" class="px-3 py-1 rounded-full bg-[#EFE5DC] text-[#6E5649]">2. Password</span>
             </div>
 
-            <p id="loginErrorMsg" class="hidden text-xs font-bold text-red-700 mb-3">Invalid username or password.</p>
+            <!-- STEP 1: CODE -->
+            <form id="codeStepForm" onsubmit="handleCodeSubmit(event)" class="text-left space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-[#3B261D] mb-1.5">Enter Access Code</label>
+                    <input type="text" id="accessCodeInput" required autocomplete="off" placeholder="Enter access code" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
+                </div>
+                <p id="codeErrorMsg" class="hidden text-xs font-bold text-red-700">Invalid access code. Please try again.</p>
+                <button type="submit" class="w-full py-3 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white font-bold text-sm transition">
+                    Verify Code & Continue <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </form>
 
-            <button type="submit" class="w-full py-3 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white font-bold text-sm transition">
-                Sign In <i class="fa-solid fa-arrow-right ml-1"></i>
-            </button>
-            <a href="index.html" class="inline-block mt-4 text-xs font-bold text-[#8C583A] hover:underline">← Back to Website</a>
-        </form>
+            <!-- STEP 2: PASSWORD -->
+            <form id="passwordStepForm" onsubmit="handlePasswordSubmit(event)" class="hidden text-left space-y-4">
+                <div class="p-3 rounded-xl bg-[#F2E8DF] border border-[#D4C3B3] flex items-center justify-between text-xs">
+                    <span>Code Verified: <strong id="verifiedCodeLabel" class="text-[#3B261D]"></strong></span>
+                    <button type="button" onclick="backToCodeStep()" class="text-[#8C583A] font-bold underline bg-transparent border-0">Change</button>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#3B261D] mb-1.5">Enter Admin Password</label>
+                    <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter password" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
+                </div>
+                <p id="passErrorMsg" class="hidden text-xs font-bold text-red-700">Incorrect password. Please try again.</p>
+                <button type="submit" class="w-full py-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white font-bold text-sm transition">
+                    Unlock Control Panel <i class="fa-solid fa-lock-open ml-1"></i>
+                </button>
+            </form>
+
+            <a href="index.html" class="inline-block mt-6 text-xs font-bold text-[#8C583A] hover:underline">← Back to Main Website</a>
+        </div>
     </div>
 
-    <!-- ADMIN DASHBOARD -->
+    <!-- SEPARATE CONTROL WEBSITE DASHBOARD -->
     <div id="adminDashboard" class="hidden">
         <header class="sticky top-0 z-30 bg-[#FDFBF9] border-b border-[#D4C3B3] shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <img id="admLogoPreview" src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-9 h-9 rounded-xl object-contain bg-[#EFE5DC] p-1 border border-[#C4AE99]">
+                    <div class="w-10 h-10 rounded-xl bg-[#EFE5DC] p-1 border border-[#C4AE99] flex items-center justify-center">
+                        <img id="admLogoPreview" src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-full h-full object-contain" alt="Logo">
+                    </div>
                     <div>
-                        <span class="font-bold font-heading text-base block leading-none">SHIKHOR AUTO ADMIN</span>
-                        <span class="text-[10px] font-bold text-green-700 uppercase">shikhor@bd • Auto-Sync Active</span>
+                        <span class="font-bold font-heading text-base block leading-none">SHIKHOR CONTROL SITE</span>
+                        <span class="text-[10px] font-bold text-green-700 uppercase">Verified Session • Main Site Controller</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <button type="button" onclick="pickImageFor('logo')" class="px-3 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold">
-                        <i class="fa-solid fa-image text-[#8C583A]"></i> Change Logo
+                        <i class="fa-solid fa-image text-[#8C583A]"></i> Logo
                     </button>
                     <a href="index.html" target="_blank" class="px-3.5 py-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                        View Live Site ↗
+                        Open Main Site ↗
                     </a>
                     <button type="button" onclick="logoutAdmin()" class="px-3 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold">
                         Logout
                     </button>
                 </div>
             </div>
+
+            <!-- DEDICATED SECTION NAVIGATION BAR -->
+            <div class="bg-[#F2E8DF] border-t border-[#D4C3B3] overflow-x-auto">
+                <div id="sectionNavTabs" class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-2 whitespace-nowrap">
+                    <button type="button" data-tab="notice" onclick="switchSectionTab('notice')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                        <i class="fa-solid fa-bullhorn mr-1.5"></i> Notice
+                    </button>
+                    <button type="button" data-tab="news" onclick="switchSectionTab('news')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                        <i class="fa-regular fa-newspaper mr-1.5"></i> News
+                    </button>
+                    <button type="button" data-tab="team" onclick="switchSectionTab('team')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                        <i class="fa-solid fa-users mr-1.5"></i> Panel Members
+                    </button>
+                    <button type="button" data-tab="groupwork" onclick="switchSectionTab('groupwork')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                        <i class="fa-solid fa-people-group mr-1.5"></i> Group Work
+                    </button>
+                    <button type="button" data-tab="gallery" onclick="switchSectionTab('gallery')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                        <i class="fa-solid fa-images mr-1.5"></i> Gallery
+                    </button>
+                    <button type="button" data-tab="site" onclick="switchSectionTab('site')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                        <i class="fa-solid fa-sliders mr-1.5"></i> Hero, Stats & Donation
+                    </button>
+                </div>
+            </div>
         </header>
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-10">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
 
-            <!-- 1. GALLERY AUTO UPLOAD -->
-            <section class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm">
-                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <!-- SECTION 1: NOTICE ONLY -->
+            <section id="panel-notice" class="admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">GALLERY</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Upload Gallery Pictures</h2>
-                        <p class="text-xs text-[#5C3D2E]">Click "Upload Picture" — select any file with any name. It appears automatically.</p>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Notice Manager</h2>
+                        <p class="text-xs text-[#5C3D2E]">Add, edit, upload banner photo, or delete notices.</p>
                     </div>
-                    <button type="button" onclick="pickImageFor('new-gallery')" class="px-5 py-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow-md flex items-center gap-2">
-                        <i class="fa-solid fa-folder-open"></i> Upload Picture
+                    <button type="button" onclick="addPostByCategory('Notice')" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                        <i class="fa-solid fa-plus mr-1"></i> Add New Notice
+                    </button>
+                </div>
+                <div id="adminNoticeOnlyList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </section>
+
+            <!-- SECTION 2: NEWS ONLY -->
+            <section id="panel-news" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">News Manager</h2>
+                        <p class="text-xs text-[#5C3D2E]">Add, edit, upload banner photo, or delete news stories.</p>
+                    </div>
+                    <button type="button" onclick="addPostByCategory('News')" class="px-4 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
+                        <i class="fa-solid fa-plus mr-1"></i> Add New News
+                    </button>
+                </div>
+                <div id="adminNewsOnlyList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </section>
+
+            <!-- SECTION 3: PANEL MEMBERS & FOUNDER -->
+            <section id="panel-team" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Founder & Panel Members</h2>
+                        <p class="text-xs text-[#5C3D2E]">Manage founder details and add/edit/delete panel members.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="saveSiteSections()" class="px-4 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
+                            <i class="fa-solid fa-check mr-1"></i> Save Founder Info
+                        </button>
+                        <button type="button" onclick="addNewMember()" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                            <i class="fa-solid fa-plus mr-1"></i> Add Panel Member
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-[#F2E8DF] rounded-2xl p-5 border border-[#C4AE99] space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <img id="admFounderPhoto" src="./zarif.jpg" onerror="this.src='./logo.png'" class="w-20 h-20 rounded-2xl object-cover border-2 border-[#8C583A]">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A]">Founder</span>
+                                <h3 class="font-bold font-heading text-lg text-[#231712] mt-1">Founder Profile & Message</h3>
+                            </div>
+                        </div>
+                        <button type="button" onclick="pickImageFor('founder')" class="px-4 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
+                            <i class="fa-solid fa-camera mr-1"></i> Upload Photo
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input type="text" id="secFounderName" placeholder="Founder Name" class="px-3.5 py-2 rounded-xl border border-[#C4AE99] bg-[#FDFBF9] text-sm">
+                        <input type="text" id="secFounderRole" placeholder="Designation" class="px-3.5 py-2 rounded-xl border border-[#C4AE99] bg-[#FDFBF9] text-sm">
+                    </div>
+                    <textarea id="secFounderQuote" rows="2" placeholder="Message from the Founder" class="w-full px-3.5 py-2 rounded-xl border border-[#C4AE99] bg-[#FDFBF9] text-sm"></textarea>
+                </div>
+
+                <div id="adminTeamGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+            </section>
+
+            <!-- SECTION 4: GROUP WORK / INITIATIVES -->
+            <section id="panel-groupwork" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Group Work & Initiatives</h2>
+                        <p class="text-xs text-[#5C3D2E]">Add, edit, or delete group work programs shown on the main website.</p>
+                    </div>
+                    <button type="button" onclick="addGroupWorkItem()" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                        <i class="fa-solid fa-plus mr-1"></i> Add Group Work
+                    </button>
+                </div>
+                <div id="adminGroupWorkList" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+            </section>
+
+            <!-- SECTION 5: GALLERY -->
+            <section id="panel-gallery" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Gallery Manager</h2>
+                        <p class="text-xs text-[#5C3D2E]">Upload photos, edit captions, or delete gallery images.</p>
+                    </div>
+                    <button type="button" onclick="pickImageFor('new-gallery')" class="px-5 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
+                        <i class="fa-solid fa-folder-open mr-1"></i> Upload Picture
                     </button>
                 </div>
                 <div id="adminGalleryList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
             </section>
 
-            <!-- 2. FOUNDER & TEAM AUTO PHOTO UPLOAD -->
-            <section class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm">
-                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <!-- SECTION 6: HERO, STATS, ABOUT & DONATION -->
+            <section id="panel-site" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#EFE5DC] pb-4">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">LEADERSHIP & TEAM</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Founder & Panel Member Photos</h2>
-                        <p class="text-xs text-[#5C3D2E]">Tap "Upload Picture" on any member card to replace their photo instantly.</p>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
+                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Hero, Counters, About & Donation</h2>
                     </div>
-                    <button type="button" onclick="addNewMember()" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                        <i class="fa-solid fa-plus mr-1"></i> Add Member
+                    <button type="button" onclick="saveSiteSections()" class="px-5 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                        <i class="fa-solid fa-check mr-1"></i> Save Changes
                     </button>
                 </div>
 
-                <div id="adminFounderCard" class="bg-[#F2E8DF] rounded-2xl p-5 border border-[#C4AE99] mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"></div>
-                <div id="adminTeamGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
-            </section>
-
-            <!-- 3. NOTICE & NEWS AUTO BANNER UPLOAD -->
-            <section class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm">
-                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">NOTICE & NEWS</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Notices & News with Auto Photo</h2>
+                        <label class="block text-xs font-bold text-[#3B261D] mb-1">Families Supported</label>
+                        <input type="text" id="secFamiliesCount" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm font-semibold">
                     </div>
-                    <button type="button" onclick="addNewNoticeOrNews()" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                        <i class="fa-solid fa-plus mr-1"></i> Add Notice / News
-                    </button>
+                    <div>
+                        <label class="block text-xs font-bold text-[#3B261D] mb-1">Active Volunteers</label>
+                        <input type="text" id="secVolunteersCount" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#3B261D] mb-1">Successful Events</label>
+                        <input type="text" id="secEventsCount" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm font-semibold">
+                    </div>
                 </div>
-                <div id="adminNoticeNewsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Title</label>
+                        <input type="text" id="secHeroTitle" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#3B261D] mb-1">bKash / Nagad Personal Number</label>
+                        <input type="text" id="secDonationNumber" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Subtitle</label>
+                    <textarea id="secHeroSubtitle" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-[#3B261D] mb-1">About Us Description</label>
+                    <textarea id="secAboutText" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm"></textarea>
+                </div>
             </section>
 
         </main>
@@ -129,19 +281,27 @@
 
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec";
-        const AUTH_USER = "shikhor@bd";
+        const ACCESS_CODE = "shikhor@bd";
         const AUTH_PASS = "Shikhor_Foundation_Bd";
 
         const STORAGE_KEYS = {
             sections: "shikhor_admin_site_sections_v1",
             team: "shikhor_admin_team_v1",
             gallery: "shikhor_admin_gallery_v1",
-            notice: "shikhor_admin_notice_news_v1"
+            notice: "shikhor_admin_notice_news_v1",
+            groupWork: "shikhor_admin_group_work_v1"
         };
 
         let state = {
             sections: {
                 logoUrl: "./logo.png",
+                familiesCount: "50+",
+                volunteersCount: "50+",
+                eventsCount: "10+",
+                heroTitle: "A little kindness can grow into a better tomorrow.",
+                heroSubtitle: "Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.",
+                aboutText: "Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.",
+                donationNumber: "+8801956631465",
                 founderName: "Md. Shewise Al Islam Zarif",
                 founderRole: "Founder & CEO / President",
                 founderQuote: "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow.",
@@ -152,6 +312,26 @@
                 { id: "tm-3", name: "Nafew Khalil", role: "Vice President of Program Organisation", photo: "./nafew.jpg" },
                 { id: "tm-4", name: "Md. Shakhawat Hossain Sayem", role: "Head Of Administration & Marketing", photo: "./shakhawat.jpg" },
                 { id: "tm-7", name: "Rikto Ruddur Lyric", role: "Asst. Head Of Marketing", photo: "./rikto.png" }
+            ],
+            groupWork: [
+                {
+                    id: "gw-1",
+                    icon: "fa-hands-holding-child",
+                    title: "Humanitarian Assistance",
+                    description: "Supporting people and families experiencing hardship through thoughtful winter clothing distribution, relief packages, and emergency support."
+                },
+                {
+                    id: "gw-2",
+                    icon: "fa-book-open",
+                    title: "Educational Support",
+                    description: "Empowering rural and disadvantaged students by providing essential educational materials, books, and learning guidance for a brighter future."
+                },
+                {
+                    id: "gw-3",
+                    icon: "fa-people-group",
+                    title: "Community Support & Awareness",
+                    description: "Bringing people together to identify community needs, foster cooperation, and respond with care, responsibility, and unity."
+                }
             ],
             gallery: [
                 { id: "gal-1", caption: "Community Support Activity", image: "./gallery1.jpg" }
@@ -181,6 +361,7 @@
         };
 
         let pendingUploadTarget = null;
+        let currentTab = "notice";
 
         function showToast(msg) {
             const box = document.getElementById("toastBox");
@@ -190,18 +371,44 @@
             window._toastTimer = setTimeout(() => box.classList.add("hidden"), 2500);
         }
 
-        function handleAdminLogin(e) {
+        function handleCodeSubmit(e) {
             e.preventDefault();
-            const u = document.getElementById("adminUsernameInput").value.trim();
-            const p = document.getElementById("adminPasswordInput").value;
-            const errEl = document.getElementById("loginErrorMsg");
+            const codeVal = document.getElementById("accessCodeInput").value.trim();
+            const errEl = document.getElementById("codeErrorMsg");
+            if (codeVal === ACCESS_CODE) {
+                errEl.classList.add("hidden");
+                document.getElementById("verifiedCodeLabel").textContent = codeVal;
+                document.getElementById("codeStepForm").classList.add("hidden");
+                document.getElementById("passwordStepForm").classList.remove("hidden");
+                document.getElementById("stepBadge1").className = "px-3 py-1 rounded-full bg-green-700 text-white";
+                document.getElementById("stepBadge2").className = "px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A]";
+                document.getElementById("adminPasswordInput").focus();
+            } else {
+                errEl.classList.remove("hidden");
+            }
+        }
 
-            if (u === AUTH_USER && p === AUTH_PASS) {
+        function backToCodeStep() {
+            document.getElementById("passwordStepForm").classList.add("hidden");
+            document.getElementById("codeStepForm").classList.remove("hidden");
+            document.getElementById("passErrorMsg").classList.add("hidden");
+            document.getElementById("adminPasswordInput").value = "";
+            document.getElementById("stepBadge1").className = "px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A]";
+            document.getElementById("stepBadge2").className = "px-3 py-1 rounded-full bg-[#EFE5DC] text-[#6E5649]";
+        }
+
+        function handlePasswordSubmit(e) {
+            e.preventDefault();
+            const passVal = document.getElementById("adminPasswordInput").value;
+            const errEl = document.getElementById("passErrorMsg");
+            if (passVal === AUTH_PASS) {
                 errEl.classList.add("hidden");
                 sessionStorage.setItem("shikhor_admin_authed", "1");
                 document.getElementById("lockScreen").classList.add("hidden");
                 document.getElementById("adminDashboard").classList.remove("hidden");
                 loadState();
+                populateSectionInputs();
+                switchSectionTab(currentTab);
                 renderAll();
             } else {
                 errEl.classList.remove("hidden");
@@ -212,7 +419,21 @@
             sessionStorage.removeItem("shikhor_admin_authed");
             document.getElementById("adminDashboard").classList.add("hidden");
             document.getElementById("lockScreen").classList.remove("hidden");
+            document.getElementById("accessCodeInput").value = "";
             document.getElementById("adminPasswordInput").value = "";
+            backToCodeStep();
+        }
+
+        function switchSectionTab(tabName) {
+            currentTab = tabName;
+            document.querySelectorAll(".admin-panel").forEach(p => p.classList.add("hidden"));
+            const activePanel = document.getElementById(`panel-${tabName}`);
+            if (activePanel) activePanel.classList.remove("hidden");
+
+            document.querySelectorAll(".sec-tab").forEach(btn => {
+                if (btn.dataset.tab === tabName) btn.classList.add("tab-active");
+                else btn.classList.remove("tab-active");
+            });
         }
 
         function loadState() {
@@ -244,7 +465,45 @@
                     const parsedN = JSON.parse(n);
                     if (Array.isArray(parsedN) && parsedN.length > 0) state.notice = parsedN;
                 }
+
+                const gw = localStorage.getItem(STORAGE_KEYS.groupWork);
+                if (gw) {
+                    const parsedGw = JSON.parse(gw);
+                    if (Array.isArray(parsedGw) && parsedGw.length > 0) state.groupWork = parsedGw;
+                }
             } catch (e) {}
+        }
+
+        function populateSectionInputs() {
+            document.getElementById("secFamiliesCount").value = state.sections.familiesCount || "50+";
+            document.getElementById("secVolunteersCount").value = state.sections.volunteersCount || "50+";
+            document.getElementById("secEventsCount").value = state.sections.eventsCount || "10+";
+            document.getElementById("secHeroTitle").value = state.sections.heroTitle || "";
+            document.getElementById("secHeroSubtitle").value = state.sections.heroSubtitle || "";
+            document.getElementById("secAboutText").value = state.sections.aboutText || "";
+            document.getElementById("secDonationNumber").value = state.sections.donationNumber || "+8801956631465";
+            document.getElementById("secFounderName").value = state.sections.founderName || "";
+            document.getElementById("secFounderRole").value = state.sections.founderRole || "";
+            document.getElementById("secFounderQuote").value = state.sections.founderQuote || "";
+        }
+
+        function readSectionInputs() {
+            state.sections.familiesCount = document.getElementById("secFamiliesCount").value.trim() || "50+";
+            state.sections.volunteersCount = document.getElementById("secVolunteersCount").value.trim() || "50+";
+            state.sections.eventsCount = document.getElementById("secEventsCount").value.trim() || "10+";
+            state.sections.heroTitle = document.getElementById("secHeroTitle").value.trim();
+            state.sections.heroSubtitle = document.getElementById("secHeroSubtitle").value.trim();
+            state.sections.aboutText = document.getElementById("secAboutText").value.trim();
+            state.sections.donationNumber = document.getElementById("secDonationNumber").value.trim() || "+8801956631465";
+            state.sections.founderName = document.getElementById("secFounderName").value.trim();
+            state.sections.founderRole = document.getElementById("secFounderRole").value.trim();
+            state.sections.founderQuote = document.getElementById("secFounderQuote").value.trim();
+        }
+
+        function saveSiteSections() {
+            readSectionInputs();
+            autoSaveAndSync("saveAll");
+            renderAll();
         }
 
         function autoSaveAndSync(syncType = "saveAll", extraPayload = {}) {
@@ -253,8 +512,9 @@
                 localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
                 localStorage.setItem(STORAGE_KEYS.gallery, JSON.stringify(state.gallery));
                 localStorage.setItem(STORAGE_KEYS.notice, JSON.stringify(state.notice));
+                localStorage.setItem(STORAGE_KEYS.groupWork, JSON.stringify(state.groupWork));
             } catch (e) {
-                showToast("Storage full — try a smaller photo!");
+                showToast("Storage limit reached — try a smaller photo!");
             }
 
             if (GOOGLE_SCRIPT_URL) {
@@ -268,11 +528,12 @@
                         team: state.team,
                         gallery: state.gallery,
                         notice: state.notice,
+                        groupWork: state.groupWork,
                         ...extraPayload
                     })
                 }).catch(() => {});
             }
-            showToast("Photo applied & synced automatically!");
+            showToast("Saved & synced to main website!");
         }
 
         function compressImageFile(file, maxWidth = 900, quality = 0.78) {
@@ -351,19 +612,54 @@
         });
 
         function addNewMember() {
-            const name = prompt("Member Name:");
-            if (!name || !name.trim()) return;
-            const role = prompt("Designation / Role:", "Panel Member") || "Panel Member";
             const newId = "tm-" + Date.now();
-            state.team.push({ id: newId, name: name.trim(), role: role.trim(), photo: "./logo.png" });
+            state.team.push({ id: newId, name: "New Panel Member", role: "Panel Member", photo: "./logo.png" });
             renderAll();
             autoSaveAndSync("saveAll");
-            pickImageFor("team:" + newId);
+        }
+
+        function updateMemberField(id, field, val) {
+            const m = state.team.find(x => x.id === id);
+            if (!m) return;
+            m[field] = val;
+            autoSaveAndSync("saveAll");
         }
 
         function removeMember(id) {
             state.team = state.team.filter(m => m.id !== id);
             renderAll();
+            autoSaveAndSync("saveAll");
+        }
+
+        function addGroupWorkItem() {
+            const newId = "gw-" + Date.now();
+            state.groupWork.push({
+                id: newId,
+                icon: "fa-hands-holding-child",
+                title: "New Group Work",
+                description: "Describe this group work initiative."
+            });
+            renderAll();
+            autoSaveAndSync("saveAll");
+        }
+
+        function updateGroupWorkField(id, field, val) {
+            const g = state.groupWork.find(x => x.id === id);
+            if (!g) return;
+            g[field] = val;
+            autoSaveAndSync("saveAll");
+        }
+
+        function removeGroupWorkItem(id) {
+            state.groupWork = state.groupWork.filter(g => g.id !== id);
+            renderAll();
+            autoSaveAndSync("saveAll");
+        }
+
+        function updateGalleryCaption(id, caption) {
+            const g = state.gallery.find(x => x.id === id);
+            if (!g) return;
+            g.caption = caption;
             autoSaveAndSync("saveAll");
         }
 
@@ -373,58 +669,101 @@
             autoSaveAndSync("saveAll");
         }
 
-        function addNewNoticeOrNews() {
-            const title = prompt("Headline / Title:");
-            if (!title || !title.trim()) return;
-            const catInput = prompt("Category (Notice or News):", "Notice");
-            const category = (catInput && catInput.trim().toLowerCase() === "news") ? "News" : "Notice";
-            const summary = prompt("Short Summary:", title.trim()) || title.trim();
+        function addPostByCategory(category) {
             const newId = "item-" + Date.now();
             state.notice.unshift({
                 id: newId,
                 category,
                 status: "Published",
                 date: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
-                title: title.trim(),
+                title: category === "News" ? "New News Story" : "New Official Notice",
                 image: "./gallery1.jpg",
-                summary: summary.trim(),
-                fullContent: summary.trim()
+                summary: `Short summary for this ${category.toLowerCase()}.`,
+                fullContent: `Full details for this ${category.toLowerCase()}.`
             });
             renderAll();
             autoSaveAndSync("saveAll");
-            pickImageFor("notice:" + newId);
+        }
+
+        function updateNoticeField(id, field, val) {
+            const n = state.notice.find(x => x.id === id);
+            if (!n) return;
+            n[field] = val;
+            autoSaveAndSync("saveAll");
+        }
+
+        function removeNoticeItem(id) {
+            state.notice = state.notice.filter(n => n.id !== id);
+            renderAll();
+            autoSaveAndSync("saveAll");
+        }
+
+        function renderPostCards(list) {
+            if (!list.length) {
+                return `<div class="col-span-full p-6 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3] text-center text-xs text-[#5C3D2E]">No items in this section yet. Click the Add button above to create one.</div>`;
+            }
+            return list.map(n => `
+                <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-3">
+                    <div class="flex items-center gap-3">
+                        <img src="${n.image || './gallery1.jpg'}" onerror="this.src='./logo.png'" class="w-20 h-20 rounded-xl object-cover border border-[#C4AE99] shrink-0">
+                        <div class="flex-1 space-y-2">
+                            <select onchange="updateNoticeField('${n.id}', 'status', this.value)" class="px-2.5 py-1 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
+                                <option value="Published" ${n.status === 'Published' ? 'selected' : ''}>Published</option>
+                                <option value="Draft" ${n.status === 'Draft' ? 'selected' : ''}>Draft</option>
+                            </select>
+                            <input type="text" value="${n.title}" onchange="updateNoticeField('${n.id}', 'title', this.value)" placeholder="Title" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
+                        </div>
+                    </div>
+                    <input type="text" value="${n.summary}" onchange="updateNoticeField('${n.id}', 'summary', this.value)" placeholder="Short summary" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">
+                    <textarea rows="2" onchange="updateNoticeField('${n.id}', 'fullContent', this.value)" placeholder="Full details" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">${n.fullContent}</textarea>
+                    <div class="flex items-center justify-between gap-2">
+                        <button type="button" onclick="pickImageFor('notice:${n.id}')" class="px-3.5 py-2 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
+                            <i class="fa-solid fa-image mr-1"></i> Upload Photo
+                        </button>
+                        <button type="button" onclick="removeNoticeItem('${n.id}')" class="px-3 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
+                            <i class="fa-solid fa-trash mr-1"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join("");
         }
 
         function renderAll() {
-            document.getElementById("admLogoPreview").src = state.sections.logoUrl || "./logo.png";
+            const logoSrc = state.sections.logoUrl || "./logo.png";
+            document.getElementById("admLogoPreview").src = logoSrc;
+            document.getElementById("gateLogoImg").src = logoSrc;
+            document.getElementById("admFounderPhoto").src = state.sections.founderPhoto || "./zarif.jpg";
 
-            document.getElementById("adminFounderCard").innerHTML = `
-                <div class="flex items-center gap-4">
-                    <img src="${state.sections.founderPhoto || './zarif.jpg'}" onerror="this.src='./logo.png'" class="w-20 h-20 rounded-2xl object-cover border-2 border-[#8C583A]">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A]">Founder</span>
-                        <h3 class="font-bold font-heading text-lg text-[#231712] mt-1">${state.sections.founderName}</h3>
-                        <p class="text-xs text-[#5C3D2E]">${state.sections.founderRole}</p>
-                    </div>
-                </div>
-                <button type="button" onclick="pickImageFor('founder')" class="px-4 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-camera"></i> Upload Picture
-                </button>
-            `;
+            const noticeItems = state.notice.filter(x => String(x.category).toLowerCase() !== "news");
+            const newsItems = state.notice.filter(x => String(x.category).toLowerCase() === "news");
+
+            document.getElementById("adminNoticeOnlyList").innerHTML = renderPostCards(noticeItems);
+            document.getElementById("adminNewsOnlyList").innerHTML = renderPostCards(newsItems);
 
             document.getElementById("adminTeamGrid").innerHTML = state.team.map(m => `
-                <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] text-center flex flex-col justify-between">
-                    <div>
-                        <img src="${m.photo || './logo.png'}" onerror="this.src='./logo.png'" class="w-24 h-24 mx-auto rounded-2xl object-cover border-2 border-[#B88655] mb-3">
-                        <h4 class="font-bold font-heading text-sm text-[#231712]">${m.name}</h4>
-                        <p class="text-[11px] text-[#8C583A] font-semibold mb-3">${m.role}</p>
-                    </div>
-                    <div class="flex items-center justify-center gap-2">
-                        <button type="button" onclick="pickImageFor('team:${m.id}')" class="flex-1 py-2 px-3 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                            <i class="fa-solid fa-image mr-1"></i> Upload Picture
+                <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-2.5">
+                    <img src="${m.photo || './logo.png'}" onerror="this.src='./logo.png'" class="w-24 h-24 mx-auto rounded-2xl object-cover border-2 border-[#B88655]">
+                    <input type="text" value="${m.name}" onchange="updateMemberField('${m.id}', 'name', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
+                    <input type="text" value="${m.role}" onchange="updateMemberField('${m.id}', 'role', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px] text-center">
+                    <div class="flex items-center gap-2 pt-1">
+                        <button type="button" onclick="pickImageFor('team:${m.id}')" class="flex-1 py-2 px-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                            <i class="fa-solid fa-image mr-1"></i> Photo
                         </button>
-                        <button type="button" onclick="removeMember('${m.id}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold" title="Delete">
+                        <button type="button" onclick="removeMember('${m.id}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
                             <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join("");
+
+            document.getElementById("adminGroupWorkList").innerHTML = state.groupWork.map(g => `
+                <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-2.5">
+                    <input type="text" value="${g.title}" onchange="updateGroupWorkField('${g.id}', 'title', this.value)" placeholder="Group Work Title" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
+                    <input type="text" value="${g.icon || 'fa-hands-holding-child'}" onchange="updateGroupWorkField('${g.id}', 'icon', this.value)" placeholder="Icon (e.g. fa-hands-holding-child)" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px]">
+                    <textarea rows="3" onchange="updateGroupWorkField('${g.id}', 'description', this.value)" placeholder="Description" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">${g.description}</textarea>
+                    <div class="flex justify-end">
+                        <button type="button" onclick="removeGroupWorkItem('${g.id}')" class="px-3 py-1.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
+                            <i class="fa-solid fa-trash mr-1"></i> Delete
                         </button>
                     </div>
                 </div>
@@ -434,10 +773,10 @@
                 <div class="bg-[#F2E8DF] rounded-2xl overflow-hidden border border-[#D4C3B3] flex flex-col justify-between">
                     <img src="${g.image || './gallery1.jpg'}" onerror="this.src='./logo.png'" class="w-full h-40 object-cover">
                     <div class="p-3 space-y-2">
-                        <p class="text-xs font-bold text-[#231712] truncate">${g.caption || "Gallery Photo"}</p>
+                        <input type="text" value="${g.caption || ''}" onchange="updateGalleryCaption('${g.id}', this.value)" placeholder="Caption" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-semibold">
                         <div class="flex items-center gap-2">
                             <button type="button" onclick="pickImageFor('gallery:${g.id}')" class="flex-1 py-2 px-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                                <i class="fa-solid fa-image mr-1"></i> Change Picture
+                                <i class="fa-solid fa-image mr-1"></i> Change Photo
                             </button>
                             <button type="button" onclick="removeGalleryItem('${g.id}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
                                 <i class="fa-solid fa-trash"></i>
@@ -446,28 +785,18 @@
                     </div>
                 </div>
             `).join("");
-
-            document.getElementById("adminNoticeNewsList").innerHTML = state.notice.map(n => `
-                <div class="bg-[#F2E8DF] rounded-2xl overflow-hidden border border-[#D4C3B3] flex flex-col justify-between">
-                    <img src="${n.image || './gallery1.jpg'}" onerror="this.src='./logo.png'" class="w-full h-36 object-cover">
-                    <div class="p-4 flex-1 flex flex-col justify-between">
-                        <div>
-                            <span class="text-[10px] font-bold uppercase text-[#8C583A]">${n.category} • ${n.date}</span>
-                            <h4 class="font-bold font-heading text-sm text-[#231712] mt-1 mb-3">${n.title}</h4>
-                        </div>
-                        <button type="button" onclick="pickImageFor('notice:${n.id}')" class="w-full py-2 px-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
-                            <i class="fa-solid fa-image mr-1"></i> Upload Picture
-                        </button>
-                    </div>
-                </div>
-            `).join("");
         }
 
         window.addEventListener("DOMContentLoaded", () => {
+            loadState();
+            const logoSrc = state.sections.logoUrl || "./logo.png";
+            document.getElementById("gateLogoImg").src = logoSrc;
+
             if (sessionStorage.getItem("shikhor_admin_authed") === "1") {
                 document.getElementById("lockScreen").classList.add("hidden");
                 document.getElementById("adminDashboard").classList.remove("hidden");
-                loadState();
+                populateSectionInputs();
+                switchSectionTab(currentTab);
                 renderAll();
             }
         });
