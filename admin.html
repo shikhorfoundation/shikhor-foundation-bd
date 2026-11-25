@@ -58,23 +58,26 @@
 
     <!-- SEPARATE CONTROL WEBSITE DASHBOARD -->
     <div id="adminDashboard" class="hidden">
-        <header class="sticky top-0 z-30 bg-[#FDFBF9] border-b border-[#D4C3B3] shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+        <header class="bg-[#FDFBF9] border-b border-[#D4C3B3] shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 min-h-16 py-2.5 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#EFE5DC] p-1 border border-[#C4AE99] flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-[#EFE5DC] p-1 border border-[#C4AE99] flex items-center justify-center shrink-0">
                         <img id="admLogoPreview" src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-full h-full object-contain" alt="Logo">
                     </div>
                     <div>
                         <span class="font-bold font-heading text-base block leading-none">SHIKHOR CONTROL SITE</span>
-                        <span class="text-[10px] font-bold text-green-700 uppercase">shikhor@bd • Main Site Controller</span>
+                        <span id="syncStatusLabel" class="text-[10px] font-bold text-green-700 uppercase">shikhor@bd • Ready</span>
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <button type="button" onclick="pickImageFor('logo')" class="px-3 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold">
                         <i class="fa-solid fa-image text-[#8C583A]"></i> Logo
                     </button>
-                    <button type="button" onclick="syncFromGoogleSheetOnOpen(true)" class="px-3 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold">
-                        <i class="fa-solid fa-rotate text-[#8C583A]"></i> Sheet Sync
+                    <button type="button" onclick="syncFromGoogleSheetOnOpen(true, true)" class="px-3 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold">
+                        <i class="fa-solid fa-rotate text-[#8C583A]"></i> Pull From Sheet
+                    </button>
+                    <button type="button" onclick="autoSaveAndSync('saveAll', {}, true)" class="px-3 py-2 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Push To Sheet
                     </button>
                     <a href="index.html" target="_blank" class="px-3.5 py-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
                         Open Main Site ↗
@@ -150,7 +153,7 @@
                         <h2 class="text-2xl font-bold font-heading text-[#231712]">Founder & Panel Members</h2>
                         <p class="text-xs text-[#5C3D2E]">Manage founder details and add/edit/delete panel members.</p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <button type="button" onclick="saveSiteSections()" class="px-4 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
                             <i class="fa-solid fa-check mr-1"></i> Save Founder Info
                         </button>
@@ -275,8 +278,16 @@
             team: "shikhor_admin_team_v1",
             gallery: "shikhor_admin_gallery_v1",
             notice: "shikhor_admin_notice_news_v1",
-            groupWork: "shikhor_admin_group_work_v1"
+            groupWork: "shikhor_admin_group_work_v1",
+            lastSavedAt: "shikhor_admin_last_saved_at_v1"
         };
+
+        const DEFAULT_TEAM = [
+            { id: "tm-2", name: "Ahsan Zaman", role: "Vice President", photo: "./ahsan.jpg" },
+            { id: "tm-3", name: "Nafew Khalil", role: "Vice President of Program Organisation", photo: "./nafew.jpg" },
+            { id: "tm-4", name: "Md. Shakhawat Hossain Sayem", role: "Head Of Administration & Marketing", photo: "./shakhawat.jpg" },
+            { id: "tm-7", name: "Rikto Ruddur Lyric", role: "Asst. Head Of Marketing", photo: "./rikto.png" }
+        ];
 
         let state = {
             sections: {
@@ -293,12 +304,7 @@
                 founderQuote: "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow.",
                 founderPhoto: "./zarif.jpg"
             },
-            team: [
-                { id: "tm-2", name: "Ahsan Zaman", role: "Vice President", photo: "./ahsan.jpg" },
-                { id: "tm-3", name: "Nafew Khalil", role: "Vice President of Program Organisation", photo: "./nafew.jpg" },
-                { id: "tm-4", name: "Md. Shakhawat Hossain Sayem", role: "Head Of Administration & Marketing", photo: "./shakhawat.jpg" },
-                { id: "tm-7", name: "Rikto Ruddur Lyric", role: "Asst. Head Of Marketing", photo: "./rikto.png" }
-            ],
+            team: DEFAULT_TEAM.map(m => ({ ...m })),
             groupWork: [
                 {
                     id: "gw-1",
@@ -347,7 +353,46 @@
         };
 
         let pendingUploadTarget = null;
-        let currentTab = "notice";
+        let currentTab = "team";
+
+        function cleanText(val, fallback = "") {
+            if (val === undefined || val === null) return fallback;
+            const str = String(val).trim();
+            if (!str || str.toLowerCase() === "undefined" || str.toLowerCase() === "null") return fallback;
+            return str;
+        }
+
+        function escapeAttr(str) {
+            return String(str || "")
+                .replace(/&/g, "&amp;")
+                .replace(/"/g, "&quot;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        function normalizeTeamList(rawList) {
+            if (!Array.isArray(rawList) || rawList.length === 0) {
+                return DEFAULT_TEAM.map(m => ({ ...m }));
+            }
+            const normalized = rawList
+                .map((m, idx) => {
+                    if (!m || typeof m !== "object") return null;
+                    const name = cleanText(m.name || m["Full Name"] || m.fullName || m.title, "");
+                    const role = cleanText(m.role || m["Designation / Role"] || m.designation, "");
+                    const photo = cleanText(m.photo || m["Photo URL"] || m.image, "./logo.png");
+                    const id = cleanText(m.id || m["Member ID"], `tm-${idx + 1}`);
+                    if (!name && !role) return null;
+                    return {
+                        id,
+                        name: name || "Panel Member",
+                        role: role || "Designation",
+                        photo
+                    };
+                })
+                .filter(Boolean);
+
+            return normalized.length > 0 ? normalized : DEFAULT_TEAM.map(m => ({ ...m }));
+        }
 
         function showToast(msg) {
             const box = document.getElementById("toastBox");
@@ -355,6 +400,15 @@
             box.classList.remove("hidden");
             clearTimeout(window._toastTimer);
             window._toastTimer = setTimeout(() => box.classList.add("hidden"), 2500);
+        }
+
+        function updateSyncStatus(text, isWarning = false) {
+            const el = document.getElementById("syncStatusLabel");
+            if (!el) return;
+            el.textContent = text;
+            el.className = isWarning
+                ? "text-[10px] font-bold text-amber-700 uppercase"
+                : "text-[10px] font-bold text-green-700 uppercase";
         }
 
         function handleAdminLogin(e) {
@@ -372,7 +426,7 @@
                 populateSectionInputs();
                 switchSectionTab(currentTab);
                 renderAll();
-                syncFromGoogleSheetOnOpen(false);
+                syncFromGoogleSheetOnOpen(false, false);
             } else {
                 errEl.classList.remove("hidden");
             }
@@ -400,89 +454,155 @@
         function loadState() {
             try {
                 const s = localStorage.getItem(STORAGE_KEYS.sections);
-                if (s) state.sections = { ...state.sections, ...JSON.parse(s) };
-
-                const t = localStorage.getItem(STORAGE_KEYS.team);
-                if (t) {
-                    const parsedT = JSON.parse(t);
-                    if (Array.isArray(parsedT) && parsedT.length > 0) {
-                        state.team = parsedT.map((m, idx) => ({
-                            id: m.id || m["Member ID"] || `tm-${idx + 1}`,
-                            name: m.name || m["Full Name"] || "Member",
-                            role: m.role || m["Designation / Role"] || "Panel Member",
-                            photo: m.photo || m["Photo URL"] || "./logo.png"
-                        }));
+                if (s) {
+                    const parsedS = JSON.parse(s);
+                    if (parsedS && typeof parsedS === "object") {
+                        Object.keys(parsedS).forEach(k => {
+                            const v = cleanText(parsedS[k], "");
+                            if (v) state.sections[k] = v;
+                        });
                     }
                 }
+
+                const t = localStorage.getItem(STORAGE_KEYS.team);
+                if (t) state.team = normalizeTeamList(JSON.parse(t));
 
                 const g = localStorage.getItem(STORAGE_KEYS.gallery);
                 if (g) {
                     const parsedG = JSON.parse(g);
-                    if (Array.isArray(parsedG) && parsedG.length > 0) state.gallery = parsedG;
+                    if (Array.isArray(parsedG) && parsedG.length > 0) {
+                        state.gallery = parsedG.map((item, idx) => ({
+                            id: cleanText(item.id, `gal-${idx + 1}`),
+                            caption: cleanText(item.caption, "Gallery Photo"),
+                            image: cleanText(item.image, "./gallery1.jpg")
+                        }));
+                    }
                 }
 
                 const n = localStorage.getItem(STORAGE_KEYS.notice);
                 if (n) {
                     const parsedN = JSON.parse(n);
-                    if (Array.isArray(parsedN) && parsedN.length > 0) state.notice = parsedN;
+                    if (Array.isArray(parsedN) && parsedN.length > 0) {
+                        state.notice = parsedN.map((item, idx) => ({
+                            id: cleanText(item.id, `item-${idx + 1}`),
+                            category: cleanText(item.category || item.Category, "Notice"),
+                            status: cleanText(item.status || item.Status, "Published"),
+                            date: cleanText(item.date || item["Publish Date"], "25 Nov 2026"),
+                            title: cleanText(item.title || item["Headline / Title"], "Untitled"),
+                            image: cleanText(item.image || item["Image URL"], "./gallery1.jpg"),
+                            summary: cleanText(item.summary || item.Summary, ""),
+                            fullContent: cleanText(item.fullContent || item["Full Content"], "")
+                        }));
+                    }
                 }
 
                 const gw = localStorage.getItem(STORAGE_KEYS.groupWork);
                 if (gw) {
                     const parsedGw = JSON.parse(gw);
-                    if (Array.isArray(parsedGw) && parsedGw.length > 0) state.groupWork = parsedGw;
+                    if (Array.isArray(parsedGw) && parsedGw.length > 0) {
+                        state.groupWork = parsedGw.map((item, idx) => ({
+                            id: cleanText(item.id, `gw-${idx + 1}`),
+                            icon: cleanText(item.icon, "fa-hands-holding-child"),
+                            title: cleanText(item.title, "Group Work"),
+                            description: cleanText(item.description, "")
+                        }));
+                    }
                 }
             } catch (e) {}
         }
 
-        async function syncFromGoogleSheetOnOpen(notifyUser = false) {
+        async function syncFromGoogleSheetOnOpen(notifyUser = false, forceOverwrite = false) {
             if (!GOOGLE_SCRIPT_URL) return;
+            const lastSaved = Number(localStorage.getItem(STORAGE_KEYS.lastSavedAt) || 0);
+            const recentlyEdited = !forceOverwrite && (Date.now() - lastSaved < 30000);
+
             try {
                 const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`);
                 const data = await res.json();
-                if (!data || !data.success) return;
+                if (!data || !data.success) {
+                    if (notifyUser) showToast("Sheet response invalid — check Apps Script deployment.");
+                    return;
+                }
+
+                if (recentlyEdited) {
+                    updateSyncStatus("shikhor@bd • Local edits preserved", true);
+                    return;
+                }
 
                 if (data.sections && Object.keys(data.sections).length > 0) {
-                    state.sections = { ...state.sections, ...data.sections };
+                    Object.keys(data.sections).forEach(k => {
+                        const v = cleanText(data.sections[k], "");
+                        if (v) state.sections[k] = v;
+                    });
                 }
                 if (Array.isArray(data.team) && data.team.length > 0) {
-                    state.team = data.team;
+                    state.team = normalizeTeamList(data.team);
                 }
                 if (Array.isArray(data.groupWork) && data.groupWork.length > 0) {
-                    state.groupWork = data.groupWork;
+                    state.groupWork = data.groupWork.map((item, idx) => ({
+                        id: cleanText(item.id, `gw-${idx + 1}`),
+                        icon: cleanText(item.icon, "fa-hands-holding-child"),
+                        title: cleanText(item.title, "Group Work"),
+                        description: cleanText(item.description, "")
+                    }));
                 }
                 if (Array.isArray(data.gallery) && data.gallery.length > 0) {
-                    state.gallery = data.gallery;
+                    state.gallery = data.gallery.map((item, idx) => ({
+                        id: cleanText(item.id, `gal-${idx + 1}`),
+                        caption: cleanText(item.caption, "Gallery Photo"),
+                        image: cleanText(item.image, "./gallery1.jpg")
+                    }));
                 }
                 if (Array.isArray(data.notice) && data.notice.length > 0) {
-                    state.notice = data.notice;
+                    state.notice = data.notice.map((item, idx) => ({
+                        id: cleanText(item.id, `item-${idx + 1}`),
+                        category: cleanText(item.category || item.Category, "Notice"),
+                        status: cleanText(item.status || item.Status, "Published"),
+                        date: cleanText(item.date || item["Publish Date"], "25 Nov 2026"),
+                        title: cleanText(item.title || item["Headline / Title"], "Untitled"),
+                        image: cleanText(item.image || item["Image URL"], "./gallery1.jpg"),
+                        summary: cleanText(item.summary || item.Summary, ""),
+                        fullContent: cleanText(item.fullContent || item["Full Content"], "")
+                    }));
                 }
 
-                localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(state.sections));
-                localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
-                localStorage.setItem(STORAGE_KEYS.groupWork, JSON.stringify(state.groupWork));
-                localStorage.setItem(STORAGE_KEYS.gallery, JSON.stringify(state.gallery));
-                localStorage.setItem(STORAGE_KEYS.notice, JSON.stringify(state.notice));
-
+                persistLocalOnly();
                 populateSectionInputs();
                 renderAll();
-                if (notifyUser) showToast("Synced latest data from Google Sheet!");
+                updateSyncStatus("shikhor@bd • Synced with Sheet");
+                if (notifyUser) showToast("Pulled latest data from Google Sheet!");
             } catch (e) {
+                updateSyncStatus("shikhor@bd • Offline / Local mode", true);
                 if (notifyUser) showToast("Could not reach Google Sheet right now.");
             }
         }
 
+        function persistLocalOnly() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(state.sections));
+                localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
+                localStorage.setItem(STORAGE_KEYS.gallery, JSON.stringify(state.gallery));
+                localStorage.setItem(STORAGE_KEYS.notice, JSON.stringify(state.notice));
+                localStorage.setItem(STORAGE_KEYS.groupWork, JSON.stringify(state.groupWork));
+                localStorage.setItem(STORAGE_KEYS.lastSavedAt, String(Date.now()));
+                return true;
+            } catch (e) {
+                showToast("Browser storage full! Remove large base64 photos or use smaller ones.");
+                return false;
+            }
+        }
+
         function populateSectionInputs() {
-            document.getElementById("secFamiliesCount").value = state.sections.familiesCount || "50+";
-            document.getElementById("secVolunteersCount").value = state.sections.volunteersCount || "50+";
-            document.getElementById("secEventsCount").value = state.sections.eventsCount || "10+";
-            document.getElementById("secHeroTitle").value = state.sections.heroTitle || "";
-            document.getElementById("secHeroSubtitle").value = state.sections.heroSubtitle || "";
-            document.getElementById("secAboutText").value = state.sections.aboutText || "";
-            document.getElementById("secDonationNumber").value = state.sections.donationNumber || "+8801956631465";
-            document.getElementById("secFounderName").value = state.sections.founderName || "";
-            document.getElementById("secFounderRole").value = state.sections.founderRole || "";
-            document.getElementById("secFounderQuote").value = state.sections.founderQuote || "";
+            document.getElementById("secFamiliesCount").value = cleanText(state.sections.familiesCount, "50+");
+            document.getElementById("secVolunteersCount").value = cleanText(state.sections.volunteersCount, "50+");
+            document.getElementById("secEventsCount").value = cleanText(state.sections.eventsCount, "10+");
+            document.getElementById("secHeroTitle").value = cleanText(state.sections.heroTitle, "");
+            document.getElementById("secHeroSubtitle").value = cleanText(state.sections.heroSubtitle, "");
+            document.getElementById("secAboutText").value = cleanText(state.sections.aboutText, "");
+            document.getElementById("secDonationNumber").value = cleanText(state.sections.donationNumber, "+8801956631465");
+            document.getElementById("secFounderName").value = cleanText(state.sections.founderName, "");
+            document.getElementById("secFounderRole").value = cleanText(state.sections.founderRole, "");
+            document.getElementById("secFounderQuote").value = cleanText(state.sections.founderQuote, "");
         }
 
         function readSectionInputs() {
@@ -500,20 +620,13 @@
 
         function saveSiteSections() {
             readSectionInputs();
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
             renderAll();
         }
 
-        function autoSaveAndSync(syncType = "saveAll", extraPayload = {}) {
-            try {
-                localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(state.sections));
-                localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
-                localStorage.setItem(STORAGE_KEYS.gallery, JSON.stringify(state.gallery));
-                localStorage.setItem(STORAGE_KEYS.notice, JSON.stringify(state.notice));
-                localStorage.setItem(STORAGE_KEYS.groupWork, JSON.stringify(state.groupWork));
-            } catch (e) {
-                showToast("Storage limit reached — try a smaller photo!");
-            }
+        function autoSaveAndSync(syncType = "saveAll", extraPayload = {}, notify = true) {
+            persistLocalOnly();
+            updateSyncStatus("shikhor@bd • Saving...");
 
             if (GOOGLE_SCRIPT_URL) {
                 fetch(GOOGLE_SCRIPT_URL, {
@@ -529,12 +642,21 @@
                         groupWork: state.groupWork,
                         ...extraPayload
                     })
-                }).catch(() => {});
+                })
+                .then(() => {
+                    updateSyncStatus("shikhor@bd • Saved & Synced");
+                    if (notify) showToast("Saved & synced!");
+                })
+                .catch(() => {
+                    updateSyncStatus("shikhor@bd • Saved Locally", true);
+                    if (notify) showToast("Saved locally (Sheet sync pending).");
+                });
+            } else if (notify) {
+                showToast("Saved locally!");
             }
-            showToast("Saved & synced to main website!");
         }
 
-        function compressImageFile(file, maxWidth = 900, quality = 0.78) {
+        function compressImageFile(file, maxWidth = 640, quality = 0.68) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
@@ -603,7 +725,7 @@
                 }
 
                 renderAll();
-                autoSaveAndSync("saveAll");
+                autoSaveAndSync("saveAll", {}, true);
             } catch (err) {
                 alert("Could not load this image file.");
             }
@@ -613,20 +735,20 @@
             const newId = "tm-" + Date.now();
             state.team.push({ id: newId, name: "New Panel Member", role: "Panel Member", photo: "./logo.png" });
             renderAll();
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function updateMemberField(id, field, val) {
             const m = state.team.find(x => x.id === id);
             if (!m) return;
-            m[field] = val;
-            autoSaveAndSync("saveAll");
+            m[field] = cleanText(val, field === "name" ? "Panel Member" : "Designation");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function removeMember(id) {
             state.team = state.team.filter(m => m.id !== id);
             renderAll();
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function addGroupWorkItem() {
@@ -638,33 +760,33 @@
                 description: "Describe this group work initiative."
             });
             renderAll();
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function updateGroupWorkField(id, field, val) {
             const g = state.groupWork.find(x => x.id === id);
             if (!g) return;
             g[field] = val;
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function removeGroupWorkItem(id) {
             state.groupWork = state.groupWork.filter(g => g.id !== id);
             renderAll();
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function updateGalleryCaption(id, caption) {
             const g = state.gallery.find(x => x.id === id);
             if (!g) return;
             g.caption = caption;
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function removeGalleryItem(id) {
             state.gallery = state.gallery.filter(g => g.id !== id);
             renderAll();
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function addPostByCategory(category) {
@@ -680,20 +802,20 @@
                 fullContent: `Full details for this ${category.toLowerCase()}.`
             });
             renderAll();
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function updateNoticeField(id, field, val) {
             const n = state.notice.find(x => x.id === id);
             if (!n) return;
             n[field] = val;
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function removeNoticeItem(id) {
             state.notice = state.notice.filter(n => n.id !== id);
             renderAll();
-            autoSaveAndSync("saveAll");
+            autoSaveAndSync("saveAll", {}, true);
         }
 
         function renderPostCards(list) {
@@ -703,22 +825,22 @@
             return list.map(n => `
                 <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-3">
                     <div class="flex items-center gap-3">
-                        <img src="${n.image || './gallery1.jpg'}" onerror="this.src='./logo.png'" class="w-20 h-20 rounded-xl object-cover border border-[#C4AE99] shrink-0">
+                        <img src="${escapeAttr(cleanText(n.image, './gallery1.jpg'))}" onerror="this.src='./logo.png'" class="w-20 h-20 rounded-xl object-cover border border-[#C4AE99] shrink-0">
                         <div class="flex-1 space-y-2">
-                            <select onchange="updateNoticeField('${n.id}', 'status', this.value)" class="px-2.5 py-1 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
+                            <select onchange="updateNoticeField('${escapeAttr(n.id)}', 'status', this.value)" class="px-2.5 py-1 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
                                 <option value="Published" ${n.status === 'Published' ? 'selected' : ''}>Published</option>
                                 <option value="Draft" ${n.status === 'Draft' ? 'selected' : ''}>Draft</option>
                             </select>
-                            <input type="text" value="${n.title}" onchange="updateNoticeField('${n.id}', 'title', this.value)" placeholder="Title" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
+                            <input type="text" value="${escapeAttr(cleanText(n.title, ''))}" onchange="updateNoticeField('${escapeAttr(n.id)}', 'title', this.value)" placeholder="Title" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
                         </div>
                     </div>
-                    <input type="text" value="${n.summary}" onchange="updateNoticeField('${n.id}', 'summary', this.value)" placeholder="Short summary" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">
-                    <textarea rows="2" onchange="updateNoticeField('${n.id}', 'fullContent', this.value)" placeholder="Full details" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">${n.fullContent}</textarea>
+                    <input type="text" value="${escapeAttr(cleanText(n.summary, ''))}" onchange="updateNoticeField('${escapeAttr(n.id)}', 'summary', this.value)" placeholder="Short summary" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">
+                    <textarea rows="2" onchange="updateNoticeField('${escapeAttr(n.id)}', 'fullContent', this.value)" placeholder="Full details" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">${escapeAttr(cleanText(n.fullContent, ''))}</textarea>
                     <div class="flex items-center justify-between gap-2">
-                        <button type="button" onclick="pickImageFor('notice:${n.id}')" class="px-3.5 py-2 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
+                        <button type="button" onclick="pickImageFor('notice:${escapeAttr(n.id)}')" class="px-3.5 py-2 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
                             <i class="fa-solid fa-image mr-1"></i> Upload Photo
                         </button>
-                        <button type="button" onclick="removeNoticeItem('${n.id}')" class="px-3 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
+                        <button type="button" onclick="removeNoticeItem('${escapeAttr(n.id)}')" class="px-3 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
                             <i class="fa-solid fa-trash mr-1"></i> Delete
                         </button>
                     </div>
@@ -727,10 +849,10 @@
         }
 
         function renderAll() {
-            const logoSrc = state.sections.logoUrl || "./logo.png";
+            const logoSrc = cleanText(state.sections.logoUrl, "./logo.png");
             document.getElementById("admLogoPreview").src = logoSrc;
             document.getElementById("gateLogoImg").src = logoSrc;
-            document.getElementById("admFounderPhoto").src = state.sections.founderPhoto || "./zarif.jpg";
+            document.getElementById("admFounderPhoto").src = cleanText(state.sections.founderPhoto, "./zarif.jpg");
 
             const noticeItems = state.notice.filter(x => String(x.category).toLowerCase() !== "news");
             const newsItems = state.notice.filter(x => String(x.category).toLowerCase() === "news");
@@ -738,29 +860,37 @@
             document.getElementById("adminNoticeOnlyList").innerHTML = renderPostCards(noticeItems);
             document.getElementById("adminNewsOnlyList").innerHTML = renderPostCards(newsItems);
 
-            document.getElementById("adminTeamGrid").innerHTML = state.team.map(m => `
-                <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-2.5">
-                    <img src="${m.photo || './logo.png'}" onerror="this.src='./logo.png'" class="w-24 h-24 mx-auto rounded-2xl object-cover border-2 border-[#B88655]">
-                    <input type="text" value="${m.name}" onchange="updateMemberField('${m.id}', 'name', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
-                    <input type="text" value="${m.role}" onchange="updateMemberField('${m.id}', 'role', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px] text-center">
-                    <div class="flex items-center gap-2 pt-1">
-                        <button type="button" onclick="pickImageFor('team:${m.id}')" class="flex-1 py-2 px-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                            <i class="fa-solid fa-image mr-1"></i> Photo
-                        </button>
-                        <button type="button" onclick="removeMember('${m.id}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+            const cleanTeam = normalizeTeamList(state.team);
+            state.team = cleanTeam;
+
+            document.getElementById("adminTeamGrid").innerHTML = cleanTeam.map(m => {
+                const safeName = cleanText(m.name, "Panel Member");
+                const safeRole = cleanText(m.role, "Designation");
+                const safePhoto = cleanText(m.photo, "./logo.png");
+                return `
+                    <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-2.5">
+                        <img src="${escapeAttr(safePhoto)}" onerror="this.src='./logo.png'" class="w-24 h-24 mx-auto rounded-2xl object-cover border-2 border-[#B88655]">
+                        <input type="text" value="${escapeAttr(safeName)}" onchange="updateMemberField('${escapeAttr(m.id)}', 'name', this.value)" placeholder="Member Name" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
+                        <input type="text" value="${escapeAttr(safeRole)}" onchange="updateMemberField('${escapeAttr(m.id)}', 'role', this.value)" placeholder="Designation" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px] text-center">
+                        <div class="flex items-center gap-2 pt-1">
+                            <button type="button" onclick="pickImageFor('team:${escapeAttr(m.id)}')" class="flex-1 py-2 px-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                                <i class="fa-solid fa-image mr-1"></i> Photo
+                            </button>
+                            <button type="button" onclick="removeMember('${escapeAttr(m.id)}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `).join("");
+                `;
+            }).join("");
 
             document.getElementById("adminGroupWorkList").innerHTML = state.groupWork.map(g => `
                 <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-2.5">
-                    <input type="text" value="${g.title}" onchange="updateGroupWorkField('${g.id}', 'title', this.value)" placeholder="Group Work Title" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
-                    <input type="text" value="${g.icon || 'fa-hands-holding-child'}" onchange="updateGroupWorkField('${g.id}', 'icon', this.value)" placeholder="Icon (e.g. fa-hands-holding-child)" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px]">
-                    <textarea rows="3" onchange="updateGroupWorkField('${g.id}', 'description', this.value)" placeholder="Description" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">${g.description}</textarea>
+                    <input type="text" value="${escapeAttr(cleanText(g.title, ''))}" onchange="updateGroupWorkField('${escapeAttr(g.id)}', 'title', this.value)" placeholder="Group Work Title" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
+                    <input type="text" value="${escapeAttr(cleanText(g.icon, 'fa-hands-holding-child'))}" onchange="updateGroupWorkField('${escapeAttr(g.id)}', 'icon', this.value)" placeholder="Icon (e.g. fa-hands-holding-child)" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px]">
+                    <textarea rows="3" onchange="updateGroupWorkField('${escapeAttr(g.id)}', 'description', this.value)" placeholder="Description" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">${escapeAttr(cleanText(g.description, ''))}</textarea>
                     <div class="flex justify-end">
-                        <button type="button" onclick="removeGroupWorkItem('${g.id}')" class="px-3 py-1.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
+                        <button type="button" onclick="removeGroupWorkItem('${escapeAttr(g.id)}')" class="px-3 py-1.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
                             <i class="fa-solid fa-trash mr-1"></i> Delete
                         </button>
                     </div>
@@ -769,14 +899,14 @@
 
             document.getElementById("adminGalleryList").innerHTML = state.gallery.map(g => `
                 <div class="bg-[#F2E8DF] rounded-2xl overflow-hidden border border-[#D4C3B3] flex flex-col justify-between">
-                    <img src="${g.image || './gallery1.jpg'}" onerror="this.src='./logo.png'" class="w-full h-40 object-cover">
+                    <img src="${escapeAttr(cleanText(g.image, './gallery1.jpg'))}" onerror="this.src='./logo.png'" class="w-full h-40 object-cover">
                     <div class="p-3 space-y-2">
-                        <input type="text" value="${g.caption || ''}" onchange="updateGalleryCaption('${g.id}', this.value)" placeholder="Caption" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-semibold">
+                        <input type="text" value="${escapeAttr(cleanText(g.caption, ''))}" onchange="updateGalleryCaption('${escapeAttr(g.id)}', this.value)" placeholder="Caption" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-semibold">
                         <div class="flex items-center gap-2">
-                            <button type="button" onclick="pickImageFor('gallery:${g.id}')" class="flex-1 py-2 px-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
+                            <button type="button" onclick="pickImageFor('gallery:${escapeAttr(g.id)}')" class="flex-1 py-2 px-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
                                 <i class="fa-solid fa-image mr-1"></i> Change Photo
                             </button>
-                            <button type="button" onclick="removeGalleryItem('${g.id}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
+                            <button type="button" onclick="removeGalleryItem('${escapeAttr(g.id)}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -787,7 +917,7 @@
 
         window.addEventListener("DOMContentLoaded", () => {
             loadState();
-            const logoSrc = state.sections.logoUrl || "./logo.png";
+            const logoSrc = cleanText(state.sections.logoUrl, "./logo.png");
             document.getElementById("gateLogoImg").src = logoSrc;
 
             if (sessionStorage.getItem("shikhor_admin_authed") === "1") {
@@ -796,7 +926,7 @@
                 populateSectionInputs();
                 switchSectionTab(currentTab);
                 renderAll();
-                syncFromGoogleSheetOnOpen(false);
+                syncFromGoogleSheetOnOpen(false, false);
             }
         });
     </script>
