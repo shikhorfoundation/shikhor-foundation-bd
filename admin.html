@@ -101,7 +101,6 @@
     <!-- AUTHENTICATED ADMIN DASHBOARD -->
     <div id="adminDashboardApp" class="hidden min-h-screen flex flex-col">
 
-        <!-- TOP ADMIN HEADER -->
         <header class="sticky top-0 z-40 bg-[#231712] text-[#F6EFE8] border-b border-[#5C3D2E] shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
@@ -134,10 +133,8 @@
             </div>
         </header>
 
-        <!-- MAIN CONTENT -->
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-            <!-- OVERVIEW STATS -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-[#FDFBF9] p-5 rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift">
                     <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published Notices</p>
@@ -157,7 +154,6 @@
                 </div>
             </div>
 
-            <!-- SECTOR NAVIGATION TABS -->
             <div class="bg-[#FDFBF9] p-3 rounded-2xl border border-[#D4C3B3] shadow-sm flex flex-wrap items-center gap-2">
                 <button type="button" onclick="switchSector('notices_news')" data-sector-tab="notices_news" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#3B261D] text-white shadow">
                     <i class="fa-solid fa-bullhorn"></i>
@@ -223,25 +219,26 @@
                                 <input type="text" id="nnDate" placeholder="e.g. Nov 25, 2026" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
                             </div>
 
-                            <!-- DIRECT PC / PHONE IMAGE UPLOAD BOX -->
+                            <!-- INSTANT AUTO-SUBMIT ADD IMAGES BOX -->
                             <div class="p-3.5 rounded-2xl bg-[#F2E8DF] border border-[#C4AE99] space-y-2.5">
                                 <div class="flex items-center justify-between">
-                                    <label class="text-xs font-bold text-[#3B261D]">Cover / Banner Image</label>
+                                    <label class="text-xs font-bold text-[#3B261D]">Add Images (Instant Auto-Submit)</label>
                                     <span id="nnUploadStatus" class="text-[11px] font-bold text-[#8C583A]">Ready</span>
                                 </div>
 
-                                <input type="file" id="nnImageFileInput" accept="image/*" class="hidden" onchange="handleDirectImagePick(event, 'nnBanner', 'nnImagePreview', 'nnUploadStatus')">
+                                <input type="file" id="nnImageFileInput" accept="image/*" class="hidden" onchange="handleAutoSubmitImage(event, 'nn')">
 
-                                <button type="button" onclick="document.getElementById('nnImageFileInput').click()" class="w-full py-2.5 px-4 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-folder-open"></i>
-                                    <span>Upload Image from PC / Phone</span>
+                                <button type="button" id="nnUploadBtn" onclick="document.getElementById('nnImageFileInput').click()" class="w-full py-3 px-4 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-images"></i>
+                                    <span>Add Images (Pick Any File & Auto-Submit)</span>
                                 </button>
+                                <p class="text-[11px] text-[#5C3D2E]">Select any photo from PC or phone — no file renaming needed, auto-submits right away.</p>
 
                                 <div id="nnPreviewWrap" class="hidden rounded-xl overflow-hidden border border-[#C4AE99] bg-[#FDFBF9] h-32 relative">
                                     <img id="nnImagePreview" src="" alt="Preview" class="w-full h-full object-cover">
                                 </div>
 
-                                <input type="text" id="nnBanner" oninput="updatePreviewFromUrl('nnBanner', 'nnImagePreview', 'nnPreviewWrap')" placeholder="Or paste image URL (auto-filled on upload)" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-xs text-[#231712] focus:outline-none focus:border-[#8C583A]">
+                                <input type="text" id="nnBanner" oninput="updatePreviewFromUrl('nnBanner', 'nnImagePreview', 'nnPreviewWrap')" placeholder="Image URL auto-fills on pick" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-xs text-[#231712] focus:outline-none focus:border-[#8C583A]">
                             </div>
 
                             <div>
@@ -373,21 +370,20 @@
                                 <input type="text" id="tmRole" required placeholder="e.g. Executive Member" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
                             </div>
 
-                            <!-- DIRECT TEAM PHOTO UPLOAD -->
                             <div class="p-3 rounded-2xl bg-[#F2E8DF] border border-[#C4AE99] space-y-2">
                                 <div class="flex items-center justify-between">
-                                    <label class="text-xs font-bold text-[#3B261D]">Member Photo</label>
+                                    <label class="text-xs font-bold text-[#3B261D]">Add Images (Auto-Submit)</label>
                                     <span id="tmUploadStatus" class="text-[11px] font-bold text-[#8C583A]">Ready</span>
                                 </div>
-                                <input type="file" id="tmImageFileInput" accept="image/*" class="hidden" onchange="handleDirectImagePick(event, 'tmPhoto', 'tmImagePreview', 'tmUploadStatus')">
-                                <button type="button" onclick="document.getElementById('tmImageFileInput').click()" class="w-full py-2 px-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-folder-open"></i>
-                                    <span>Upload Photo from PC / Phone</span>
+                                <input type="file" id="tmImageFileInput" accept="image/*" class="hidden" onchange="handleAutoSubmitImage(event, 'tm')">
+                                <button type="button" id="tmUploadBtn" onclick="document.getElementById('tmImageFileInput').click()" class="w-full py-2.5 px-3 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold shadow transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-images"></i>
+                                    <span>Add Images (Pick & Auto-Submit)</span>
                                 </button>
                                 <div id="tmPreviewWrap" class="hidden w-16 h-16 mx-auto rounded-xl overflow-hidden border border-[#C4AE99] bg-[#FDFBF9]">
                                     <img id="tmImagePreview" src="" alt="Member Preview" class="w-full h-full object-cover">
                                 </div>
-                                <input type="text" id="tmPhoto" oninput="updatePreviewFromUrl('tmPhoto', 'tmImagePreview', 'tmPreviewWrap')" placeholder="Or paste photo URL" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-xs">
+                                <input type="text" id="tmPhoto" oninput="updatePreviewFromUrl('tmPhoto', 'tmImagePreview', 'tmPreviewWrap')" placeholder="Photo URL auto-fills on pick" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-xs">
                             </div>
 
                             <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow transition">
@@ -468,7 +464,6 @@
 
         </main>
 
-        <!-- FOOTER -->
         <footer class="bg-[#231712] text-[#D4C3B3] py-6 border-t border-[#5C3D2E] text-center text-xs">
             <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
                 <span>Shikhor Foundation Admin Panel • Rooted in Humanity, Growing with Compassion</span>
@@ -548,7 +543,7 @@
             nnFilter: "all"
         };
 
-        function compressImageFile(file, maxWidth = 1280, quality = 0.82) {
+        function compressImageFile(file, maxWidth = 1200, quality = 0.8) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
@@ -577,24 +572,16 @@
             });
         }
 
-        async function handleDirectImagePick(event, targetUrlInputId, previewImgId, statusBadgeId) {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
+        async function uploadImageToDriveOrLocal(file, statusEl, previewImg, previewWrap, urlInput) {
+            if (statusEl) statusEl.textContent = "Uploading...";
+            const { dataUrl, base64Data, mimeType } = await compressImageFile(file);
 
-            const statusEl = document.getElementById(statusBadgeId);
-            const urlInput = document.getElementById(targetUrlInputId);
-            const previewImg = document.getElementById(previewImgId);
-            const previewWrap = previewImg ? previewImg.parentElement : null;
+            if (previewImg && previewWrap) {
+                previewImg.src = dataUrl;
+                previewWrap.classList.remove("hidden");
+            }
 
             try {
-                if (statusEl) statusEl.textContent = "Uploading to Drive...";
-                const { dataUrl, base64Data, mimeType } = await compressImageFile(file);
-
-                if (previewImg && previewWrap) {
-                    previewImg.src = dataUrl;
-                    previewWrap.classList.remove("hidden");
-                }
-
                 const res = await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -605,28 +592,112 @@
                         base64Data: base64Data
                     })
                 });
-
                 const result = await res.json();
                 if (result && result.success && result.imageUrl) {
                     urlInput.value = result.imageUrl;
                     if (previewImg) previewImg.src = result.imageUrl;
-                    if (statusEl) statusEl.textContent = "Uploaded to Drive ✓";
-                    showToast("Image Uploaded", `"${file.name}" saved to Google Drive automatically!`);
-                } else {
-                    throw new Error(result.error || "Upload failed");
+                    if (statusEl) statusEl.textContent = "Uploaded ✓";
+                    return result.imageUrl;
                 }
-            } catch (err) {
+            } catch (e) {}
+
+            const { dataUrl: localSmall } = await compressImageFile(file, 800, 0.7);
+            urlInput.value = localSmall;
+            if (previewImg) previewImg.src = localSmall;
+            if (statusEl) statusEl.textContent = "Attached ✓";
+            return localSmall;
+        }
+
+        async function handleAutoSubmitImage(event, scope) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            if (scope === "nn") {
+                const btn = document.getElementById("nnUploadBtn");
+                const statusEl = document.getElementById("nnUploadStatus");
+                const urlInput = document.getElementById("nnBanner");
+                const previewImg = document.getElementById("nnImagePreview");
+                const previewWrap = document.getElementById("nnPreviewWrap");
+
+                btn.disabled = true;
                 try {
-                    const { dataUrl } = await compressImageFile(file, 900, 0.72);
-                    urlInput.value = dataUrl;
-                    if (statusEl) statusEl.textContent = "Attached Locally ✓";
-                    showToast("Image Attached", `"${file.name}" attached! Deploy updated Apps Script for Drive links.`, true);
-                } catch (e2) {
-                    if (statusEl) statusEl.textContent = "Error";
-                    showToast("Upload Error", "Could not process selected image.", true);
+                    const finalImg = await uploadImageToDriveOrLocal(file, statusEl, previewImg, previewWrap, urlInput);
+                    const category = document.getElementById("nnCategory").value || "News";
+                    const status = document.getElementById("nnStatus").value || "Published";
+                    const date = document.getElementById("nnDate").value.trim() || formatNowBD();
+                    const titleInput = document.getElementById("nnTitle");
+                    const autoTitle = titleInput.value.trim() || `${category} Update (${formatNowBD()})`;
+                    const summary = document.getElementById("nnSummary").value.trim() || autoTitle;
+                    const fullContent = document.getElementById("nnFullContent").value.trim() || summary;
+                    const editId = document.getElementById("nnEditId").value.trim();
+
+                    if (editId) {
+                        const idx = state.items.findIndex(i => i.id === editId);
+                        if (idx !== -1) {
+                            state.items[idx] = {
+                                ...state.items[idx],
+                                category,
+                                status,
+                                date,
+                                title: autoTitle,
+                                summary,
+                                fullContent,
+                                banner: finalImg
+                            };
+                            recordChangeAndSync("Notice & News", "UPDATED", `Auto-submitted image & updated [${category}] "${autoTitle}"`);
+                        }
+                    } else {
+                        state.items.unshift({
+                            id: "item-" + Date.now(),
+                            category,
+                            status,
+                            date,
+                            title: autoTitle,
+                            banner: finalImg,
+                            summary,
+                            fullContent
+                        });
+                        recordChangeAndSync("Notice & News", "ADDED", `Auto-submitted image & published [${category}] "${autoTitle}"`);
+                    }
+
+                    resetNoticeNewsForm();
+                    renderAll();
+                    showToast("Auto-Submitted!", `"${autoTitle}" is live and synced to your spreadsheet.`);
+                } finally {
+                    btn.disabled = false;
+                    event.target.value = "";
                 }
-            } finally {
-                event.target.value = "";
+            } else if (scope === "tm") {
+                const btn = document.getElementById("tmUploadBtn");
+                const statusEl = document.getElementById("tmUploadStatus");
+                const urlInput = document.getElementById("tmPhoto");
+                const previewImg = document.getElementById("tmImagePreview");
+                const previewWrap = document.getElementById("tmPreviewWrap");
+                const nameInput = document.getElementById("tmName");
+                const roleInput = document.getElementById("tmRole");
+
+                btn.disabled = true;
+                try {
+                    const finalImg = await uploadImageToDriveOrLocal(file, statusEl, previewImg, previewWrap, urlInput);
+                    const nameVal = nameInput.value.trim();
+                    const roleVal = roleInput.value.trim();
+
+                    if (nameVal && roleVal) {
+                        state.team.push({ id: "tm-" + Date.now(), name: nameVal, role: roleVal, photo: finalImg });
+                        document.getElementById("teamMemberForm").reset();
+                        statusEl.textContent = "Ready";
+                        previewWrap.classList.add("hidden");
+                        recordChangeAndSync("Team & Panel", "ADDED", `Auto-submitted photo & added "${nameVal}" (${roleVal})`);
+                        renderTeamList();
+                        showToast("Auto-Submitted!", `"${nameVal}" added to panel and synced.`);
+                    } else {
+                        showToast("Photo Attached", "Enter Full Name & Role to auto-save member.", false);
+                        if (!nameVal) nameInput.focus();
+                    }
+                } finally {
+                    btn.disabled = false;
+                    event.target.value = "";
+                }
             }
         }
 
@@ -1191,12 +1262,23 @@
                             fullContent: row["Full Content"] || row["Content"] || row["Summary"] || ""
                         }));
                     }
+                    if (data.sections && typeof data.sections === "object") {
+                        state.sections = { ...DEFAULT_SECTIONS, ...data.sections };
+                    }
+                    if (Array.isArray(data.team) && data.team.length > 0) {
+                        state.team = data.team.map((m, i) => ({
+                            id: m["Member ID"] || m.id || ("tm-" + i),
+                            name: m["Full Name"] || m.name || "Member",
+                            role: m["Designation / Role"] || m.role || "Panel Member",
+                            photo: m["Photo URL"] || m.photo || "logo.png"
+                        }));
+                    }
                     if (Array.isArray(data.visitors) && data.visitors.length > 0) {
                         state.visitorLogs = data.visitors;
                     }
                     if (Array.isArray(data.auditLogs) && data.auditLogs.length > 0) {
                         state.auditLogs = data.auditLogs.map((r, i) => ({
-                            id: "sheet-aud-" + i,
+                            id: r["Log ID"] || ("sheet-aud-" + i),
                             timestamp: r["Timestamp"] || r["Date"] || "",
                             sector: r["Sector"] || "General",
                             changeType: r["Change Type"] || r["Action"] || "LOG",
