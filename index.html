@@ -221,7 +221,7 @@
                     <a href="#news" class="hover:text-[#231712] hover:underline underline-offset-4 transition">News</a>
                     <a href="#about" class="hover:text-[#231712] hover:underline underline-offset-4 transition">About</a>
                     <a href="#mission" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Mission & Vision</a>
-                    <a href="#initiatives" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Initiatives</a>
+                    <a href="#initiatives" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Group Work</a>
                     <a href="#team" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Team</a>
                     <a href="#donation" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Donation</a>
                     <a href="#gallery" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Gallery</a>
@@ -248,7 +248,7 @@
                 <a href="#news" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">News</a>
                 <a href="#about" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">About Us</a>
                 <a href="#mission" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Mission & Vision</a>
-                <a href="#initiatives" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Initiatives</a>
+                <a href="#initiatives" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Group Work</a>
                 <a href="#team" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Our Team</a>
                 <a href="#donation" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Donation</a>
                 <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
@@ -484,14 +484,14 @@
             </div>
         </section>
 
-        <!-- INITIATIVES -->
+        <!-- INITIATIVES / GROUP WORK -->
         <section id="initiatives" class="py-20 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-12">
-                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR INITIATIVES</span>
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">GROUP WORK & INITIATIVES</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Turning compassion into action.</h2>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div id="liveInitiativesGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-hands-holding-child"></i>
@@ -686,6 +686,7 @@
                         <li><a href="#news" class="hover:text-white transition">News</a></li>
                         <li><a href="#about" class="hover:text-white transition">About Us</a></li>
                         <li><a href="#mission" class="hover:text-white transition">Mission & Vision</a></li>
+                        <li><a href="#initiatives" class="hover:text-white transition">Group Work</a></li>
                         <li><a href="#donation" class="hover:text-white transition">Donation</a></li>
                         <li><a href="#team" class="hover:text-white transition">Our Team</a></li>
                     </ul>
@@ -982,6 +983,26 @@
             }
         }
 
+        function renderLiveGroupWork(list) {
+            const grid = document.getElementById("liveInitiativesGrid");
+            if (!grid || !Array.isArray(list) || list.length === 0) return;
+
+            grid.innerHTML = list.map(item => {
+                const icon = item.icon || "fa-hands-holding-child";
+                const title = item.title || "Group Work";
+                const desc = item.description || "";
+                return `
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
+                            <i class="fa-solid ${escapeHtml(icon)}"></i>
+                        </div>
+                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">${escapeHtml(title)}</h3>
+                        <p class="text-[#4F392E] text-sm leading-relaxed">${escapeHtml(desc)}</p>
+                    </div>
+                `;
+            }).join("");
+        }
+
         function renderLiveGallery(galleryList) {
             const grid = document.getElementById("liveGalleryGrid");
             if (!grid || !Array.isArray(galleryList) || galleryList.length === 0) return;
@@ -1173,6 +1194,9 @@
 
                 const localGallery = localStorage.getItem("shikhor_admin_gallery_v1");
                 if (localGallery) renderLiveGallery(JSON.parse(localGallery));
+
+                const localGroupWork = localStorage.getItem("shikhor_admin_group_work_v1");
+                if (localGroupWork) renderLiveGroupWork(JSON.parse(localGroupWork));
             } catch (e) {}
         }
 
@@ -1195,6 +1219,9 @@
                     if (Array.isArray(data.gallery) && data.gallery.length > 0) {
                         renderLiveGallery(data.gallery);
                     }
+                    if (Array.isArray(data.groupWork) && data.groupWork.length > 0) {
+                        renderLiveGroupWork(data.groupWork);
+                    }
                 }
             } catch (err) {}
         }
@@ -1210,7 +1237,8 @@
                 e.key === "shikhor_admin_notice_news_v1" ||
                 e.key === "shikhor_admin_site_sections_v1" ||
                 e.key === "shikhor_admin_team_v1" ||
-                e.key === "shikhor_admin_gallery_v1"
+                e.key === "shikhor_admin_gallery_v1" ||
+                e.key === "shikhor_admin_group_work_v1"
             ) {
                 loadLocalFallbackFromAdmin();
             }
