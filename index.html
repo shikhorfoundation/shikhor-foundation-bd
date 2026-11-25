@@ -8,36 +8,104 @@
     <meta name="description" content="Shikhor Foundation is a community-driven humanitarian initiative built on the power of people helping people. Together for a Better Tomorrow.">
     <meta property="og:site_name" content="Shikhor Foundation">
     <meta property="og:title" content="Shikhor Foundation | Together for a Better Tomorrow">
-    
-    <!-- Favicon & Google Search Logo Optimization -->
-    <link rel="icon" type="image/png" sizes="512x512" href="[https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png](https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png)">
-    <link rel="shortcut icon" href="[https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png](https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png)">
-    <link rel="apple-touch-icon" href="[https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png](https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png)">
 
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-    <link href="[https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap)" rel="stylesheet">
-    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+    <link rel="icon" type="image/png" sizes="512x512" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+    <link rel="shortcut icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+    <link rel="apple-touch-icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+
+    <!-- Primary + Fallback CDN Loaders -->
+    <script id="tailwindCdn" src="https://cdn.tailwindcss.com" onerror="loadTailwindFallback()"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Built-in Layout & Theme Fallback (Works even if Tailwind CDN is blocked) -->
     <style>
-        body { font-family: 'Outfit', sans-serif; }
-        h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
-        
+        :root {
+            --bg-cream: #F6EFE8;
+            --bg-warm: #FDFBF9;
+            --bg-sand: #EFE5DC;
+            --bg-soft: #F2E8DF;
+            --ink-dark: #231712;
+            --ink-brown: #3B261D;
+            --ink-body: #4F392E;
+            --accent: #8C583A;
+            --accent-dark: #6E432B;
+            --gold: #E6B88A;
+            --border-warm: #D4C3B3;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-cream);
+            color: var(--ink-dark);
+            line-height: 1.5;
+        }
+        h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', Georgia, serif; }
+        a { color: inherit; text-decoration: none; }
+        img { max-width: 100%; display: block; }
+        button { cursor: pointer; font-family: inherit; }
+
+        .hidden { display: none !important; }
+
+        /* Fallback Layout Classes when Tailwind CDN doesn't load */
+        .max-w-7xl { max-width: 80rem; margin-left: auto; margin-right: auto; }
+        .max-w-4xl { max-width: 56rem; margin-left: auto; margin-right: auto; }
+        .max-w-3xl { max-width: 48rem; margin-left: auto; margin-right: auto; }
+        .max-w-2xl { max-width: 42rem; margin-left: auto; margin-right: auto; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .text-center { text-align: center; }
+        .flex { display: flex; }
+        .flex-1 { flex: 1 1 0%; }
+        .flex-col { flex-direction: column; }
+        .flex-wrap { flex-wrap: wrap; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        .gap-8 { gap: 2rem; }
+        .grid { display: grid; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) {
+            .lg\:flex { display: flex; }
+            .lg\:hidden { display: none; }
+            .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+
+        header.sticky {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(253, 251, 249, 0.96);
+            border-bottom: 1px solid var(--border-warm);
+            padding: 12px 16px;
+        }
+        nav a { font-size: 14px; font-weight: 500; color: #5C3D2E; }
+        nav a:hover { color: var(--ink-dark); }
+
         .hover-lift {
-            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .hover-lift:hover {
-            transform: translateY(-7px);
-            box-shadow: 0 22px 35px -10px rgba(35, 23, 18, 0.22);
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.35s ease-out forwards;
+            transform: translateY(-5px);
+            box-shadow: 0 18px 30px -10px rgba(35, 23, 18, 0.2);
         }
 
-        /* Breaking News Marquee Ticker */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+
         @keyframes tickerScroll {
             0% { transform: translateX(0%); }
             100% { transform: translateX(-50%); }
@@ -47,27 +115,50 @@
             width: max-content;
             animation: tickerScroll 28s linear infinite;
         }
-        .ticker-wrapper:hover .ticker-track {
-            animation-play-state: paused;
-        }
+        .ticker-wrapper:hover .ticker-track { animation-play-state: paused; }
 
-        /* Highlight pulse when jumped from headline */
         @keyframes cardHighlight {
             0% { box-shadow: 0 0 0 0 rgba(140, 88, 58, 0.75); border-color: #8C583A; background-color: #FFF6EB; }
             70% { box-shadow: 0 0 0 12px rgba(140, 88, 58, 0); border-color: #8C583A; background-color: #FFF6EB; }
             100% { box-shadow: 0 0 0 0 rgba(140, 88, 58, 0); }
         }
-        .highlight-news-card {
-            animation: cardHighlight 2.2s ease-out;
+        .highlight-news-card { animation: cardHighlight 2.2s ease-out; }
+
+        /* Modals & Floating Controls Safety */
+        #lightboxModal, #articleReaderModal {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            background: rgba(26, 16, 12, 0.88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
+        #chatWindow {
+            position: fixed;
+            bottom: 84px;
+            left: 20px;
+            z-index: 60;
+            width: 340px;
+            max-width: calc(100vw - 40px);
+            background: #FDFBF9;
+            border: 1px solid #D4C3B3;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+        .fab-chat { position: fixed; bottom: 20px; left: 20px; z-index: 55; width: 52px; height: 52px; border-radius: 9999px; background: #3B261D; color: #E6B88A; border: 2px solid #8C583A; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+        .fab-top { position: fixed; bottom: 82px; right: 20px; z-index: 55; width: 42px; height: 42px; border-radius: 9999px; background: #3B261D; color: #E6B88A; border: 1px solid #8C583A; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .fab-wa { position: fixed; bottom: 20px; right: 20px; z-index: 55; width: 52px; height: 52px; border-radius: 9999px; background: #25D366; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
     </style>
 </head>
 <body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white">
 
     <!-- IMAGE LIGHTBOX MODAL -->
-    <div id="lightboxModal" onclick="closeLightbox()" class="fixed inset-0 z-50 bg-[#1A100C]/90 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div id="lightboxModal" onclick="closeLightbox()" class="hidden">
         <div class="relative max-w-4xl w-full text-center">
-            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-[#D4A373]">
+            <button type="button" onclick="closeLightbox()" class="px-3 py-1.5 rounded-lg bg-[#3B261D] text-white text-xs font-bold mb-3">
                 <i class="fa-solid fa-xmark"></i> Close
             </button>
             <img id="lightboxImg" src="" alt="Gallery Preview" class="max-h-[80vh] mx-auto rounded-2xl shadow-2xl border-2 border-[#B88655]">
@@ -76,7 +167,7 @@
     </div>
 
     <!-- FULL NEWS / NOTICE READER MODAL -->
-    <div id="articleReaderModal" onclick="if(event.target === this) closeArticleModal()" class="fixed inset-0 z-50 bg-[#1A100C]/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 hidden overflow-y-auto">
+    <div id="articleReaderModal" onclick="if(event.target === this) closeArticleModal()" class="hidden overflow-y-auto">
         <div class="bg-[#FDFBF9] text-[#231712] max-w-3xl w-full rounded-3xl border-2 border-[#B88655] shadow-2xl overflow-hidden my-auto animate-fade-in">
             <div class="bg-[#3B261D] text-white px-5 sm:px-7 py-4 flex items-center justify-between gap-4">
                 <div class="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-[#E6B88A]">
@@ -139,10 +230,10 @@
                 </nav>
 
                 <div class="flex items-center gap-2.5">
-                    <a href="[https://forms.gle/G841ht9aQ9ca1ja86](https://forms.gle/G841ht9aQ9ca1ja86)" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         Join Volunteer
                     </a>
-                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] border border-[#D4C3B3]">
+                    <button type="button" onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] border border-[#D4C3B3]">
                         <i class="fa-solid fa-bars"></i>
                     </button>
                 </div>
@@ -159,11 +250,11 @@
                 <a href="#donation" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Donation</a>
                 <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
                 <a href="#contact" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Contact</a>
-                <a href="[https://forms.gle/G841ht9aQ9ca1ja86](https://forms.gle/G841ht9aQ9ca1ja86)" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
             </div>
         </header>
 
-        <!-- TOP BREAKING HEADLINE BAR (CLICKABLE JUMP TO NEWS/NOTICE) -->
+        <!-- TOP BREAKING HEADLINE BAR -->
         <div class="bg-[#231712] text-[#F6EFE8] border-b border-[#8C583A] shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-11 flex items-center gap-3 overflow-hidden">
                 <div class="shrink-0 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#8C583A] text-white text-[11px] font-bold uppercase tracking-wider shadow">
@@ -175,25 +266,21 @@
                         <button type="button" onclick="jumpToHighlight('notice-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
                             <span class="px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase">Notice</span>
                             <span>Volunteer & Community Drive — Official Announcements</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
                         </button>
                         <span class="text-[#8C583A]">•</span>
                         <button type="button" onclick="jumpToHighlight('news-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
                             <span class="px-2 py-0.5 rounded bg-[#5C3D2E] text-white text-[10px] font-bold uppercase">News</span>
                             <span>Standing Together for Communities — Latest Ground Reports</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
                         </button>
                         <span class="text-[#8C583A]">•</span>
                         <button type="button" onclick="jumpToHighlight('notice-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
                             <span class="px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase">Notice</span>
                             <span>Volunteer & Community Drive — Official Announcements</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
                         </button>
                         <span class="text-[#8C583A]">•</span>
                         <button type="button" onclick="jumpToHighlight('news-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
                             <span class="px-2 py-0.5 rounded bg-[#5C3D2E] text-white text-[10px] font-bold uppercase">News</span>
                             <span>Standing Together for Communities — Latest Ground Reports</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
                         </button>
                     </div>
                 </div>
@@ -201,7 +288,7 @@
         </div>
 
         <!-- HERO SECTION -->
-        <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-24 lg:py-32 overflow-hidden border-b border-[#D4C3B3]">
+        <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-20 lg:py-28 overflow-hidden border-b border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                 <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-[#FDFBF9] shadow-2xl border-4 border-[#B88655] flex items-center justify-center overflow-hidden p-2.5 transform transition hover:scale-105">
                     <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
@@ -210,24 +297,24 @@
                 <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#3B261D] text-[#F6EFE8] text-xs font-bold mb-6 tracking-widest shadow-md">
                     <span>HELP</span> • <span>SUPPORT</span> • <span>EMPOWER</span>
                 </div>
-                <h1 class="text-4xl sm:text-6xl font-extrabold font-heading text-[#231712] tracking-tight max-w-4xl mx-auto leading-tight">
+                <h1 id="liveHeroTitle" class="text-4xl sm:text-6xl font-extrabold font-heading text-[#231712] tracking-tight max-w-4xl mx-auto leading-tight">
                     A little kindness can grow into a <span class="text-[#8C583A]">better tomorrow.</span>
                 </h1>
                 <p id="liveHeroSubtitle" class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed">
                     Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.
                 </p>
-                
+
                 <div class="mt-6 flex justify-center items-center gap-4">
-                    <a href="[https://www.facebook.com/Shikhor.Foundation.For.BD](https://www.facebook.com/Shikhor.Foundation.For.BD)" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-brands fa-facebook-f text-sm"></i> Facebook Page
                     </a>
-                    <a href="[https://www.instagram.com/shikhor_foundation](https://www.instagram.com/shikhor_foundation)" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-brands fa-instagram text-sm"></i> Instagram
                     </a>
                 </div>
 
                 <div class="mt-10 flex flex-wrap justify-center gap-4">
-                    <a href="[https://forms.gle/G841ht9aQ9ca1ja86](https://forms.gle/G841ht9aQ9ca1ja86)" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1">
                         Join as Volunteer <i class="fa-solid fa-arrow-right ml-2"></i>
                     </a>
                     <a href="#donation" class="px-8 py-4 bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] font-semibold rounded-xl border-2 border-[#B88655] shadow-md transition transform hover:-translate-y-1">
@@ -236,7 +323,7 @@
                 </div>
 
                 <!-- LIVE IMPACT COUNTER -->
-                <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
                         <h3 id="liveFamiliesCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Families Supported</p>
@@ -245,7 +332,7 @@
                         <h3 id="liveVolunteersCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Active Volunteers</p>
                     </div>
-                    <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift col-span-2 md:col-span-1">
+                    <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
                         <h3 id="liveEventsCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">10+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Successful Events</p>
                     </div>
@@ -257,7 +344,7 @@
             </div>
         </section>
 
-        <!-- LIVE NOTICE & NEWS SECTION (COMPACT COVER CARDS -> FULL READER MODAL) -->
+        <!-- LIVE NOTICE & NEWS SECTION -->
         <section id="notice" class="py-16 bg-[#EFE5DC] border-b border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
 
@@ -298,7 +385,7 @@
                     </div>
                 </div>
 
-                <!-- NEWS SECTION (COVER + HEADING + VIEW NEWS BUTTON) -->
+                <!-- NEWS SECTION -->
                 <div id="news" class="scroll-mt-32 pt-4 border-t border-[#D4C3B3]">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
                         <div>
@@ -336,9 +423,9 @@
         </section>
 
         <!-- ABOUT US -->
-        <section id="about" class="py-24 bg-[#FDFBF9]">
+        <section id="about" class="py-20 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
                         <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">WHO WE ARE</span>
                         <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">
@@ -377,9 +464,9 @@
         </section>
 
         <!-- MISSION & VISION -->
-        <section id="mission" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+        <section id="mission" class="py-20 bg-[#EFE5DC] border-y border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="text-center max-w-3xl mx-auto mb-12">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR DIRECTION</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Mission & Vision</h2>
                 </div>
@@ -407,9 +494,9 @@
         </section>
 
         <!-- INITIATIVES -->
-        <section id="initiatives" class="py-24 bg-[#FDFBF9]">
+        <section id="initiatives" class="py-20 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="text-center max-w-3xl mx-auto mb-12">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR INITIATIVES</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Turning compassion into action.</h2>
                 </div>
@@ -446,15 +533,14 @@
         </section>
 
         <!-- TEAM DIRECTORY -->
-        <section id="team" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+        <section id="team" class="py-20 bg-[#EFE5DC] border-y border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="text-center max-w-3xl mx-auto mb-12">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">THE PEOPLE BEHIND SHIKHOR</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Our Leadership & Panel Members</h2>
                 </div>
 
-                <!-- 1. FOUNDER CARD -->
-                <div class="bg-[#FDFBF9] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
+                <div class="bg-[#FDFBF9] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
                     <div class="text-center">
                         <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#8C583A] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="zarif.jpg" alt="Md. Shewise Al Islam Zarif" class="w-full h-full object-cover">
@@ -471,111 +557,43 @@
                     </div>
                 </div>
 
-                <!-- PANEL MEMBERS GRID -->
                 <div id="livePanelGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
                             <img src="ahsan.jpg" alt="Ahsan Zaman" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Ahsan Zaman</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President</p>
                     </div>
-
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
                             <img src="nafew.jpg" alt="Nafew Khalil" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Nafew Khalil</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President of Program Organisation</p>
                     </div>
-
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
                             <img src="shakhawat.jpg" alt="Md. Shakhawat Hossain Sayem" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Shakhawat Hossain Sayem</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration & Marketing<br><span class="text-[10px] text-[#6E5649] font-normal">(Acting IT Secretary)</span></p>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration & Marketing</p>
                     </div>
-
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="minhajul.jpg" alt="MD. Minhajul Islam" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">MD. Minhajul Islam</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts & Finance</p>
-                    </div>
-
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="shafi.jpg" alt="Faymul Islam Shafi" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Faymul Islam Shafi</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Volunteer</p>
-                    </div>
-
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="sayed.jpg" alt="Sayed Bin Kamal" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Sayed Bin Kamal</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Administration</p>
-                    </div>
-
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="alif.jpg" alt="Alif Hasan Ayman" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Alif Hasan Ayman</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Accounts & Finance</p>
-                    </div>
-
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
                             <img src="rikto.png" alt="Rikto Ruddur Lyric" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Rikto Ruddur Lyric</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Marketing</p>
-                    </div>
-
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="mayasha.jpg" alt="Mayasha Afrin" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Mayasha Afrin</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Volunteer</p>
-                    </div>
-
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="wahid.jpg" alt="Wahid Yashfi" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Wahid Yashfi</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
-                    </div>
-
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="arafat.jpg" alt="Arafat Sultan" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Arafat Sultan</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
-                    </div>
-
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="raiyanul.jpg" alt="Md. Raiyanul Islam" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Raiyanul Islam</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- DEDICATED DONATION SECTION -->
-        <section id="donation" class="py-24 bg-[#FDFBF9]">
+        <section id="donation" class="py-20 bg-[#FDFBF9]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="text-center max-w-3xl mx-auto mb-12">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">SUPPORT OUR CAUSE</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Make a Donation</h2>
                     <p class="mt-4 text-[#4F392E] text-sm leading-relaxed">
@@ -584,7 +602,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <!-- bKash Card -->
                     <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
                             <img src="bkash.png" alt="bKash Logo" class="h-14 object-contain">
@@ -603,7 +620,6 @@
                         <p class="text-[11px] text-[#6E5649] mt-3">Reference: Shikhor Donation</p>
                     </div>
 
-                    <!-- Nagad Card -->
                     <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
                             <img src="nagad.png" alt="Nagad Logo" class="h-14 object-contain">
@@ -626,9 +642,9 @@
         </section>
 
         <!-- GALLERY -->
-        <section id="gallery" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+        <section id="gallery" class="py-20 bg-[#EFE5DC] border-y border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="text-center max-w-3xl mx-auto mb-12">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR GALLERY</span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Moments of Humanity</h2>
                     <p class="mt-4 text-[#4F392E] text-sm">Click any photo to view full screen. Every picture tells a story of hope.</p>
@@ -636,34 +652,25 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div onclick="openLightbox('gallery1.jpg', 'Community Support Activity')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
                         <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
-                            <i class="fa-solid fa-expand mr-2"></i> View Photo
-                        </div>
                     </div>
                     <div onclick="openLightbox('gallery2.jpg', 'Educational Support Initiative')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
                         <img src="gallery2.jpg" alt="Educational Support Initiative" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
-                            <i class="fa-solid fa-expand mr-2"></i> View Photo
-                        </div>
                     </div>
                     <div onclick="openLightbox('gallery3.jpg', 'Volunteer Gathering')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
                         <img src="gallery3.jpg" alt="Volunteer Gathering" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
-                            <i class="fa-solid fa-expand mr-2"></i> View Photo
-                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- VOLUNTEER CALLOUT -->
-        <section class="py-20 bg-[#3B261D] text-white text-center border-b border-[#5C3D2E]">
+        <section class="py-16 bg-[#3B261D] text-white text-center border-b border-[#5C3D2E]">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl sm:text-4xl font-extrabold font-heading mb-4">Want to Make a Real Difference?</h2>
                 <p class="text-[#E8D9CB] max-w-xl mx-auto mb-8 text-sm sm:text-base">
                     Join our team of dedicated volunteers and help us spread compassion where it's needed most.
                 </p>
-                <a href="[https://forms.gle/G841ht9aQ9ca1ja86](https://forms.gle/G841ht9aQ9ca1ja86)" target="_blank" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1">
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1">
                     Apply as a Volunteer Now ↗
                 </a>
             </div>
@@ -683,17 +690,13 @@
                         Rooted in Humanity, Growing with Compassion. Together for a Better Tomorrow.
                     </p>
                     <div class="flex items-center gap-3">
-                        <a href="[https://www.facebook.com/Shikhor.Foundation.For.BD](https://www.facebook.com/Shikhor.Foundation.For.BD)" target="_blank" class="w-9 h-9 rounded-xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 transition shadow-md" title="Facebook">
-                            <i class="fa-brands fa-facebook-f text-sm"></i>
-                        </a>
-                        <a href="[https://www.instagram.com/shikhor_foundation](https://www.instagram.com/shikhor_foundation)" target="_blank" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white flex items-center justify-center hover:scale-110 transition shadow-md" title="Instagram">
-                            <i class="fa-brands fa-instagram text-sm"></i>
-                        </a>
+                        <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="px-3 py-1.5 rounded-lg bg-[#1877F2] text-white text-xs font-bold">Facebook</a>
+                        <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="px-3 py-1.5 rounded-lg bg-[#8C583A] text-white text-xs font-bold">Instagram</a>
                     </div>
                 </div>
                 <div>
                     <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#E6B88A]">Quick Links</h4>
-                    <ul class="space-y-2 text-xs text-[#D4C3B3]">
+                    <ul class="space-y-2 text-xs text-[#D4C3B3] list-none p-0 m-0">
                         <li><a href="#notice" class="hover:text-white transition">Live Notice</a></li>
                         <li><a href="#news" class="hover:text-white transition">News</a></li>
                         <li><a href="#about" class="hover:text-white transition">About Us</a></li>
@@ -704,9 +707,9 @@
                 </div>
                 <div>
                     <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#E6B88A]">Contact Us</h4>
-                    <p class="text-xs text-[#D4C3B3] mb-2"><i class="fa-solid fa-envelope mr-2 text-[#E6B88A]"></i> shikhor.foundation.bd@gmail.com</p>
-                    <p class="text-xs text-[#D4C3B3] mb-2"><i class="fa-solid fa-phone mr-2 text-[#E6B88A]"></i> +8801956631465 (WhatsApp available)</p>
-                    <p class="text-xs text-[#D4C3B3]"><i class="fa-solid fa-location-dot mr-2 text-[#E6B88A]"></i> Bangladesh</p>
+                    <p class="text-xs text-[#D4C3B3] mb-2">Email: shikhor.foundation.bd@gmail.com</p>
+                    <p class="text-xs text-[#D4C3B3] mb-2">Phone / WhatsApp: +8801956631465</p>
+                    <p class="text-xs text-[#D4C3B3]">Location: Bangladesh</p>
                 </div>
             </div>
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/10 pt-8 text-center text-xs text-[#A68F80]">
@@ -717,64 +720,56 @@
     </div>
 
     <!-- 24/7 FAQ CHATBOT WIDGET -->
-    <div class="fixed bottom-6 left-6 z-50">
-        <button onclick="toggleChatbot()" id="chatToggleBtn" class="w-14 h-14 bg-[#3B261D] text-[#E6B88A] border-2 border-[#8C583A] rounded-full shadow-2xl flex items-center justify-center text-xl hover:scale-110 transition duration-300 relative" title="Chat with Us">
-            <i class="fa-solid fa-comments"></i>
-            <span class="absolute -top-1 -right-1 w-4 h-4 bg-green-600 rounded-full border-2 border-white animate-pulse"></span>
-        </button>
+    <button type="button" onclick="toggleChatbot()" id="chatToggleBtn" class="fab-chat" title="Chat with Us">
+        <i class="fa-solid fa-comments"></i>
+    </button>
 
-        <div id="chatWindow" class="hidden absolute bottom-16 left-0 w-80 sm:w-96 bg-[#FDFBF9] rounded-3xl shadow-2xl border border-[#D4C3B3] overflow-hidden flex flex-col animate-fade-in">
-            <div class="bg-[#3B261D] text-white p-4 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-[#5C3D2E] flex items-center justify-center border border-[#8C583A] overflow-hidden p-1">
-                        <img src="logo.png" alt="Logo" class="w-full h-full object-contain">
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold font-heading">Shikhor Assistant</h4>
-                        <p class="text-[10px] text-green-300 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span> Online 24/7</p>
-                    </div>
-                </div>
-                <button onclick="toggleChatbot()" class="text-white hover:text-[#E6B88A] text-lg px-2">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+    <div id="chatWindow" class="hidden flex-col animate-fade-in">
+        <div class="bg-[#3B261D] text-white p-4 flex items-center justify-between">
+            <div>
+                <h4 class="text-sm font-bold font-heading m-0">Shikhor Assistant</h4>
+                <p class="text-[10px] text-green-300 m-0">Online 24/7</p>
             </div>
+            <button type="button" onclick="toggleChatbot()" class="text-white text-lg px-2 bg-transparent border-0">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
 
-            <div id="chatMessages" class="p-4 h-72 overflow-y-auto space-y-3 text-xs bg-[#F6EFE8]/50 flex flex-col">
-                <div class="bg-[#EFE5DC] text-[#3B261D] p-3 rounded-2xl rounded-tl-none max-w-[85%] border border-[#D4C3B3] shadow-sm">
-                    Hello! Welcome to <strong>Shikhor Foundation</strong>. How can I help you today? Please choose a common question below or message us directly.
-                </div>
+        <div id="chatMessages" class="p-4 h-64 overflow-y-auto space-y-3 text-xs bg-[#F6EFE8]/50 flex flex-col">
+            <div class="bg-[#EFE5DC] text-[#3B261D] p-3 rounded-2xl border border-[#D4C3B3]">
+                Hello! Welcome to <strong>Shikhor Foundation</strong>. How can I help you today?
             </div>
+        </div>
 
-            <div class="p-2.5 bg-[#FDFBF9] border-t border-[#D4C3B3] grid grid-cols-1 gap-1.5">
-                <button onclick="handleFAQClick('volunteer')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
-                    <span><i class="fa-solid fa-user-plus text-[#8C583A] mr-1.5"></i> How to join as a volunteer?</span>
-                    <i class="fa-solid fa-chevron-right text-[10px] text-[#6E5649]"></i>
-                </button>
-                <button onclick="handleFAQClick('donation')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
-                    <span><i class="fa-solid fa-hand-holding-heart text-[#8C583A] mr-1.5"></i> How to make a donation?</span>
-                    <i class="fa-solid fa-chevron-right text-[10px] text-[#6E5649]"></i>
-                </button>
-                <button onclick="handleFAQClick('contact')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
-                    <span><i class="fa-solid fa-headset text-[#8C583A] mr-1.5"></i> Need custom help? (Social Links)</span>
-                    <i class="fa-solid fa-chevron-right text-[10px] text-[#6E5649]"></i>
-                </button>
-            </div>
+        <div class="p-2.5 bg-[#FDFBF9] border-t border-[#D4C3B3] grid grid-cols-1 gap-1.5">
+            <button type="button" onclick="handleFAQClick('volunteer')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] font-medium">
+                How to join as a volunteer?
+            </button>
+            <button type="button" onclick="handleFAQClick('donation')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] font-medium">
+                How to make a donation?
+            </button>
+            <button type="button" onclick="handleFAQClick('contact')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] font-medium">
+                Need custom help? (Social Links)
+            </button>
         </div>
     </div>
 
-    <!-- BACK TO TOP BUTTON -->
-    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-24 right-6 z-40 bg-[#3B261D] text-[#E6B88A] border border-[#8C583A] w-11 h-11 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition" title="Back to Top">
+    <button type="button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fab-top" title="Back to Top">
         <i class="fa-solid fa-arrow-up"></i>
     </button>
 
-    <!-- FLOATING WHATSAPP BUTTON -->
-    <a href="[https://wa.me/8801956631465](https://wa.me/8801956631465)" target="_blank" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition duration-300" title="Chat on WhatsApp">
+    <a href="https://wa.me/8801956631465" target="_blank" class="fab-wa" title="Chat on WhatsApp">
         <i class="fa-brands fa-whatsapp text-2xl"></i>
     </a>
 
-    <!-- PUBLIC VISITOR TRACKING, HEADLINE TICKER, LIVE NOTICE & NEWS SCRIPTS -->
     <script>
-        const GOOGLE_SCRIPT_URL = "[https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec](https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec)";
+        function loadTailwindFallback() {
+            const s = document.createElement("script");
+            s.src = "https://cdn.jsdelivr.net/npm/tailwindcss@3.4.16";
+            document.head.appendChild(s);
+        }
+
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec";
         const visitorEnterTime = Date.now();
 
         const articleStore = {
@@ -806,6 +801,16 @@
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;");
+        }
+
+        function formatDisplayDate(rawDate, fallback) {
+            const cleaned = String(rawDate || "").replace(/\(বাংলাদেশ মানক সময়\)/g, "").trim();
+            if (!cleaned) return fallback;
+            const parsed = new Date(cleaned);
+            if (!isNaN(parsed.getTime())) {
+                return parsed.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+            }
+            return cleaned;
         }
 
         function sanitizeUrl(url, fallback) {
@@ -850,20 +855,14 @@
                 history.replaceState(null, "", `#article=${encodeURIComponent(articleKey)}`);
             } catch (e) {}
 
-            const modal = document.getElementById('articleReaderModal');
-            modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
+            document.getElementById('articleReaderModal').classList.remove('hidden');
         }
 
         function closeArticleModal() {
-            const modal = document.getElementById('articleReaderModal');
-            modal.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
+            document.getElementById('articleReaderModal').classList.add('hidden');
             activeArticleId = null;
             if (window.location.hash.startsWith("#article=")) {
-                try {
-                    history.replaceState(null, "", "#news");
-                } catch (e) {}
+                try { history.replaceState(null, "", "#news"); } catch (e) {}
             }
         }
 
@@ -875,9 +874,7 @@
             navigator.clipboard.writeText(shareUrl).then(() => {
                 const prevHtml = btn.innerHTML;
                 btn.innerHTML = `<i class="fa-solid fa-check text-green-700"></i> Link Copied!`;
-                setTimeout(() => {
-                    btn.innerHTML = prevHtml;
-                }, 2000);
+                setTimeout(() => { btn.innerHTML = prevHtml; }, 2000);
             });
         }
 
@@ -916,19 +913,17 @@
         function sendToGoogleSheet(payload, useBeacon = false) {
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
             const jsonStr = JSON.stringify(payload);
-
             if (useBeacon && navigator.sendBeacon) {
                 const blob = new Blob([jsonStr], { type: "text/plain;charset=UTF-8" });
                 navigator.sendBeacon(GOOGLE_SCRIPT_URL, blob);
                 return;
             }
-
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: jsonStr
-            }).catch(err => console.log('Tracking error:', err));
+            }).catch(() => {});
         }
 
         function logPublicVisitorEntry() {
@@ -996,11 +991,12 @@
                 const rawBanner = row["Image URL"] || row.banner || row["Banner"] || row["Image"] || row["Photo"] || "";
                 const fallbackBanner = isNews ? "gallery2.jpg" : "gallery1.jpg";
                 const banner = sanitizeUrl(rawBanner, fallbackBanner);
+                const dateLabel = formatDisplayDate(row["Publish Date"] || row.date, isNews ? "Recent" : "Live");
 
                 const record = {
                     id: domId,
                     category: catVal,
-                    date: row["Publish Date"] || row.date || (isNews ? "Recent" : "Live"),
+                    date: dateLabel,
                     title,
                     banner,
                     body,
@@ -1066,7 +1062,6 @@
                         <button type="button" onclick="jumpToHighlight('${escapeHtml(item.id)}')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
                             <span class="px-2 py-0.5 rounded ${badgeClass} text-[10px] font-bold uppercase">${escapeHtml(item.category)}</span>
                             <span>${escapeHtml(item.title)}</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
                         </button>
                     `;
                 }).join('<span class="text-[#8C583A]">•</span>');
@@ -1082,9 +1077,7 @@
             const hash = window.location.hash || "";
             if (hash.startsWith("#article=")) {
                 const key = decodeURIComponent(hash.replace("#article=", ""));
-                if (articleStore[key]) {
-                    openArticleByKey(key);
-                }
+                if (articleStore[key]) openArticleByKey(key);
             }
         }
 
@@ -1130,75 +1123,46 @@
         });
 
         window.addEventListener('hashchange', checkHashForArticle);
-
         window.addEventListener('keydown', (e) => {
             if (e.key === "Escape") {
                 closeArticleModal();
                 closeLightbox();
             }
         });
+        window.addEventListener('pagehide', () => { logPublicVisitorExit(); });
 
-        window.addEventListener('pagehide', () => {
-            logPublicVisitorExit();
-        });
-
-        function toggleMobileMenu() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
-        }
-
+        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('hidden'); }
         function openLightbox(src, caption) {
             document.getElementById('lightboxImg').src = src;
             document.getElementById('lightboxCaption').innerText = caption;
             document.getElementById('lightboxModal').classList.remove('hidden');
         }
-
-        function closeLightbox() {
-            document.getElementById('lightboxModal').classList.add('hidden');
-        }
-
+        function closeLightbox() { document.getElementById('lightboxModal').classList.add('hidden'); }
         function copyToClipboard(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
                 const originalText = btn.innerText;
                 btn.innerText = "Copied!";
-                btn.classList.add('bg-green-700');
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.classList.remove('bg-green-700');
-                }, 2000);
+                setTimeout(() => { btn.innerText = originalText; }, 2000);
             });
         }
-
-        function toggleChatbot() {
-            const chatWindow = document.getElementById('chatWindow');
-            chatWindow.classList.toggle('hidden');
-        }
-
+        function toggleChatbot() { document.getElementById('chatWindow').classList.toggle('hidden'); }
         function handleFAQClick(type) {
             const chatMessages = document.getElementById('chatMessages');
             let userQ = "";
             let botA = "";
-
             if (type === 'volunteer') {
                 userQ = "How to join as a volunteer?";
-                botA = `To join Shikhor Foundation as a volunteer, you can click the <strong>"Join Volunteer"</strong> button in the menu or <a href="[https://forms.gle/G841ht9aQ9ca1ja86](https://forms.gle/G841ht9aQ9ca1ja86)" target="_blank" class="text-blue-600 underline font-bold">Click Here to Fill Form</a>.`;
+                botA = `Click <strong>"Join Volunteer"</strong> in the menu or <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" style="color:#8C583A;font-weight:700;text-decoration:underline;">Fill Volunteer Form</a>.`;
             } else if (type === 'donation') {
                 userQ = "How to make a donation?";
-                botA = `You can donate securely via bKash or Nagad Personal number: <strong>+8801956631465</strong> (Send Money). Check our Donation section for direct dial links!`;
-            } else if (type === 'contact') {
+                botA = `Donate via bKash or Nagad Personal: <strong>+8801956631465</strong> (Send Money).`;
+            } else {
                 userQ = "Need custom help? (Social Links)";
-                botA = `For any other queries, feel free to message us directly on our official platforms:<br>
-                • <a href="[https://wa.me/8801956631465](https://wa.me/8801956631465)" target="_blank" class="text-green-700 font-bold underline">WhatsApp Chat</a><br>
-                • <a href="[https://www.facebook.com/Shikhor.Foundation.For.BD](https://www.facebook.com/Shikhor.Foundation.For.BD)" target="_blank" class="text-blue-600 font-bold underline">Facebook Page</a><br>
-                • <a href="[https://www.instagram.com/shikhor_foundation](https://www.instagram.com/shikhor_foundation)" target="_blank" class="text-pink-600 font-bold underline">Instagram</a>`;
+                botA = `Reach us on <a href="https://wa.me/8801956631465" target="_blank" style="font-weight:700;text-decoration:underline;">WhatsApp</a>, <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" style="font-weight:700;text-decoration:underline;">Facebook</a>, or <a href="https://www.instagram.com/shikhor_foundation" target="_blank" style="font-weight:700;text-decoration:underline;">Instagram</a>.`;
             }
-
             chatMessages.innerHTML += `
-                <div class="bg-[#3B261D] text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] self-end shadow-sm mb-2">
-                    ${userQ}
-                </div>
-                <div class="bg-[#EFE5DC] text-[#3B261D] p-3 rounded-2xl rounded-tl-none max-w-[85%] border border-[#D4C3B3] shadow-sm mb-2">
-                    ${botA}
-                </div>
+                <div style="background:#3B261D;color:#fff;padding:10px;border-radius:14px;align-self:flex-end;max-width:85%;">${userQ}</div>
+                <div style="background:#EFE5DC;color:#3B261D;padding:10px;border-radius:14px;border:1px solid #D4C3B3;max-width:85%;">${botA}</div>
             `;
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
