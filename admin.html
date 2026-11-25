@@ -3,596 +3,802 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikhor Foundation | Admin Control Center</title>
+    <meta name="google-site-verification" content="t7EDaNskJyKALDnrdUL8qp5zsv_YMXHK95xQHiOZQIw" />
+    <title>Shikhor Foundation | Together for a Better Tomorrow</title>
+    <meta name="description" content="Shikhor Foundation is a community-driven humanitarian initiative built on the power of people helping people. Together for a Better Tomorrow.">
+    <meta property="og:site_name" content="Shikhor Foundation">
+    <meta property="og:title" content="Shikhor Foundation | Together for a Better Tomorrow">
+    
+    <!-- Favicon & Google Search Logo Optimization -->
     <link rel="icon" type="image/png" sizes="512x512" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+    <link rel="shortcut icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+    <link rel="apple-touch-icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Outfit', sans-serif; }
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
-
+        
         .hover-lift {
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
         }
         .hover-lift:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 26px -8px rgba(35, 23, 18, 0.18);
+            transform: translateY(-7px);
+            box-shadow: 0 22px 35px -10px rgba(35, 23, 18, 0.22);
         }
-
+        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
+            animation: fadeIn 0.35s ease-out forwards;
+        }
+
+        /* Breaking News Marquee Ticker */
+        @keyframes tickerScroll {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker-track {
+            display: flex;
+            width: max-content;
+            animation: tickerScroll 28s linear infinite;
+        }
+        .ticker-wrapper:hover .ticker-track {
+            animation-play-state: paused;
+        }
+
+        /* Highlight pulse when jumped from headline */
+        @keyframes cardHighlight {
+            0% { box-shadow: 0 0 0 0 rgba(140, 88, 58, 0.75); border-color: #8C583A; background-color: #FFF6EB; }
+            70% { box-shadow: 0 0 0 12px rgba(140, 88, 58, 0); border-color: #8C583A; background-color: #FFF6EB; }
+            100% { box-shadow: 0 0 0 0 rgba(140, 88, 58, 0); }
+        }
+        .highlight-news-card {
+            animation: cardHighlight 2.2s ease-out;
         }
     </style>
 </head>
-<body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white min-h-screen flex flex-col">
+<body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white">
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toastBanner" class="fixed top-5 right-5 z-50 hidden max-w-sm bg-[#231712] text-[#F6EFE8] border border-[#B88655] rounded-2xl shadow-2xl px-4 py-3.5 flex items-start gap-3 animate-fade-in">
-        <i id="toastIcon" class="fa-solid fa-circle-check text-[#E6B88A] mt-0.5 text-base"></i>
-        <div class="flex-1 text-xs leading-relaxed">
-            <p id="toastTitle" class="font-bold text-white uppercase tracking-wider text-[11px]">Synced</p>
-            <p id="toastMessage" class="text-[#E8D9CB] mt-0.5"></p>
+    <!-- IMAGE LIGHTBOX MODAL -->
+    <div id="lightboxModal" onclick="closeLightbox()" class="fixed inset-0 z-50 bg-[#1A100C]/90 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="relative max-w-4xl w-full text-center">
+            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-[#D4A373]">
+                <i class="fa-solid fa-xmark"></i> Close
+            </button>
+            <img id="lightboxImg" src="" alt="Gallery Preview" class="max-h-[80vh] mx-auto rounded-2xl shadow-2xl border-2 border-[#B88655]">
+            <p id="lightboxCaption" class="text-[#EFE5DC] text-sm mt-3 font-medium"></p>
         </div>
-        <button type="button" onclick="hideToast()" class="text-[#D4C3B3] hover:text-white">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
     </div>
 
-    <!-- ADMIN LOGIN SCREEN -->
-    <div id="adminLoginScreen" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8]">
-        <div class="w-full max-w-md bg-[#FDFBF9] rounded-3xl border-2 border-[#B88655] shadow-2xl p-7 sm:p-9 animate-fade-in">
-            <div class="text-center mb-7">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#EFE5DC] border border-[#C4AE99] p-2 shadow-md flex items-center justify-center">
-                    <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
+    <!-- FULL NEWS / NOTICE READER MODAL -->
+    <div id="articleReaderModal" onclick="if(event.target === this) closeArticleModal()" class="fixed inset-0 z-50 bg-[#1A100C]/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 hidden overflow-y-auto">
+        <div class="bg-[#FDFBF9] text-[#231712] max-w-3xl w-full rounded-3xl border-2 border-[#B88655] shadow-2xl overflow-hidden my-auto animate-fade-in">
+            <div class="bg-[#3B261D] text-white px-5 sm:px-7 py-4 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-[#E6B88A]">
+                    <i id="readerCategoryIcon" class="fa-regular fa-newspaper"></i>
+                    <span id="readerCategory">News</span>
+                    <span class="text-white/40">•</span>
+                    <span id="readerDate" class="text-[#EFE5DC]">Live</span>
                 </div>
-                <span class="inline-block px-3 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-widest mb-2">
-                    Restricted Access
-                </span>
-                <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712]">Admin Sign In</h1>
-                <p class="text-xs text-[#5C3D2E] mt-1.5">Enter your authorized credentials to access Shikhor Foundation Admin Workspace.</p>
-            </div>
-
-            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 text-sm">
-                <div>
-                    <label for="adminUsernameInput" class="block text-xs font-bold text-[#3B261D] mb-1.5">Username</label>
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A] text-xs">
-                            <i class="fa-solid fa-user"></i>
-                        </span>
-                        <input type="text" id="adminUsernameInput" required autocomplete="username" placeholder="Enter admin username" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="adminPasswordInput" class="block text-xs font-bold text-[#3B261D] mb-1.5">Password</label>
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C583A] text-xs">
-                            <i class="fa-solid fa-lock"></i>
-                        </span>
-                        <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter admin password" class="w-full pl-10 pr-11 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6E5649] hover:text-[#231712] text-xs" title="Show/Hide Password">
-                            <i id="passwordEyeIcon" class="fa-solid fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <p id="loginErrorMsg" class="hidden text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5">
-                    Invalid username or password. Please try again.
-                </p>
-
-                <button type="submit" class="w-full py-3 px-5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold uppercase tracking-wider shadow-lg transition flex items-center justify-center gap-2 mt-2">
-                    <span>Unlock Admin Panel</span>
-                    <i class="fa-solid fa-arrow-right text-[#E6B88A]"></i>
+                <button type="button" onclick="closeArticleModal()" class="w-9 h-9 rounded-xl bg-[#5C3D2E] hover:bg-[#8C583A] text-white flex items-center justify-center transition" title="Close">
+                    <i class="fa-solid fa-xmark text-base"></i>
                 </button>
-            </form>
+            </div>
 
-            <div class="mt-6 pt-4 border-t border-[#EFE5DC] text-center">
-                <a href="index.html" class="text-xs font-bold text-[#8C583A] hover:underline inline-flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Main Website
-                </a>
+            <div id="readerBannerWrap" class="w-full h-56 sm:h-72 bg-[#EFE5DC] border-b border-[#D4C3B3] overflow-hidden relative">
+                <img id="readerBannerImg" src="gallery2.jpg" alt="News Banner" class="w-full h-full object-cover">
+            </div>
+
+            <div class="p-6 sm:p-8 max-h-[60vh] overflow-y-auto space-y-4">
+                <h2 id="readerTitle" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] leading-snug"></h2>
+                <div id="readerBody" class="text-sm sm:text-base text-[#4F392E] leading-relaxed whitespace-pre-line"></div>
+            </div>
+
+            <div class="bg-[#F2E8DF] px-6 sm:px-8 py-4 border-t border-[#D4C3B3] flex flex-wrap items-center justify-between gap-3">
+                <button type="button" onclick="copyArticleLink()" id="copyArticleBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                    <i class="fa-solid fa-link text-[#8C583A]"></i> Copy Link
+                </button>
+                <button type="button" onclick="closeArticleModal()" class="px-5 py-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold transition">
+                    Back to Website
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- PROTECTED ADMIN WORKSPACE -->
-    <div id="adminDashboardApp" class="hidden flex-1 flex flex-col">
+    <!-- MAIN WEBSITE CONTAINER -->
+    <div id="mainWebsite">
 
-        <!-- TOP HEADER -->
-        <header class="sticky top-0 z-40 bg-[#FDFBF9]/95 backdrop-blur-md border-b border-[#D4C3B3] shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-                <a href="#top" class="flex items-center gap-3 group">
-                    <div class="w-11 h-11 bg-[#EFE5DC] rounded-2xl flex items-center justify-center shadow-sm border border-[#C4AE99] p-1 overflow-hidden">
+        <!-- TOP BAR & NAVIGATION -->
+        <header class="sticky top-0 z-40 bg-[#FDFBF9]/95 backdrop-blur-md border-b border-[#D4C3B3] shadow-sm transition-all">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 bg-[#EFE5DC] rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition overflow-hidden border border-[#C4AE99] p-1">
                         <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <span class="text-xl font-bold font-heading tracking-tight text-[#231712] block leading-none">SHIKHOR</span>
-                        <span class="text-[10px] tracking-widest text-[#8C583A] font-bold uppercase mt-1 block">ADMIN WORKSPACE</span>
+                        <span class="text-[10px] tracking-widest text-[#8C583A] font-bold uppercase mt-1 block">FOUNDATION</span>
                     </div>
                 </a>
 
-                <div class="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFE5DC] border border-[#D4C3B3] text-xs font-semibold text-[#3B261D]">
-                    <span class="w-2.5 h-2.5 rounded-full bg-green-600 animate-pulse"></span>
-                    <span>Sheet Sync Active</span>
-                </div>
+                <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-[#5C3D2E]">
+                    <a href="#notice" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Notice</a>
+                    <a href="#news" class="hover:text-[#231712] hover:underline underline-offset-4 transition">News</a>
+                    <a href="#about" class="hover:text-[#231712] hover:underline underline-offset-4 transition">About</a>
+                    <a href="#mission" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Mission & Vision</a>
+                    <a href="#initiatives" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Initiatives</a>
+                    <a href="#team" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Team</a>
+                    <a href="#donation" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Donation</a>
+                    <a href="#gallery" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Gallery</a>
+                    <a href="#contact" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Contact</a>
+                </nav>
 
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="syncAllWithSheet(true)" class="px-3.5 py-2.5 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition flex items-center gap-1.5">
-                        <i id="syncSpinIcon" class="fa-solid fa-rotate text-[#8C583A]"></i>
-                        <span class="hidden sm:inline">Refresh & Sync</span>
-                    </button>
-                    <a href="index.html" target="_blank" class="px-3.5 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
-                        <span class="hidden sm:inline">View Live Site</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                <div class="flex items-center gap-2.5">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="hidden sm:inline-block px-4 py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                        Join Volunteer
                     </a>
-                    <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition flex items-center gap-1.5" title="Logout">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <span class="hidden sm:inline">Logout</span>
+                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl bg-[#EFE5DC] text-[#3B261D] border border-[#D4C3B3]">
+                        <i class="fa-solid fa-bars"></i>
                     </button>
                 </div>
+            </div>
+
+            <!-- Mobile Dropdown Menu -->
+            <div id="mobileMenu" class="hidden lg:hidden bg-[#FDFBF9] border-b border-[#D4C3B3] px-6 py-4 space-y-3 text-sm font-semibold text-[#3B261D]">
+                <a href="#notice" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Live Notice</a>
+                <a href="#news" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">News</a>
+                <a href="#about" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">About Us</a>
+                <a href="#mission" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Mission & Vision</a>
+                <a href="#initiatives" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Initiatives</a>
+                <a href="#team" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Our Team</a>
+                <a href="#donation" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Donation</a>
+                <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
+                <a href="#contact" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Contact</a>
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
             </div>
         </header>
 
-        <!-- MAIN CONTENT -->
-        <main id="top" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-
-            <!-- HERO BANNER & QUICK STATS -->
-            <section class="bg-gradient-to-r from-[#3B261D] via-[#4A3025] to-[#231712] text-[#F6EFE8] rounded-3xl p-6 sm:p-8 border border-[#8C583A] shadow-xl">
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                    <div>
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#5C3D2E] text-[#E6B88A] text-[11px] font-bold uppercase tracking-widest mb-3">
-                            <i class="fa-solid fa-sliders"></i> Centralized Sheet & Site Control
-                        </span>
-                        <h1 class="text-2xl sm:text-4xl font-extrabold font-heading text-white leading-tight">
-                            Shikhor Foundation Admin Panel
-                        </h1>
-                        <p class="text-xs sm:text-sm text-[#E8D9CB] mt-2 max-w-2xl leading-relaxed">
-                            Manage Notices, News, Headlines, Site Sections, Team Panel, Audit Logs, and Visitor Device Logs in dedicated sectors—every add, edit, or delete is recorded in your Google Sheet and synced with the live site.
-                        </p>
-                    </div>
-
-                    <!-- Connection Status Box -->
-                    <div class="bg-[#231712]/80 border border-[#8C583A]/60 rounded-2xl p-4 min-w-[260px] space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-[#D4C3B3]">Apps Script Endpoint</span>
-                            <span class="px-2 py-0.5 rounded bg-green-900/70 text-green-300 font-bold text-[10px] uppercase">Connected</span>
-                        </div>
-                        <p id="scriptEndpointPreview" class="text-[11px] text-[#E6B88A] truncate font-mono"></p>
-                        <p id="lastSyncTimeLabel" class="text-[11px] text-[#A68F80]">Last synced: Just now</p>
+        <!-- TOP BREAKING HEADLINE BAR (CLICKABLE JUMP TO NEWS/NOTICE) -->
+        <div class="bg-[#231712] text-[#F6EFE8] border-b border-[#8C583A] shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-11 flex items-center gap-3 overflow-hidden">
+                <div class="shrink-0 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#8C583A] text-white text-[11px] font-bold uppercase tracking-wider shadow">
+                    <span class="w-2 h-2 rounded-full bg-[#FFE082] animate-ping"></span>
+                    <span>Latest Headlines</span>
+                </div>
+                <div class="ticker-wrapper relative flex-1 overflow-hidden">
+                    <div id="headlineTickerTrack" class="ticker-track items-center gap-8 text-xs sm:text-sm font-medium">
+                        <button type="button" onclick="jumpToHighlight('notice-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase">Notice</span>
+                            <span>Volunteer & Community Drive — Official Announcements</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
+                        <span class="text-[#8C583A]">•</span>
+                        <button type="button" onclick="jumpToHighlight('news-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded bg-[#5C3D2E] text-white text-[10px] font-bold uppercase">News</span>
+                            <span>Standing Together for Communities — Latest Ground Reports</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
+                        <span class="text-[#8C583A]">•</span>
+                        <button type="button" onclick="jumpToHighlight('notice-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase">Notice</span>
+                            <span>Volunteer & Community Drive — Official Announcements</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
+                        <span class="text-[#8C583A]">•</span>
+                        <button type="button" onclick="jumpToHighlight('news-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded bg-[#5C3D2E] text-white text-[10px] font-bold uppercase">News</span>
+                            <span>Standing Together for Communities — Latest Ground Reports</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
                     </div>
                 </div>
-
-                <!-- 4 TOP SUMMARY CARDS -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-7">
-                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published Notices</p>
-                        <h3 id="statNoticeCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
-                    </div>
-                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Published News</p>
-                        <h3 id="statNewsCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
-                    </div>
-                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Change Audit Entries</p>
-                        <h3 id="statAuditCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
-                    </div>
-                    <div class="bg-[#FDFBF9] text-[#231712] rounded-2xl p-4 border border-[#D4C3B3] shadow-sm">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-[#8C583A]">Visitor Device Logs</p>
-                        <h3 id="statVisitorCount" class="text-2xl sm:text-3xl font-extrabold font-heading mt-1">0</h3>
-                    </div>
-                </div>
-            </section>
-
-            <!-- DEDICATED SECTOR NAVIGATION TABS -->
-            <div class="bg-[#FDFBF9] p-2.5 rounded-2xl border border-[#D4C3B3] shadow-sm flex flex-wrap gap-2">
-                <button type="button" data-sector-tab="notices_news" onclick="switchSector('notices_news')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#3B261D] text-white shadow">
-                    <i class="fa-solid fa-bullhorn"></i>
-                    <span>Notice & News</span>
-                </button>
-                <button type="button" data-sector-tab="headlines" onclick="switchSector('headlines')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-bolt"></i>
-                    <span>Headline Ticker</span>
-                </button>
-                <button type="button" data-sector-tab="site_sections" onclick="switchSector('site_sections')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    <span>Site Sections & Stats</span>
-                </button>
-                <button type="button" data-sector-tab="team" onclick="switchSector('team')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Team & Panel</span>
-                </button>
-                <button type="button" data-sector-tab="audit_logs" onclick="switchSector('audit_logs')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-clipboard-list"></i>
-                    <span>Change & Delete Proof</span>
-                </button>
-                <button type="button" data-sector-tab="visitor_logs" onclick="switchSector('visitor_logs')" class="sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]">
-                    <i class="fa-solid fa-mobile-screen"></i>
-                    <span>Visitor Devices</span>
-                </button>
             </div>
+        </div>
 
-            <!-- SECTOR 1: NOTICE & NEWS MANAGER -->
-            <section id="sector-notices_news" class="admin-sector space-y-6 animate-fade-in">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-5 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm h-fit">
-                        <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 01 • Publish</span>
-                                <h2 id="nnFormHeading" class="text-xl font-bold font-heading text-[#231712]">Add New Notice or News</h2>
-                            </div>
-                            <button type="button" onclick="resetNoticeNewsForm()" class="text-xs font-bold text-[#8C583A] hover:underline">Reset</button>
-                        </div>
+        <!-- HERO SECTION -->
+        <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-24 lg:py-32 overflow-hidden border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-[#FDFBF9] shadow-2xl border-4 border-[#B88655] flex items-center justify-center overflow-hidden p-2.5 transform transition hover:scale-105">
+                    <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
+                </div>
 
-                        <form id="noticeNewsForm" onsubmit="handleNoticeNewsSubmit(event)" class="space-y-4 text-xs sm:text-sm">
-                            <input type="hidden" id="nnEditId" value="">
+                <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#3B261D] text-[#F6EFE8] text-xs font-bold mb-6 tracking-widest shadow-md">
+                    <span>HELP</span> • <span>SUPPORT</span> • <span>EMPOWER</span>
+                </div>
+                <h1 class="text-4xl sm:text-6xl font-extrabold font-heading text-[#231712] tracking-tight max-w-4xl mx-auto leading-tight">
+                    A little kindness can grow into a <span class="text-[#8C583A]">better tomorrow.</span>
+                </h1>
+                <p id="liveHeroSubtitle" class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed">
+                    Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.
+                </p>
+                
+                <div class="mt-6 flex justify-center items-center gap-4">
+                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                        <i class="fa-brands fa-facebook-f text-sm"></i> Facebook Page
+                    </a>
+                    <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                        <i class="fa-brands fa-instagram text-sm"></i> Instagram
+                    </a>
+                </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Category</label>
-                                    <select id="nnCategory" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] font-medium focus:outline-none focus:border-[#8C583A]">
-                                        <option value="Notice">Notice</option>
-                                        <option value="News">News</option>
-                                        <option value="Press Release">Press Release</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Status</label>
-                                    <select id="nnStatus" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] font-medium focus:outline-none focus:border-[#8C583A]">
-                                        <option value="Published">Published (Live)</option>
-                                        <option value="Draft">Draft</option>
-                                    </select>
-                                </div>
-                            </div>
+                <div class="mt-10 flex flex-wrap justify-center gap-4">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1">
+                        Join as Volunteer <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                    <a href="#donation" class="px-8 py-4 bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] font-semibold rounded-xl border-2 border-[#B88655] shadow-md transition transform hover:-translate-y-1">
+                        Support Our Cause <i class="fa-solid fa-hand-holding-heart ml-2 text-[#8C583A]"></i>
+                    </a>
+                </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Publish Date & Time</label>
-                                    <input type="text" id="nnDate" placeholder="e.g. Nov 25, 2026" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Banner / Cover Image URL</label>
-                                    <input type="text" id="nnBanner" placeholder="gallery2.jpg or https://..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Headline / Title *</label>
-                                <input type="text" id="nnTitle" required placeholder="Enter notice or news headline..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]">
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Short Summary</label>
-                                <textarea id="nnSummary" rows="2" placeholder="Short card preview summary..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]"></textarea>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Full News / Notice Details (Shown on View)</label>
-                                <textarea id="nnFullContent" rows="4" placeholder="Write the complete story or notice details shown when a visitor clicks View News / View Notice..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-[#231712] focus:outline-none focus:border-[#8C583A]"></textarea>
-                            </div>
-
-                            <button type="submit" id="nnSubmitBtn" class="w-full py-3 px-5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-cloud-arrow-up text-[#E6B88A]"></i>
-                                <span>Publish & Save to Spreadsheet</span>
-                            </button>
-                        </form>
+                <!-- LIVE IMPACT COUNTER -->
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                    <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
+                        <h3 id="liveFamiliesCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
+                        <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Families Supported</p>
                     </div>
-
-                    <div class="lg:col-span-7 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm">
-                        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                            <div>
-                                <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Live Items</span>
-                                <h2 class="text-xl font-bold font-heading text-[#231712]">Active Notices & News</h2>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button type="button" onclick="setNnFilter('all')" id="filter-all" class="nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#3B261D] text-white">All</button>
-                                <button type="button" onclick="setNnFilter('Notice')" id="filter-Notice" class="nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F2E8DF] text-[#3B261D]">Notices</button>
-                                <button type="button" onclick="setNnFilter('News')" id="filter-News" class="nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F2E8DF] text-[#3B261D]">News</button>
-                            </div>
-                        </div>
-
-                        <div id="adminNoticeNewsList" class="space-y-3.5 max-h-[620px] overflow-y-auto pr-1"></div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
+                        <h3 id="liveVolunteersCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
+                        <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Active Volunteers</p>
+                    </div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift col-span-2 md:col-span-1">
+                        <h3 id="liveEventsCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">10+</h3>
+                        <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Successful Events</p>
                     </div>
                 </div>
-            </section>
 
-            <!-- SECTOR 2: HEADLINE TICKER CONTROL -->
-            <section id="sector-headlines" class="admin-sector hidden space-y-6 animate-fade-in">
-                <div class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
+                <p class="mt-8 text-xs font-bold tracking-widest text-[#6E432B] uppercase">
+                    COMPASSION ✳ COMMUNITY ✳ DIGNITY ✳ HOPE ✳ ACTION
+                </p>
+            </div>
+        </section>
+
+        <!-- LIVE NOTICE & NEWS SECTION (COMPACT COVER CARDS -> FULL READER MODAL) -->
+        <section id="notice" class="py-16 bg-[#EFE5DC] border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
+
+                <!-- LIVE NOTICE BOARD -->
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                        <div>
+                            <span class="inline-flex items-center gap-2 text-[#8C583A] font-bold text-xs uppercase tracking-widest">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                                LIVE NOTICE BOARD
+                            </span>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">Latest Notices & Announcements</h2>
+                        </div>
+                        <span class="px-3.5 py-1.5 rounded-full bg-[#3B261D] text-[#E6B88A] text-xs font-bold tracking-wider uppercase shadow-sm">
+                            Live Updates
+                        </span>
+                    </div>
+
+                    <div id="liveNoticeContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div id="notice-default-1" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border-l-4 border-[#8C583A] border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
+                            <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
+                                <img src="gallery1.jpg" alt="Volunteer & Community Drive" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between text-[11px] font-bold text-[#8C583A] uppercase mb-2">
+                                        <span><i class="fa-solid fa-bullhorn mr-1"></i> Notice</span>
+                                        <span>Live</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4 leading-snug">Volunteer & Community Drive</h3>
+                                </div>
+                                <button type="button" onclick="openArticleByKey('notice-default-1')" class="w-full py-2.5 px-4 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold transition flex items-center justify-center gap-2">
+                                    <span>View Notice</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEWS SECTION (COVER + HEADING + VIEW NEWS BUTTON) -->
+                <div id="news" class="scroll-mt-32 pt-4 border-t border-[#D4C3B3]">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                        <div>
+                            <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block">SHIKHOR HIGHLIGHTS</span>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">Latest News & Updates</h2>
+                        </div>
+                        <span class="px-3.5 py-1.5 rounded-full bg-[#FDFBF9] text-[#3B261D] border border-[#B88655] text-xs font-bold tracking-wider uppercase">
+                            News Desk
+                        </span>
+                    </div>
+
+                    <div id="liveNewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div id="news-default-1" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
+                            <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
+                                <img src="gallery2.jpg" alt="Standing Together for Communities" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between text-[11px] font-bold text-[#8C583A] uppercase mb-2">
+                                        <span><i class="fa-regular fa-newspaper mr-1"></i> News</span>
+                                        <span>Featured</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4 leading-snug">Standing Together for Communities</h3>
+                                </div>
+                                <button type="button" onclick="openArticleByKey('news-default-1')" class="w-full py-2.5 px-4 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold transition flex items-center justify-center gap-2">
+                                    <span>View News</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ABOUT US -->
+        <section id="about" class="py-24 bg-[#FDFBF9]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div>
-                        <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 02 • Top Ticker</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Latest Headlines Ticker Preview & Jump Control</h2>
-                        <p class="text-xs sm:text-sm text-[#4F392E] mt-1">
-                            Every published Notice and News item automatically appears in the top clickable headline bar on <code class="bg-[#F2E8DF] px-1.5 py-0.5 rounded">index.html</code>. Clicking a headline scrolls directly to that card and highlights it.
+                        <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">WHO WE ARE</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">
+                            We believe in the power of people helping people.
+                        </h2>
+                        <p id="liveAboutText" class="mt-6 text-[#4F392E] leading-relaxed text-base sm:text-lg">
+                            Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.
+                        </p>
+                        <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
+                                <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Humanity</h4>
+                                <p class="text-xs text-[#5C3D2E]">Every person deserves dignity, care, and support.</p>
+                            </div>
+                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
+                                <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Togetherness</h4>
+                                <p class="text-xs text-[#5C3D2E]">Collective effort builds sustainable impact.</p>
+                            </div>
+                            <div class="p-5 bg-[#F2E8DF] rounded-2xl border border-[#D4C3B3] hover-lift">
+                                <h4 class="font-bold font-heading text-[#3B261D] text-lg mb-1">Transparency</h4>
+                                <p class="text-xs text-[#5C3D2E]">Trust grows through honesty and accountability.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-[#3B261D] text-[#F6EFE8] p-8 sm:p-12 rounded-3xl border border-[#5C3D2E] relative shadow-xl">
+                        <div class="w-12 h-12 rounded-2xl bg-[#5C3D2E] text-[#E6B88A] flex items-center justify-center text-xl mb-5">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold font-heading text-white mb-3">Our Core Motto</h3>
+                        <p class="text-xl italic font-medium text-[#E6B88A] mb-6">"Together for a Better Tomorrow."</p>
+                        <p class="text-[#D4C3B3] text-sm leading-relaxed">
+                            We work tirelessly to respond to real needs with empathy, responsibility, and total transparency, ensuring every helping hand reaches the right place.
                         </p>
                     </div>
-
-                    <div class="bg-[#231712] text-[#F6EFE8] rounded-2xl p-3.5 border border-[#8C583A] flex items-center gap-3 overflow-x-auto">
-                        <span class="shrink-0 px-3 py-1 rounded-lg bg-[#8C583A] text-white text-[11px] font-bold uppercase">Live Ticker</span>
-                        <div id="adminHeadlinePreviewChips" class="flex items-center gap-3 text-xs whitespace-nowrap"></div>
-                    </div>
-
-                    <div id="adminHeadlineList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- SECTOR 3: SITE SECTIONS & STATS EDITOR -->
-            <section id="sector-site_sections" class="admin-sector hidden space-y-6 animate-fade-in">
-                <form id="siteSectionsForm" onsubmit="handleSiteSectionsSave(event)" class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
-                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
-                        <div>
-                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 03 • Main Page Content</span>
-                            <h2 class="text-2xl font-bold font-heading text-[#231712]">Hero, Impact Counter, About & Donation Settings</h2>
+        <!-- MISSION & VISION -->
+        <section id="mission" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR DIRECTION</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Mission & Vision</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-[#FDFBF9] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-[#E6B88A] rounded-xl flex items-center justify-center font-bold text-xl mb-6">
+                            <i class="fa-solid fa-eye"></i>
                         </div>
-                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow-md transition flex items-center gap-2">
-                            <i class="fa-solid fa-floppy-disk text-[#E6B88A]"></i>
-                            <span>Save Section Changes</span>
-                        </button>
+                        <h3 class="text-2xl font-bold font-heading text-[#231712] mb-4">Our Vision</h3>
+                        <p class="text-[#4F392E] leading-relaxed">
+                            A compassionate and inclusive society where every individual has the opportunity to live with dignity, hope, and a secure future.
+                        </p>
                     </div>
-
-                    <div>
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-[#5C3D2E] mb-3">Impact Counter Numbers</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="p-4 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3]">
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Families Supported</label>
-                                <input type="text" id="secFamiliesCount" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-sm font-bold">
-                            </div>
-                            <div class="p-4 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3]">
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Active Volunteers</label>
-                                <input type="text" id="secVolunteersCount" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-sm font-bold">
-                            </div>
-                            <div class="p-4 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3]">
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Successful Events</label>
-                                <input type="text" id="secEventsCount" class="w-full px-3 py-2 rounded-xl bg-[#FDFBF9] border border-[#C4AE99] text-sm font-bold">
-                            </div>
+                    <div class="bg-[#FDFBF9] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-[#E6B88A] rounded-xl flex items-center justify-center font-bold text-xl mb-6">
+                            <i class="fa-solid fa-bullseye"></i>
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Headline</label>
-                            <input type="text" id="secHeroTitle" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">bKash / Nagad Donation Number</label>
-                            <input type="text" id="secDonationNumber" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Sub-description</label>
-                            <textarea id="secHeroSubtitle" rows="2" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-[#3B261D] mb-1">About Us Description</label>
-                            <textarea id="secAboutText" rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99] text-sm"></textarea>
-                        </div>
-                    </div>
-                </form>
-            </section>
-
-            <!-- SECTOR 4: TEAM & PANEL MANAGER -->
-            <section id="sector-team" class="admin-sector hidden space-y-6 animate-fade-in">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-4 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm h-fit">
-                        <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 04 • Panel</span>
-                        <h2 class="text-xl font-bold font-heading text-[#231712] mb-4">Add Team Member</h2>
-                        <form id="teamMemberForm" onsubmit="handleTeamAdd(event)" class="space-y-3.5 text-sm">
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Full Name *</label>
-                                <input type="text" id="tmName" required placeholder="Member Name" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Designation / Role *</label>
-                                <input type="text" id="tmRole" required placeholder="e.g. Executive Member" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-[#3B261D] mb-1">Photo Filename or URL</label>
-                                <input type="text" id="tmPhoto" placeholder="logo.png or member.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F6EFE8] border border-[#C4AE99]">
-                            </div>
-                            <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold shadow transition">
-                                Add & Log to Sheet
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="lg:col-span-8 bg-[#FDFBF9] rounded-3xl p-6 border border-[#D4C3B3] shadow-sm">
-                        <h2 class="text-xl font-bold font-heading text-[#231712] mb-4">Shikhor Leadership & Panel Roster</h2>
-                        <div id="adminTeamList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+                        <h3 class="text-2xl font-bold font-heading text-[#231712] mb-4">Our Mission</h3>
+                        <p class="text-[#4F392E] leading-relaxed">
+                            To mobilize people, resources, and ideas for practical community support, impactful educational initiatives, and meaningful social change.
+                        </p>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- SECTOR 5: CHANGE & DELETE AUDIT PROOF LOGS -->
-            <section id="sector-audit_logs" class="admin-sector hidden space-y-6 animate-fade-in">
-                <div class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-5">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 05 • Spreadsheet Proof</span>
-                            <h2 class="text-2xl font-bold font-heading text-[#231712]">What Was Added, Changed, or Removed</h2>
-                            <p class="text-xs sm:text-sm text-[#4F392E] mt-1">
-                                Every action taken from this panel logs the exact sector, action type (ADDED / UPDATED / REMOVED), item details, date, and time to your Google Sheet.
-                            </p>
+        <!-- INITIATIVES -->
+        <section id="initiatives" class="py-24 bg-[#FDFBF9]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR INITIATIVES</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Turning compassion into action.</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
+                            <i class="fa-solid fa-hands-holding-child"></i>
                         </div>
-                        <button type="button" onclick="clearLocalAuditView()" class="px-3.5 py-2 rounded-xl bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                            Clear Local View
-                        </button>
+                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">Humanitarian Assistance</h3>
+                        <p class="text-[#4F392E] text-sm leading-relaxed">
+                            Supporting people and families experiencing hardship through thoughtful winter clothing distribution, relief packages, and emergency support.
+                        </p>
                     </div>
-
-                    <div class="overflow-x-auto rounded-2xl border border-[#D4C3B3]">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead class="bg-[#3B261D] text-[#E6B88A] uppercase text-[11px] tracking-wider">
-                                <tr>
-                                    <th class="py-3 px-4">Date & Time</th>
-                                    <th class="py-3 px-4">Sector</th>
-                                    <th class="py-3 px-4">Change Type</th>
-                                    <th class="py-3 px-4">Details (What Changed / Removed)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="auditLogTableBody" class="divide-y divide-[#E5D7C9] bg-[#FDFBF9]"></tbody>
-                        </table>
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">Educational Support</h3>
+                        <p class="text-[#4F392E] text-sm leading-relaxed">
+                            Empowering rural and disadvantaged students by providing essential educational materials, books, and learning guidance for a brighter future.
+                        </p>
+                    </div>
+                    <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
+                        <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
+                            <i class="fa-solid fa-people-group"></i>
+                        </div>
+                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">Community Support & Awareness</h3>
+                        <p class="text-[#4F392E] text-sm leading-relaxed">
+                            Bringing people together to identify community needs, foster cooperation, and respond with care, responsibility, and unity.
+                        </p>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- SECTOR 6: VISITOR DEVICE LOGS -->
-            <section id="sector-visitor_logs" class="admin-sector hidden space-y-6 animate-fade-in">
-                <div class="bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-5">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C583A]">Sector 06 • Public Traffic</span>
-                            <h2 class="text-2xl font-bold font-heading text-[#231712]">Visitor Device, Entry & Exit Logs</h2>
-                            <p class="text-xs sm:text-sm text-[#4F392E] mt-1">
-                                Tracks public visitors entering and leaving the website without requiring login—showing device type, OS, browser, screen size, and timestamp.
-                            </p>
+        <!-- TEAM DIRECTORY -->
+        <section id="team" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">THE PEOPLE BEHIND SHIKHOR</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Our Leadership & Panel Members</h2>
+                </div>
+
+                <!-- 1. FOUNDER CARD -->
+                <div class="bg-[#FDFBF9] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
+                    <div class="text-center">
+                        <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#8C583A] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="zarif.jpg" alt="Md. Shewise Al Islam Zarif" class="w-full h-full object-cover">
                         </div>
-                        <button type="button" onclick="syncAllWithSheet(true)" class="px-4 py-2 rounded-xl bg-[#3B261D] text-white text-xs font-bold">
-                            Pull Latest Sheet Logs
-                        </button>
+                        <h3 class="text-xl font-bold font-heading text-[#231712]">Md. Shewise Al Islam Zarif</h3>
+                        <p class="text-sm font-bold text-[#8C583A] mt-1">Founder & CEO / President</p>
                     </div>
-
-                    <div class="overflow-x-auto rounded-2xl border border-[#D4C3B3]">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead class="bg-[#3B261D] text-[#E6B88A] uppercase text-[11px] tracking-wider">
-                                <tr>
-                                    <th class="py-3 px-4">Timestamp</th>
-                                    <th class="py-3 px-4">Visitor / Status</th>
-                                    <th class="py-3 px-4">Device & Browser Info</th>
-                                </tr>
-                            </thead>
-                            <tbody id="visitorLogTableBody" class="divide-y divide-[#E5D7C9] bg-[#FDFBF9]"></tbody>
-                        </table>
+                    <div class="md:col-span-2">
+                        <span class="text-xs uppercase font-bold text-[#5C3D2E] tracking-wider block mb-2">Message from the Founder</span>
+                        <blockquote class="text-[#3B261D] italic text-base leading-relaxed mb-4">
+                            "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow."
+                        </blockquote>
+                        <p class="text-xs font-semibold text-[#6E5649]">— Md. Shewise Al Islam Zarif</p>
                     </div>
                 </div>
-            </section>
 
-        </main>
+                <!-- PANEL MEMBERS GRID -->
+                <div id="livePanelGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="ahsan.jpg" alt="Ahsan Zaman" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Ahsan Zaman</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President</p>
+                    </div>
 
-        <!-- FOOTER -->
-        <footer class="bg-[#231712] text-[#D4C3B3] py-6 border-t border-[#5C3D2E] text-center text-xs">
-            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-                <span>Shikhor Foundation Admin Panel • Rooted in Humanity, Growing with Compassion</span>
-                <span class="text-[#A68F80]">&copy; 2026 Shikhor Foundation</span>
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="nafew.jpg" alt="Nafew Khalil" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Nafew Khalil</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President of Program Organisation</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="shakhawat.jpg" alt="Md. Shakhawat Hossain Sayem" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Shakhawat Hossain Sayem</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration & Marketing<br><span class="text-[10px] text-[#6E5649] font-normal">(Acting IT Secretary)</span></p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="minhajul.jpg" alt="MD. Minhajul Islam" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">MD. Minhajul Islam</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts & Finance</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="shafi.jpg" alt="Faymul Islam Shafi" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Faymul Islam Shafi</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Volunteer</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="sayed.jpg" alt="Sayed Bin Kamal" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Sayed Bin Kamal</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Administration</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="alif.jpg" alt="Alif Hasan Ayman" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Alif Hasan Ayman</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Accounts & Finance</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="rikto.png" alt="Rikto Ruddur Lyric" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Rikto Ruddur Lyric</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Marketing</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="mayasha.jpg" alt="Mayasha Afrin" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Mayasha Afrin</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Volunteer</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="wahid.jpg" alt="Wahid Yashfi" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Wahid Yashfi</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="arafat.jpg" alt="Arafat Sultan" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Arafat Sultan</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
+                    </div>
+
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
+                            <img src="raiyanul.jpg" alt="Md. Raiyanul Islam" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Raiyanul Islam</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Executive Member</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEDICATED DONATION SECTION -->
+        <section id="donation" class="py-24 bg-[#FDFBF9]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">SUPPORT OUR CAUSE</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Make a Donation</h2>
+                    <p class="mt-4 text-[#4F392E] text-sm leading-relaxed">
+                        Your small contribution can bring meaningful changes to helpless lives. Support us securely through bKash or Nagad.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <!-- bKash Card -->
+                    <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
+                        <div class="h-16 flex items-center justify-center mx-auto mb-4">
+                            <img src="bkash.png" alt="bKash Logo" class="h-14 object-contain">
+                        </div>
+                        <h3 class="text-2xl font-bold font-heading text-[#231712] mb-2">bKash Personal</h3>
+                        <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
+                        <div class="bg-[#FDFBF9] py-3 px-6 rounded-xl border border-[#C4AE99] inline-flex items-center gap-3 mb-4 shadow-inner">
+                            <span id="bkashNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
+                            <button id="bkashCopyBtn" onclick="copyToClipboard(document.getElementById('bkashNum').innerText, this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
+                        </div>
+                        <div class="mt-2">
+                            <a id="bkashDialLink" href="tel:*247*#*8801956631465#" class="inline-block px-4 py-2 bg-[#E2136F] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
+                                <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*247#)
+                            </a>
+                        </div>
+                        <p class="text-[11px] text-[#6E5649] mt-3">Reference: Shikhor Donation</p>
+                    </div>
+
+                    <!-- Nagad Card -->
+                    <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
+                        <div class="h-16 flex items-center justify-center mx-auto mb-4">
+                            <img src="nagad.png" alt="Nagad Logo" class="h-14 object-contain">
+                        </div>
+                        <h3 class="text-2xl font-bold font-heading text-[#231712] mb-2">Nagad Personal</h3>
+                        <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
+                        <div class="bg-[#FDFBF9] py-3 px-6 rounded-xl border border-[#C4AE99] inline-flex items-center gap-3 mb-4 shadow-inner">
+                            <span id="nagadNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
+                            <button id="nagadCopyBtn" onclick="copyToClipboard(document.getElementById('nagadNum').innerText, this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
+                        </div>
+                        <div class="mt-2">
+                            <a id="nagadDialLink" href="tel:*167*#*8801956631465#" class="inline-block px-4 py-2 bg-[#F7941D] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
+                                <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*167#)
+                            </a>
+                        </div>
+                        <p class="text-[11px] text-[#6E5649] mt-3">Reference: Shikhor Donation</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY -->
+        <section id="gallery" class="py-24 bg-[#EFE5DC] border-y border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR GALLERY</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Moments of Humanity</h2>
+                    <p class="mt-4 text-[#4F392E] text-sm">Click any photo to view full screen. Every picture tells a story of hope.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div onclick="openLightbox('gallery1.jpg', 'Community Support Activity')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                        <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
+                            <i class="fa-solid fa-expand mr-2"></i> View Photo
+                        </div>
+                    </div>
+                    <div onclick="openLightbox('gallery2.jpg', 'Educational Support Initiative')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                        <img src="gallery2.jpg" alt="Educational Support Initiative" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
+                            <i class="fa-solid fa-expand mr-2"></i> View Photo
+                        </div>
+                    </div>
+                    <div onclick="openLightbox('gallery3.jpg', 'Volunteer Gathering')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                        <img src="gallery3.jpg" alt="Volunteer Gathering" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
+                            <i class="fa-solid fa-expand mr-2"></i> View Photo
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VOLUNTEER CALLOUT -->
+        <section class="py-20 bg-[#3B261D] text-white text-center border-b border-[#5C3D2E]">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl sm:text-4xl font-extrabold font-heading mb-4">Want to Make a Real Difference?</h2>
+                <p class="text-[#E8D9CB] max-w-xl mx-auto mb-8 text-sm sm:text-base">
+                    Join our team of dedicated volunteers and help us spread compassion where it's needed most.
+                </p>
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1">
+                    Apply as a Volunteer Now ↗
+                </a>
+            </div>
+        </section>
+
+        <!-- CONTACT & FOOTER -->
+        <footer id="contact" class="bg-[#231712] text-white py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-[#FDFBF9] rounded-2xl flex items-center justify-center border border-[#8C583A] overflow-hidden p-1">
+                            <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
+                        </div>
+                        <span class="text-lg font-bold font-heading tracking-tight">SHIKHOR FOUNDATION</span>
+                    </div>
+                    <p class="text-[#D4C3B3] text-xs leading-relaxed mb-4">
+                        Rooted in Humanity, Growing with Compassion. Together for a Better Tomorrow.
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="w-9 h-9 rounded-xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 transition shadow-md" title="Facebook">
+                            <i class="fa-brands fa-facebook-f text-sm"></i>
+                        </a>
+                        <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white flex items-center justify-center hover:scale-110 transition shadow-md" title="Instagram">
+                            <i class="fa-brands fa-instagram text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#E6B88A]">Quick Links</h4>
+                    <ul class="space-y-2 text-xs text-[#D4C3B3]">
+                        <li><a href="#notice" class="hover:text-white transition">Live Notice</a></li>
+                        <li><a href="#news" class="hover:text-white transition">News</a></li>
+                        <li><a href="#about" class="hover:text-white transition">About Us</a></li>
+                        <li><a href="#mission" class="hover:text-white transition">Mission & Vision</a></li>
+                        <li><a href="#donation" class="hover:text-white transition">Donation</a></li>
+                        <li><a href="#team" class="hover:text-white transition">Our Team</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#E6B88A]">Contact Us</h4>
+                    <p class="text-xs text-[#D4C3B3] mb-2"><i class="fa-solid fa-envelope mr-2 text-[#E6B88A]"></i> shikhor.foundation.bd@gmail.com</p>
+                    <p class="text-xs text-[#D4C3B3] mb-2"><i class="fa-solid fa-phone mr-2 text-[#E6B88A]"></i> +8801956631465 (WhatsApp available)</p>
+                    <p class="text-xs text-[#D4C3B3]"><i class="fa-solid fa-location-dot mr-2 text-[#E6B88A]"></i> Bangladesh</p>
+                </div>
+            </div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/10 pt-8 text-center text-xs text-[#A68F80]">
+                &copy; 2026 Shikhor Foundation. All rights reserved.
             </div>
         </footer>
 
     </div>
 
+    <!-- 24/7 FAQ CHATBOT WIDGET -->
+    <div class="fixed bottom-6 left-6 z-50">
+        <button onclick="toggleChatbot()" id="chatToggleBtn" class="w-14 h-14 bg-[#3B261D] text-[#E6B88A] border-2 border-[#8C583A] rounded-full shadow-2xl flex items-center justify-center text-xl hover:scale-110 transition duration-300 relative" title="Chat with Us">
+            <i class="fa-solid fa-comments"></i>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-green-600 rounded-full border-2 border-white animate-pulse"></span>
+        </button>
+
+        <div id="chatWindow" class="hidden absolute bottom-16 left-0 w-80 sm:w-96 bg-[#FDFBF9] rounded-3xl shadow-2xl border border-[#D4C3B3] overflow-hidden flex flex-col animate-fade-in">
+            <div class="bg-[#3B261D] text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-[#5C3D2E] flex items-center justify-center border border-[#8C583A] overflow-hidden p-1">
+                        <img src="logo.png" alt="Logo" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold font-heading">Shikhor Assistant</h4>
+                        <p class="text-[10px] text-green-300 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span> Online 24/7</p>
+                    </div>
+                </div>
+                <button onclick="toggleChatbot()" class="text-white hover:text-[#E6B88A] text-lg px-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div id="chatMessages" class="p-4 h-72 overflow-y-auto space-y-3 text-xs bg-[#F6EFE8]/50 flex flex-col">
+                <div class="bg-[#EFE5DC] text-[#3B261D] p-3 rounded-2xl rounded-tl-none max-w-[85%] border border-[#D4C3B3] shadow-sm">
+                    Hello! Welcome to <strong>Shikhor Foundation</strong>. How can I help you today? Please choose a common question below or message us directly.
+                </div>
+            </div>
+
+            <div class="p-2.5 bg-[#FDFBF9] border-t border-[#D4C3B3] grid grid-cols-1 gap-1.5">
+                <button onclick="handleFAQClick('volunteer')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
+                    <span><i class="fa-solid fa-user-plus text-[#8C583A] mr-1.5"></i> How to join as a volunteer?</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-[#6E5649]"></i>
+                </button>
+                <button onclick="handleFAQClick('donation')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
+                    <span><i class="fa-solid fa-hand-holding-heart text-[#8C583A] mr-1.5"></i> How to make a donation?</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-[#6E5649]"></i>
+                </button>
+                <button onclick="handleFAQClick('contact')" class="text-left text-xs bg-[#F2E8DF] hover:bg-[#E2D3C5] text-[#3B261D] p-2 rounded-xl border border-[#D4C3B3] transition font-medium flex items-center justify-between">
+                    <span><i class="fa-solid fa-headset text-[#8C583A] mr-1.5"></i> Need custom help? (Social Links)</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-[#6E5649]"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BACK TO TOP BUTTON -->
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-24 right-6 z-40 bg-[#3B261D] text-[#E6B88A] border border-[#8C583A] w-11 h-11 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition" title="Back to Top">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- FLOATING WHATSAPP BUTTON -->
+    <a href="https://wa.me/8801956631465" target="_blank" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition duration-300" title="Chat on WhatsApp">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+    </a>
+
+    <!-- PUBLIC VISITOR TRACKING, HEADLINE TICKER, LIVE NOTICE & NEWS SCRIPTS -->
     <script>
-        const ADMIN_AUTH = {
-            username: "shikhor@bd",
-            password: "Shikhor_foundation_bd",
-            sessionKey: "shikhor_admin_authenticated_session_v1"
-        };
-
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec";
+        const visitorEnterTime = Date.now();
 
-        const STORAGE_KEYS = {
-            items: "shikhor_admin_notice_news_v1",
-            sections: "shikhor_admin_site_sections_v1",
-            team: "shikhor_admin_team_v1",
-            audit: "shikhor_admin_audit_logs_v1",
-            visitors: "shikhor_admin_visitor_logs_v1"
-        };
-
-        const DEFAULT_ITEMS = [
-            {
-                id: "item-notice-1",
+        const articleStore = {
+            "notice-default-1": {
+                id: "notice-default-1",
                 category: "Notice",
-                status: "Published",
-                date: "Nov 25, 2026",
+                date: "Live",
                 title: "Volunteer & Community Drive",
                 banner: "gallery1.jpg",
-                summary: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live.",
-                fullContent: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live. Interested volunteers and supporters can stay tuned for schedule updates, field locations, and registration details."
+                body: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live. Interested volunteers and supporters can stay tuned for schedule updates, field locations, and registration details.",
+                isNews: false
             },
-            {
-                id: "item-news-1",
+            "news-default-1": {
+                id: "news-default-1",
                 category: "News",
-                status: "Published",
-                date: "Nov 25, 2026",
+                date: "Featured",
                 title: "Standing Together for Communities",
                 banner: "gallery2.jpg",
-                summary: "Recent news stories, relief updates, and ground reports from Shikhor Foundation.",
-                fullContent: "Recent news stories, relief updates, and ground reports from Shikhor Foundation are featured here. Every initiative is driven by compassion, community participation, and transparent action to support families in need."
+                body: "Recent news stories, relief updates, and ground reports from Shikhor Foundation are featured here. Every initiative is driven by compassion, community participation, and transparent action to support families in need.",
+                isNews: true
             }
-        ];
-
-        const DEFAULT_SECTIONS = {
-            familiesCount: "100+",
-            volunteersCount: "50+",
-            eventsCount: "10+",
-            heroTitle: "A little kindness can grow into a better tomorrow.",
-            heroSubtitle: "Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.",
-            aboutText: "Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.",
-            donationNumber: "+8801956631465"
         };
 
-        const DEFAULT_TEAM = [
-            { id: "tm-1", name: "Md. Shewise Al Islam Zarif", role: "Founder & CEO / President", photo: "zarif.jpg" },
-            { id: "tm-2", name: "Ahsan Zaman", role: "Vice President", photo: "ahsan.jpg" },
-            { id: "tm-3", name: "Nafew Khalil", role: "Vice President of Program Organisation", photo: "nafew.jpg" },
-            { id: "tm-4", name: "Md. Shakhawat Hossain Sayem", role: "Head Of Administration & Marketing", photo: "shakhawat.jpg" },
-            { id: "tm-5", name: "MD. Minhajul Islam", role: "Head of Accounts & Finance", photo: "minhajul.jpg" },
-            { id: "tm-6", name: "Faymul Islam Shafi", role: "Head Of Volunteer", photo: "shafi.jpg" },
-            { id: "tm-7", name: "Rikto Ruddur Lyric", role: "Asst. Head Of Marketing", photo: "rikto.png" }
-        ];
-
-        let state = {
-            items: [],
-            sections: { ...DEFAULT_SECTIONS },
-            team: [],
-            auditLogs: [],
-            visitorLogs: [],
-            activeSector: "notices_news",
-            nnFilter: "all"
-        };
-
-        function togglePasswordVisibility() {
-            const input = document.getElementById("adminPasswordInput");
-            const icon = document.getElementById("passwordEyeIcon");
-            if (input.type === "password") {
-                input.type = "text";
-                icon.className = "fa-solid fa-eye-slash";
-            } else {
-                input.type = "password";
-                icon.className = "fa-solid fa-eye";
-            }
-        }
-
-        function setAuthView(isAuthenticated) {
-            document.getElementById("adminLoginScreen").classList.toggle("hidden", isAuthenticated);
-            document.getElementById("adminDashboardApp").classList.toggle("hidden", !isAuthenticated);
-            if (isAuthenticated) {
-                loadLocalState();
-                renderAll();
-                syncAllWithSheet(false);
-            }
-        }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const userVal = document.getElementById("adminUsernameInput").value.trim();
-            const passVal = document.getElementById("adminPasswordInput").value;
-            const errEl = document.getElementById("loginErrorMsg");
-
-            if (userVal === ADMIN_AUTH.username && passVal === ADMIN_AUTH.password) {
-                errEl.classList.add("hidden");
-                sessionStorage.setItem(ADMIN_AUTH.sessionKey, "1");
-                setAuthView(true);
-                showToast("Welcome Back", "Logged in to Shikhor Foundation Admin Panel.");
-            } else {
-                errEl.classList.remove("hidden");
-            }
-        }
-
-        function handleAdminLogout() {
-            sessionStorage.removeItem(ADMIN_AUTH.sessionKey);
-            document.getElementById("adminLoginForm").reset();
-            setAuthView(false);
-            showToast("Logged Out", "Admin session closed.");
-        }
+        let activeArticleId = null;
 
         function escapeHtml(str) {
             return String(str || "")
@@ -602,529 +808,400 @@
                 .replace(/"/g, "&quot;");
         }
 
-        function formatNowBD() {
-            return new Date().toLocaleString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            });
+        function sanitizeUrl(url, fallback) {
+            const cleaned = String(url || "").trim();
+            if (!cleaned) return fallback;
+            if (/^(https?:\/\/|\/|\.\/|\.\.\/|[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp|gif))/i.test(cleaned)) {
+                return cleaned;
+            }
+            return fallback;
         }
 
-        function showToast(title, message, isError = false) {
-            const toast = document.getElementById("toastBanner");
-            const icon = document.getElementById("toastIcon");
-            document.getElementById("toastTitle").textContent = title;
-            document.getElementById("toastMessage").textContent = message;
-            icon.className = isError
-                ? "fa-solid fa-triangle-exclamation text-amber-400 mt-0.5 text-base"
-                : "fa-solid fa-circle-check text-[#E6B88A] mt-0.5 text-base";
-            toast.classList.remove("hidden");
-            clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(hideToast, 3600);
+        function jumpToHighlight(targetId) {
+            const targetEl = document.getElementById(targetId);
+            if (!targetEl) return;
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetEl.classList.remove('highlight-news-card');
+            void targetEl.offsetWidth;
+            targetEl.classList.add('highlight-news-card');
         }
 
-        function hideToast() {
-            document.getElementById("toastBanner").classList.add("hidden");
-        }
+        function openArticleByKey(articleKey) {
+            const item = articleStore[articleKey];
+            if (!item) return;
 
-        function loadLocalState() {
+            activeArticleId = articleKey;
+            document.getElementById('readerCategory').textContent = item.category || (item.isNews ? "News" : "Notice");
+            document.getElementById('readerDate').textContent = item.date || "Live";
+            document.getElementById('readerTitle').textContent = item.title || "Update";
+            document.getElementById('readerBody').textContent = item.body || "";
+
+            const iconEl = document.getElementById('readerCategoryIcon');
+            iconEl.className = item.isNews ? "fa-regular fa-newspaper" : "fa-solid fa-bullhorn";
+
+            const bannerImg = document.getElementById('readerBannerImg');
+            bannerImg.src = item.banner || (item.isNews ? "gallery2.jpg" : "gallery1.jpg");
+            bannerImg.alt = item.title || "Article Banner";
+            bannerImg.onerror = () => {
+                bannerImg.src = item.isNews ? "gallery2.jpg" : "gallery1.jpg";
+            };
+
             try {
-                const rawItems = localStorage.getItem(STORAGE_KEYS.items);
-                state.items = rawItems ? JSON.parse(rawItems) : [...DEFAULT_ITEMS];
+                history.replaceState(null, "", `#article=${encodeURIComponent(articleKey)}`);
+            } catch (e) {}
 
-                const rawSections = localStorage.getItem(STORAGE_KEYS.sections);
-                state.sections = rawSections ? { ...DEFAULT_SECTIONS, ...JSON.parse(rawSections) } : { ...DEFAULT_SECTIONS };
+            const modal = document.getElementById('articleReaderModal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
 
-                const rawTeam = localStorage.getItem(STORAGE_KEYS.team);
-                state.team = rawTeam ? JSON.parse(rawTeam) : [...DEFAULT_TEAM];
-
-                const rawAudit = localStorage.getItem(STORAGE_KEYS.audit);
-                state.auditLogs = rawAudit ? JSON.parse(rawAudit) : [];
-
-                const rawVisitors = localStorage.getItem(STORAGE_KEYS.visitors);
-                state.visitorLogs = rawVisitors ? JSON.parse(rawVisitors) : [];
-            } catch (e) {
-                state.items = [...DEFAULT_ITEMS];
-                state.sections = { ...DEFAULT_SECTIONS };
-                state.team = [...DEFAULT_TEAM];
-                state.auditLogs = [];
-                state.visitorLogs = [];
+        function closeArticleModal() {
+            const modal = document.getElementById('articleReaderModal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            activeArticleId = null;
+            if (window.location.hash.startsWith("#article=")) {
+                try {
+                    history.replaceState(null, "", "#news");
+                } catch (e) {}
             }
         }
 
-        function saveLocalState() {
+        function copyArticleLink() {
+            const btn = document.getElementById('copyArticleBtn');
+            const shareUrl = activeArticleId
+                ? `${window.location.origin}${window.location.pathname}#article=${encodeURIComponent(activeArticleId)}`
+                : window.location.href;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const prevHtml = btn.innerHTML;
+                btn.innerHTML = `<i class="fa-solid fa-check text-green-700"></i> Link Copied!`;
+                setTimeout(() => {
+                    btn.innerHTML = prevHtml;
+                }, 2000);
+            });
+        }
+
+        function getReadableDeviceInfo() {
+            const ua = navigator.userAgent;
+            let deviceType = "Desktop / PC";
+            let os = "Unknown OS";
+            let browser = "Unknown Browser";
+
+            if (/Android/i.test(ua)) {
+                deviceType = "Android Mobile";
+                const match = ua.match(/Android\s([0-9.]+)/);
+                os = match ? `Android ${match[1]}` : "Android";
+            } else if (/iPhone|iPad|iPod/i.test(ua)) {
+                deviceType = "iOS Device (iPhone/iPad)";
+                os = "iOS";
+            } else if (/Windows/i.test(ua)) {
+                deviceType = "Windows PC";
+                os = "Windows";
+            } else if (/Mac/i.test(ua)) {
+                deviceType = "MacBook / Mac";
+                os = "macOS";
+            } else if (/Linux/i.test(ua)) {
+                deviceType = "Linux PC";
+                os = "Linux";
+            }
+
+            if (/Edg/i.test(ua)) browser = "Microsoft Edge";
+            else if (/Chrome/i.test(ua)) browser = "Google Chrome";
+            else if (/Safari/i.test(ua)) browser = "Apple Safari";
+            else if (/Firefox/i.test(ua)) browser = "Mozilla Firefox";
+
+            return `${deviceType} (${os} - ${browser}) | Screen: ${window.screen.width}x${window.screen.height}`;
+        }
+
+        function sendToGoogleSheet(payload, useBeacon = false) {
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
+            const jsonStr = JSON.stringify(payload);
+
+            if (useBeacon && navigator.sendBeacon) {
+                const blob = new Blob([jsonStr], { type: "text/plain;charset=UTF-8" });
+                navigator.sendBeacon(GOOGLE_SCRIPT_URL, blob);
+                return;
+            }
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonStr
+            }).catch(err => console.log('Tracking error:', err));
+        }
+
+        function logPublicVisitorEntry() {
+            if (sessionStorage.getItem('shikhor_public_visitor_entered')) return;
+            sessionStorage.setItem('shikhor_public_visitor_entered', '1');
+            sendToGoogleSheet({
+                action: "logVisitor",
+                type: "visit",
+                status: "Public Visitor Entry",
+                userEmail: "Public Visitor",
+                deviceInfo: getReadableDeviceInfo()
+            });
+        }
+
+        function logPublicVisitorExit() {
+            if (sessionStorage.getItem('shikhor_public_visitor_exited')) return;
+            sessionStorage.setItem('shikhor_public_visitor_exited', '1');
+            const secondsSpent = Math.max(1, Math.round((Date.now() - visitorEnterTime) / 1000));
+            sendToGoogleSheet({
+                action: "logVisitorExit",
+                type: "visitor_exit",
+                status: `Exited after ${secondsSpent}s`,
+                userEmail: "Public Visitor",
+                deviceInfo: `${getReadableDeviceInfo()} | Stayed: ${secondsSpent}s`
+            }, true);
+        }
+
+        function applySiteSections(sec) {
+            if (!sec || typeof sec !== "object") return;
+            if (sec.familiesCount) document.getElementById("liveFamiliesCount").textContent = sec.familiesCount;
+            if (sec.volunteersCount) document.getElementById("liveVolunteersCount").textContent = sec.volunteersCount;
+            if (sec.eventsCount) document.getElementById("liveEventsCount").textContent = sec.eventsCount;
+            if (sec.heroSubtitle) document.getElementById("liveHeroSubtitle").textContent = sec.heroSubtitle;
+            if (sec.aboutText) document.getElementById("liveAboutText").textContent = sec.aboutText;
+            if (sec.donationNumber) {
+                document.getElementById("bkashNum").textContent = sec.donationNumber;
+                document.getElementById("nagadNum").textContent = sec.donationNumber;
+                document.getElementById("bkashDialLink").href = `tel:*247*#${sec.donationNumber}#`;
+                document.getElementById("nagadDialLink").href = `tel:*167*#${sec.donationNumber}#`;
+            }
+        }
+
+        function renderLiveNoticeAndNews(items) {
+            const noticeContainer = document.getElementById('liveNoticeContainer');
+            const newsContainer = document.getElementById('liveNewsContainer');
+            const tickerTrack = document.getElementById('headlineTickerTrack');
+            if (!Array.isArray(items) || items.length === 0) return;
+
+            const publishedItems = items.filter(row => {
+                const status = String(row["Status"] || row.status || "Published").trim().toLowerCase();
+                return status !== "draft" && status !== "archived";
+            });
+
+            const taggedItems = publishedItems.map((row, idx) => {
+                const catVal = row["Category"] || row.category || "Notice";
+                const cat = String(catVal).trim().toLowerCase();
+                const isNews = cat === "news" || cat === "press release";
+                const domId = `${isNews ? 'news' : 'notice'}-item-${idx}`;
+                const title = String(row["Headline / Title"] || row.title || row["Notice ID"] || (isNews ? "News" : "Notice")).trim();
+                const summary = String(row["Summary"] || row.summary || "").trim();
+                const fullDetails = String(row["Full Content"] || row.fullContent || row["Details"] || row["Content"] || "").trim();
+                const body = fullDetails && summary && fullDetails !== summary
+                    ? `${summary}\n\n${fullDetails}`
+                    : (fullDetails || summary || title);
+                const rawBanner = row["Image URL"] || row.banner || row["Banner"] || row["Image"] || row["Photo"] || "";
+                const fallbackBanner = isNews ? "gallery2.jpg" : "gallery1.jpg";
+                const banner = sanitizeUrl(rawBanner, fallbackBanner);
+
+                const record = {
+                    id: domId,
+                    category: catVal,
+                    date: row["Publish Date"] || row.date || (isNews ? "Recent" : "Live"),
+                    title,
+                    banner,
+                    body,
+                    isNews
+                };
+                articleStore[domId] = record;
+                return record;
+            });
+
+            const noticeItems = taggedItems.filter(item => !item.isNews);
+            const newsItems = taggedItems.filter(item => item.isNews);
+
+            if (noticeItems.length > 0 && noticeContainer) {
+                noticeContainer.innerHTML = noticeItems.map(n => `
+                    <div id="${escapeHtml(n.id)}" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border-l-4 border-[#8C583A] border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
+                        <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
+                            <img src="${escapeHtml(n.banner)}" alt="${escapeHtml(n.title)}" onerror="this.src='gallery1.jpg'" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between text-[11px] font-bold text-[#8C583A] uppercase mb-2">
+                                    <span><i class="fa-solid fa-bullhorn mr-1"></i> ${escapeHtml(n.category)}</span>
+                                    <span>${escapeHtml(n.date)}</span>
+                                </div>
+                                <h3 class="text-lg font-bold font-heading text-[#231712] mb-4 leading-snug">${escapeHtml(n.title)}</h3>
+                            </div>
+                            <button type="button" onclick="openArticleByKey('${escapeHtml(n.id)}')" class="w-full py-2.5 px-4 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold transition flex items-center justify-center gap-2">
+                                <span>View Notice</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join("");
+            }
+
+            if (newsItems.length > 0 && newsContainer) {
+                newsContainer.innerHTML = newsItems.map(item => `
+                    <div id="${escapeHtml(item.id)}" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
+                        <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
+                            <img src="${escapeHtml(item.banner)}" alt="${escapeHtml(item.title)}" onerror="this.src='gallery2.jpg'" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between text-[11px] font-bold text-[#8C583A] uppercase mb-2">
+                                    <span><i class="fa-regular fa-newspaper mr-1"></i> ${escapeHtml(item.category)}</span>
+                                    <span>${escapeHtml(item.date)}</span>
+                                </div>
+                                <h3 class="text-lg font-bold font-heading text-[#231712] mb-4 leading-snug">${escapeHtml(item.title)}</h3>
+                            </div>
+                            <button type="button" onclick="openArticleByKey('${escapeHtml(item.id)}')" class="w-full py-2.5 px-4 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold transition flex items-center justify-center gap-2">
+                                <span>View News</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join("");
+            }
+
+            if (taggedItems.length > 0 && tickerTrack) {
+                const buildTickerButtons = () => taggedItems.map(item => {
+                    const badgeClass = item.isNews ? "bg-[#5C3D2E] text-white" : "bg-[#3B261D] text-[#E6B88A]";
+                    return `
+                        <button type="button" onclick="jumpToHighlight('${escapeHtml(item.id)}')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded ${badgeClass} text-[10px] font-bold uppercase">${escapeHtml(item.category)}</span>
+                            <span>${escapeHtml(item.title)}</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
+                    `;
+                }).join('<span class="text-[#8C583A]">•</span>');
+
+                const singlePass = buildTickerButtons();
+                tickerTrack.innerHTML = `${singlePass}<span class="text-[#8C583A]">•</span>${singlePass}`;
+            }
+
+            checkHashForArticle();
+        }
+
+        function checkHashForArticle() {
+            const hash = window.location.hash || "";
+            if (hash.startsWith("#article=")) {
+                const key = decodeURIComponent(hash.replace("#article=", ""));
+                if (articleStore[key]) {
+                    openArticleByKey(key);
+                }
+            }
+        }
+
+        function loadLocalFallbackFromAdmin() {
             try {
-                localStorage.setItem(STORAGE_KEYS.items, JSON.stringify(state.items));
-                localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(state.sections));
-                localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
-                localStorage.setItem(STORAGE_KEYS.audit, JSON.stringify(state.auditLogs));
-                localStorage.setItem(STORAGE_KEYS.visitors, JSON.stringify(state.visitorLogs));
+                const localItems = localStorage.getItem("shikhor_admin_notice_news_v1");
+                if (localItems) {
+                    const parsed = JSON.parse(localItems);
+                    if (Array.isArray(parsed) && parsed.length > 0) renderLiveNoticeAndNews(parsed);
+                }
+                const localSections = localStorage.getItem("shikhor_admin_site_sections_v1");
+                if (localSections) applySiteSections(JSON.parse(localSections));
             } catch (e) {}
         }
 
-        function postToSheet(payload) {
+        async function loadLiveNoticeAndNews() {
+            loadLocalFallbackFromAdmin();
             if (!GOOGLE_SCRIPT_URL) return;
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            }).catch(() => {});
-        }
-
-        function recordChangeAndSync(sectorName, changeType, detailsText, extraPayload = {}) {
-            const timestamp = formatNowBD();
-            const entry = {
-                id: "aud-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
-                timestamp,
-                sector: sectorName,
-                changeType,
-                details: detailsText
-            };
-
-            state.auditLogs.unshift(entry);
-            if (state.auditLogs.length > 200) state.auditLogs.pop();
-
-            saveLocalState();
-            updateDashboardCounts();
-            renderAuditTable();
-
-            postToSheet({
-                action: "logAdminChange",
-                adminUser: ADMIN_AUTH.username,
-                sector: sectorName,
-                changeType,
-                details: detailsText,
-                timestamp,
-                allItems: state.items,
-                sections: state.sections,
-                team: state.team,
-                ...extraPayload
-            });
-
-            document.getElementById("lastSyncTimeLabel").textContent = `Last synced: ${timestamp}`;
-        }
-
-        function switchSector(sectorKey) {
-            state.activeSector = sectorKey;
-            document.querySelectorAll(".admin-sector").forEach(sec => {
-                sec.classList.toggle("hidden", sec.id !== `sector-${sectorKey}`);
-            });
-            document.querySelectorAll(".sector-tab").forEach(btn => {
-                const active = btn.getAttribute("data-sector-tab") === sectorKey;
-                btn.className = active
-                    ? "sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#3B261D] text-white shadow"
-                    : "sector-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-[#F2E8DF] text-[#3B261D] hover:bg-[#E2D3C5]";
-            });
-        }
-
-        function updateDashboardCounts() {
-            const published = state.items.filter(i => String(i.status || "Published").toLowerCase() !== "draft");
-            const newsCount = published.filter(i => {
-                const c = String(i.category || "").toLowerCase();
-                return c === "news" || c === "press release";
-            }).length;
-            const noticeCount = published.length - newsCount;
-
-            document.getElementById("statNoticeCount").textContent = noticeCount;
-            document.getElementById("statNewsCount").textContent = newsCount;
-            document.getElementById("statAuditCount").textContent = state.auditLogs.length;
-            document.getElementById("statVisitorCount").textContent = state.visitorLogs.length;
-        }
-
-        function setNnFilter(filterVal) {
-            state.nnFilter = filterVal;
-            ["all", "Notice", "News"].forEach(k => {
-                const btn = document.getElementById(`filter-${k}`);
-                if (!btn) return;
-                btn.className = k === filterVal
-                    ? "nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#3B261D] text-white"
-                    : "nn-filter px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F2E8DF] text-[#3B261D]";
-            });
-            renderNoticeNewsList();
-        }
-
-        function resetNoticeNewsForm() {
-            document.getElementById("nnEditId").value = "";
-            document.getElementById("nnCategory").value = "Notice";
-            document.getElementById("nnStatus").value = "Published";
-            document.getElementById("nnDate").value = formatNowBD();
-            document.getElementById("nnBanner").value = "";
-            document.getElementById("nnTitle").value = "";
-            document.getElementById("nnSummary").value = "";
-            document.getElementById("nnFullContent").value = "";
-            document.getElementById("nnFormHeading").textContent = "Add New Notice or News";
-            document.getElementById("nnSubmitBtn").innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-[#E6B88A]"></i><span>Publish & Save to Spreadsheet</span>`;
-        }
-
-        function editNoticeNewsItem(id) {
-            const found = state.items.find(i => i.id === id);
-            if (!found) return;
-
-            document.getElementById("nnEditId").value = found.id;
-            document.getElementById("nnCategory").value = found.category || "Notice";
-            document.getElementById("nnStatus").value = found.status || "Published";
-            document.getElementById("nnDate").value = found.date || formatNowBD();
-            document.getElementById("nnBanner").value = found.banner || "";
-            document.getElementById("nnTitle").value = found.title || "";
-            document.getElementById("nnSummary").value = found.summary || "";
-            document.getElementById("nnFullContent").value = found.fullContent || "";
-            document.getElementById("nnFormHeading").textContent = "Edit Notice / News";
-            document.getElementById("nnSubmitBtn").innerHTML = `<i class="fa-solid fa-pen-to-square text-[#E6B88A]"></i><span>Update & Sync to Spreadsheet</span>`;
-            switchSector("notices_news");
-            window.scrollTo({ top: 180, behavior: "smooth" });
-        }
-
-        function handleNoticeNewsSubmit(e) {
-            e.preventDefault();
-            const editId = document.getElementById("nnEditId").value.trim();
-            const category = document.getElementById("nnCategory").value;
-            const status = document.getElementById("nnStatus").value;
-            const date = document.getElementById("nnDate").value.trim() || formatNowBD();
-            const title = document.getElementById("nnTitle").value.trim();
-            const summary = document.getElementById("nnSummary").value.trim() || title;
-            const fullContent = document.getElementById("nnFullContent").value.trim() || summary;
-            const defaultImg = (category.toLowerCase() === "news" || category.toLowerCase() === "press release") ? "gallery2.jpg" : "gallery1.jpg";
-            const banner = document.getElementById("nnBanner").value.trim() || defaultImg;
-
-            if (!title) return;
-
-            if (editId) {
-                const idx = state.items.findIndex(i => i.id === editId);
-                if (idx !== -1) {
-                    const prevTitle = state.items[idx].title;
-                    state.items[idx] = {
-                        ...state.items[idx],
-                        category,
-                        status,
-                        date,
-                        title,
-                        summary,
-                        fullContent,
-                        banner
-                    };
-                    recordChangeAndSync(
-                        "Notice & News",
-                        "UPDATED",
-                        `Edited [${category}] "${prevTitle}" -> "${title}" (${status})`
-                    );
-                    showToast("Updated & Synced", `"${title}" saved to spreadsheet and live site.`);
-                }
-            } else {
-                const newItem = {
-                    id: "item-" + Date.now(),
-                    category,
-                    status,
-                    date,
-                    title,
-                    banner,
-                    summary,
-                    fullContent
-                };
-                state.items.unshift(newItem);
-                recordChangeAndSync(
-                    "Notice & News",
-                    "ADDED",
-                    `Uploaded new [${category}] "${title}" (${status})`
-                );
-                showToast("Published & Synced", `New ${category} "${title}" added and logged.`);
-            }
-
-            resetNoticeNewsForm();
-            renderAll();
-        }
-
-        function deleteNoticeNewsItem(id) {
-            const target = state.items.find(i => i.id === id);
-            if (!target) return;
-            if (!confirm(`Remove "${target.title}"? This will also be recorded in the spreadsheet.`)) return;
-
-            state.items = state.items.filter(i => i.id !== id);
-            recordChangeAndSync(
-                "Notice & News",
-                "REMOVED",
-                `Deleted [${target.category}] "${target.title}"`
-            );
-            showToast("Removed & Logged", `"${target.title}" removed and recorded in sheet.`);
-            renderAll();
-        }
-
-        function renderNoticeNewsList() {
-            const listEl = document.getElementById("adminNoticeNewsList");
-            const filtered = state.items.filter(item => {
-                if (state.nnFilter === "all") return true;
-                if (state.nnFilter === "News") {
-                    const c = String(item.category || "").toLowerCase();
-                    return c === "news" || c === "press release";
-                }
-                return String(item.category || "").toLowerCase() === "notice";
-            });
-
-            if (filtered.length === 0) {
-                listEl.innerHTML = `<div class="p-8 text-center rounded-2xl bg-[#F6EFE8] border border-dashed border-[#C4AE99] text-xs text-[#6E5649]">No items in this view yet. Add a Notice or News from the form.</div>`;
-                return;
-            }
-
-            listEl.innerHTML = filtered.map(item => {
-                const isNews = String(item.category || "").toLowerCase().includes("news") || String(item.category || "").toLowerCase().includes("press");
-                return `
-                    <div class="p-4 rounded-2xl bg-[#F6EFE8] border border-[#D4C3B3] flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover-lift">
-                        <div class="flex items-start gap-3.5">
-                            <img src="${escapeHtml(item.banner || (isNews ? 'gallery2.jpg' : 'gallery1.jpg'))}" onerror="this.src='${isNews ? 'gallery2.jpg' : 'gallery1.jpg'}'" alt="${escapeHtml(item.title)}" class="w-16 h-16 rounded-xl object-cover border border-[#C4AE99] shrink-0 bg-[#EFE5DC]">
-                            <div>
-                                <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
-                                    <span class="px-2 py-0.5 rounded ${isNews ? 'bg-[#8C583A] text-white' : 'bg-[#3B261D] text-[#E6B88A]'}">${escapeHtml(item.category || 'Notice')}</span>
-                                    <span class="px-2 py-0.5 rounded bg-[#FDFBF9] border border-[#D4C3B3] text-[#4F392E]">${escapeHtml(item.status || 'Published')}</span>
-                                    <span class="text-[#6E5649]">${escapeHtml(item.date || '')}</span>
-                                </div>
-                                <h3 class="font-bold font-heading text-base text-[#231712] mt-1">${escapeHtml(item.title)}</h3>
-                                <p class="text-xs text-[#4F392E] line-clamp-1 mt-0.5">${escapeHtml(item.summary || item.fullContent || '')}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
-                            <button type="button" onclick="editNoticeNewsItem('${escapeHtml(item.id)}')" class="px-3 py-1.5 rounded-lg bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                                <i class="fa-solid fa-pen mr-1"></i> Edit
-                            </button>
-                            <button type="button" onclick="deleteNoticeNewsItem('${escapeHtml(item.id)}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition">
-                                <i class="fa-solid fa-trash mr-1"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join("");
-        }
-
-        function renderHeadlinesSector() {
-            const published = state.items.filter(i => String(i.status || "Published").toLowerCase() !== "draft");
-            const previewChips = document.getElementById("adminHeadlinePreviewChips");
-            const listEl = document.getElementById("adminHeadlineList");
-
-            if (published.length === 0) {
-                previewChips.innerHTML = `<span class="text-[#D4C3B3]">No published headlines</span>`;
-                listEl.innerHTML = `<p class="text-xs text-[#6E5649]">Publish a Notice or News item to populate the headline bar.</p>`;
-                return;
-            }
-
-            previewChips.innerHTML = published.map(p => `
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#3B261D] text-[#E6B88A]">
-                    <strong class="text-[10px] uppercase">${escapeHtml(p.category)}</strong>
-                    <span>${escapeHtml(p.title)}</span>
-                </span>
-            `).join("");
-
-            listEl.innerHTML = published.map((p, idx) => `
-                <div class="p-4 rounded-2xl bg-[#F6EFE8] border border-[#D4C3B3] flex items-center justify-between gap-3">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase text-[#8C583A]">#${idx + 1} • ${escapeHtml(p.category)}</span>
-                        <h4 class="font-bold text-sm text-[#231712] mt-0.5">${escapeHtml(p.title)}</h4>
-                    </div>
-                    <button type="button" onclick="editNoticeNewsItem('${escapeHtml(p.id)}')" class="px-3 py-1.5 rounded-lg bg-[#3B261D] text-white text-xs font-bold shrink-0">
-                        Edit Headline
-                    </button>
-                </div>
-            `).join("");
-        }
-
-        function populateSectionsForm() {
-            document.getElementById("secFamiliesCount").value = state.sections.familiesCount || "";
-            document.getElementById("secVolunteersCount").value = state.sections.volunteersCount || "";
-            document.getElementById("secEventsCount").value = state.sections.eventsCount || "";
-            document.getElementById("secHeroTitle").value = state.sections.heroTitle || "";
-            document.getElementById("secHeroSubtitle").value = state.sections.heroSubtitle || "";
-            document.getElementById("secAboutText").value = state.sections.aboutText || "";
-            document.getElementById("secDonationNumber").value = state.sections.donationNumber || "";
-        }
-
-        function handleSiteSectionsSave(e) {
-            e.preventDefault();
-            state.sections = {
-                familiesCount: document.getElementById("secFamiliesCount").value.trim() || "100+",
-                volunteersCount: document.getElementById("secVolunteersCount").value.trim() || "50+",
-                eventsCount: document.getElementById("secEventsCount").value.trim() || "10+",
-                heroTitle: document.getElementById("secHeroTitle").value.trim(),
-                heroSubtitle: document.getElementById("secHeroSubtitle").value.trim(),
-                aboutText: document.getElementById("secAboutText").value.trim(),
-                donationNumber: document.getElementById("secDonationNumber").value.trim() || "+8801956631465"
-            };
-
-            recordChangeAndSync(
-                "Site Sections & Stats",
-                "UPDATED",
-                `Updated stats (${state.sections.familiesCount} families, ${state.sections.volunteersCount} volunteers, ${state.sections.eventsCount} events) & section content`
-            );
-            showToast("Sections Saved", "Site section updates saved and synced to spreadsheet.");
-        }
-
-        function handleTeamAdd(e) {
-            e.preventDefault();
-            const name = document.getElementById("tmName").value.trim();
-            const role = document.getElementById("tmRole").value.trim();
-            const photo = document.getElementById("tmPhoto").value.trim() || "logo.png";
-            if (!name || !role) return;
-
-            state.team.push({ id: "tm-" + Date.now(), name, role, photo });
-            document.getElementById("teamMemberForm").reset();
-
-            recordChangeAndSync(
-                "Team & Panel",
-                "ADDED",
-                `Added team member "${name}" (${role})`
-            );
-            showToast("Team Member Added", `"${name}" added and logged.`);
-            renderTeamList();
-        }
-
-        function deleteTeamMember(id) {
-            const member = state.team.find(m => m.id === id);
-            if (!member) return;
-            if (!confirm(`Remove ${member.name} from panel?`)) return;
-
-            state.team = state.team.filter(m => m.id !== id);
-            recordChangeAndSync(
-                "Team & Panel",
-                "REMOVED",
-                `Removed team member "${member.name}" (${member.role})`
-            );
-            showToast("Team Member Removed", `"${member.name}" removed and logged.`);
-            renderTeamList();
-        }
-
-        function renderTeamList() {
-            const el = document.getElementById("adminTeamList");
-            el.innerHTML = state.team.map(m => `
-                <div class="p-4 rounded-2xl bg-[#F6EFE8] border border-[#D4C3B3] text-center flex flex-col justify-between gap-3">
-                    <div>
-                        <img src="${escapeHtml(m.photo || 'logo.png')}" onerror="this.src='logo.png'" alt="${escapeHtml(m.name)}" class="w-16 h-16 rounded-2xl object-cover mx-auto border border-[#B88655] mb-2 bg-[#FDFBF9]">
-                        <h4 class="font-bold font-heading text-sm text-[#231712]">${escapeHtml(m.name)}</h4>
-                        <p class="text-[11px] font-semibold text-[#8C583A] mt-0.5">${escapeHtml(m.role)}</p>
-                    </div>
-                    <button type="button" onclick="deleteTeamMember('${escapeHtml(m.id)}')" class="w-full py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[11px] font-bold transition">
-                        Remove Member
-                    </button>
-                </div>
-            `).join("");
-        }
-
-        function renderAuditTable() {
-            const tbody = document.getElementById("auditLogTableBody");
-            if (state.auditLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-8 px-4 text-center text-[#6E5649] text-xs">No changes recorded yet. Add, edit, or delete an item to see live proof here and in your spreadsheet.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = state.auditLogs.map(log => {
-                const badgeColor = log.changeType === "REMOVED"
-                    ? "bg-red-100 text-red-800 border-red-200"
-                    : log.changeType === "UPDATED"
-                    ? "bg-amber-100 text-amber-900 border-amber-200"
-                    : "bg-emerald-100 text-emerald-800 border-emerald-200";
-                return `
-                    <tr class="hover:bg-[#F6EFE8]/60">
-                        <td class="py-3 px-4 text-xs text-[#5C3D2E] whitespace-nowrap">${escapeHtml(log.timestamp)}</td>
-                        <td class="py-3 px-4 font-bold text-xs text-[#231712] whitespace-nowrap">${escapeHtml(log.sector)}</td>
-                        <td class="py-3 px-4 whitespace-nowrap">
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border ${badgeColor}">${escapeHtml(log.changeType)}</span>
-                        </td>
-                        <td class="py-3 px-4 text-xs text-[#3B261D]">${escapeHtml(log.details)}</td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        function renderVisitorTable() {
-            const tbody = document.getElementById("visitorLogTableBody");
-            if (!Array.isArray(state.visitorLogs) || state.visitorLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="py-8 px-4 text-center text-[#6E5649] text-xs">Visitor logs from your Google Sheet will appear here when synced.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = state.visitorLogs.slice(0, 100).map(v => {
-                const timeVal = v["Timestamp"] || v["timestamp"] || v["Date"] || "";
-                const statusVal = v["Status"] || v["status"] || v["Type"] || "Public Visitor";
-                const devVal = v["Device Info"] || v["deviceInfo"] || v["Device"] || "";
-                return `
-                    <tr class="hover:bg-[#F6EFE8]/60">
-                        <td class="py-3 px-4 text-xs text-[#5C3D2E] whitespace-nowrap">${escapeHtml(timeVal)}</td>
-                        <td class="py-3 px-4 text-xs font-bold text-[#231712]">${escapeHtml(statusVal)}</td>
-                        <td class="py-3 px-4 text-xs text-[#3B261D]">${escapeHtml(devVal)}</td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        async function syncAllWithSheet(showFeedback = false) {
-            const spin = document.getElementById("syncSpinIcon");
-            if (spin) spin.classList.add("fa-spin");
-
             try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAdminData&t=${Date.now()}`);
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`);
                 const data = await res.json();
                 if (data && data.success) {
                     if (Array.isArray(data.notice) && data.notice.length > 0) {
-                        state.items = data.notice.map((row, i) => ({
-                            id: row["Notice ID"] || row["id"] || ("sheet-item-" + i),
-                            category: row["Category"] || "Notice",
-                            status: row["Status"] || "Published",
-                            date: row["Publish Date"] || "",
-                            title: row["Headline / Title"] || row["Title"] || "Untitled",
-                            banner: row["Image URL"] || row["Banner"] || "",
-                            summary: row["Summary"] || "",
-                            fullContent: row["Full Content"] || row["Content"] || row["Summary"] || ""
-                        }));
+                        renderLiveNoticeAndNews(data.notice);
                     }
-                    if (Array.isArray(data.visitors) && data.visitors.length > 0) {
-                        state.visitorLogs = data.visitors;
+                    if (data.sections) {
+                        applySiteSections(data.sections);
                     }
-                    if (Array.isArray(data.auditLogs) && data.auditLogs.length > 0) {
-                        state.auditLogs = data.auditLogs.map((r, i) => ({
-                            id: "sheet-aud-" + i,
-                            timestamp: r["Timestamp"] || r["Date"] || "",
-                            sector: r["Sector"] || "General",
-                            changeType: r["Change Type"] || r["Action"] || "LOG",
-                            details: r["Details"] || ""
-                        }));
-                    }
-                    saveLocalState();
-                    renderAll();
-                    document.getElementById("lastSyncTimeLabel").textContent = `Last synced: ${formatNowBD()}`;
-                    if (showFeedback) showToast("Synced with Sheet", "Latest spreadsheet data loaded.");
-                } else if (showFeedback) {
-                    showToast("Local & Sheet Ready", "Local changes are saved; deploy updated Apps Script for full readback.");
                 }
-            } catch (err) {
-                if (showFeedback) showToast("Offline / Local Cache Active", "Changes are saved locally and queued via no-cors POST.", true);
-            } finally {
-                if (spin) spin.classList.remove("fa-spin");
-            }
+            } catch (err) {}
         }
 
-        function clearLocalAuditView() {
-            if (!confirm("Clear local audit table view? (Spreadsheet records remain intact)")) return;
-            state.auditLogs = [];
-            saveLocalState();
-            renderAuditTable();
-            updateDashboardCounts();
-        }
-
-        function renderAll() {
-            updateDashboardCounts();
-            renderNoticeNewsList();
-            renderHeadlinesSector();
-            populateSectionsForm();
-            renderTeamList();
-            renderAuditTable();
-            renderVisitorTable();
-        }
-
-        window.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("scriptEndpointPreview").textContent = GOOGLE_SCRIPT_URL;
-            document.getElementById("nnDate").value = formatNowBD();
-            const isLoggedIn = sessionStorage.getItem(ADMIN_AUTH.sessionKey) === "1";
-            setAuthView(isLoggedIn);
+        window.addEventListener('DOMContentLoaded', () => {
+            logPublicVisitorEntry();
+            loadLiveNoticeAndNews();
+            checkHashForArticle();
         });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === "shikhor_admin_notice_news_v1" || e.key === "shikhor_admin_site_sections_v1") {
+                loadLocalFallbackFromAdmin();
+            }
+        });
+
+        window.addEventListener('hashchange', checkHashForArticle);
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                closeArticleModal();
+                closeLightbox();
+            }
+        });
+
+        window.addEventListener('pagehide', () => {
+            logPublicVisitorExit();
+        });
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        function openLightbox(src, caption) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightboxCaption').innerText = caption;
+            document.getElementById('lightboxModal').classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.add('hidden');
+        }
+
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "Copied!";
+                btn.classList.add('bg-green-700');
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('bg-green-700');
+                }, 2000);
+            });
+        }
+
+        function toggleChatbot() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('hidden');
+        }
+
+        function handleFAQClick(type) {
+            const chatMessages = document.getElementById('chatMessages');
+            let userQ = "";
+            let botA = "";
+
+            if (type === 'volunteer') {
+                userQ = "How to join as a volunteer?";
+                botA = `To join Shikhor Foundation as a volunteer, you can click the <strong>"Join Volunteer"</strong> button in the menu or <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="text-blue-600 underline font-bold">Click Here to Fill Form</a>.`;
+            } else if (type === 'donation') {
+                userQ = "How to make a donation?";
+                botA = `You can donate securely via bKash or Nagad Personal number: <strong>+8801956631465</strong> (Send Money). Check our Donation section for direct dial links!`;
+            } else if (type === 'contact') {
+                userQ = "Need custom help? (Social Links)";
+                botA = `For any other queries, feel free to message us directly on our official platforms:<br>
+                • <a href="https://wa.me/8801956631465" target="_blank" class="text-green-700 font-bold underline">WhatsApp Chat</a><br>
+                • <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="text-blue-600 font-bold underline">Facebook Page</a><br>
+                • <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="text-pink-600 font-bold underline">Instagram</a>`;
+            }
+
+            chatMessages.innerHTML += `
+                <div class="bg-[#3B261D] text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] self-end shadow-sm mb-2">
+                    ${userQ}
+                </div>
+                <div class="bg-[#EFE5DC] text-[#3B261D] p-3 rounded-2xl rounded-tl-none max-w-[85%] border border-[#D4C3B3] shadow-sm mb-2">
+                    ${botA}
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
     </script>
 </body>
 </html>
