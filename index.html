@@ -9,9 +9,9 @@
     <meta property="og:site_name" content="Shikhor Foundation">
     <meta property="og:title" content="Shikhor Foundation | Together for a Better Tomorrow">
 
-    <link rel="icon" type="image/png" sizes="512x512" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
-    <link rel="shortcut icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
-    <link rel="apple-touch-icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="logo.png">
+    <link rel="shortcut icon" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
 
     <script id="tailwindCdn" src="https://cdn.tailwindcss.com" onerror="loadTailwindFallback()"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';">
@@ -66,6 +66,9 @@
         .gap-8 { gap: 2rem; }
         .grid { display: grid; }
         .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        @media (min-width: 640px) {
+            .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
         @media (min-width: 768px) {
             .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -157,7 +160,7 @@
             <button type="button" onclick="closeLightbox()" class="px-3 py-1.5 rounded-lg bg-[#3B261D] text-white text-xs font-bold mb-3">
                 <i class="fa-solid fa-xmark"></i> Close
             </button>
-            <img id="lightboxImg" src="" alt="Gallery Preview" class="max-h-[80vh] mx-auto rounded-2xl shadow-2xl border-2 border-[#B88655]">
+            <img id="lightboxImg" src="gallery1.jpg" alt="Gallery Preview" onerror="this.src='logo.png'" class="max-h-[80vh] mx-auto rounded-2xl shadow-2xl border-2 border-[#B88655]">
             <p id="lightboxCaption" class="text-[#EFE5DC] text-sm mt-3 font-medium"></p>
         </div>
     </div>
@@ -178,7 +181,7 @@
             </div>
 
             <div id="readerBannerWrap" class="w-full h-56 sm:h-72 bg-[#EFE5DC] border-b border-[#D4C3B3] overflow-hidden relative">
-                <img id="readerBannerImg" src="gallery2.jpg" alt="News Banner" class="w-full h-full object-cover">
+                <img id="readerBannerImg" src="gallery1.jpg" alt="News Banner" onerror="this.src='logo.png'" class="w-full h-full object-cover">
             </div>
 
             <div class="p-6 sm:p-8 max-h-[60vh] overflow-y-auto space-y-4">
@@ -205,7 +208,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                 <a href="#" class="flex items-center gap-3 group">
                     <div class="w-11 h-11 bg-[#EFE5DC] rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition overflow-hidden border border-[#C4AE99] p-1">
-                        <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
+                        <img src="logo.png" alt="Shikhor Foundation Logo" onerror="this.src='gallery1.jpg'" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <span class="text-xl font-bold font-heading tracking-tight text-[#231712] block leading-none">SHIKHOR</span>
@@ -287,7 +290,7 @@
         <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-20 lg:py-28 overflow-hidden border-b border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                 <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 rounded-full bg-[#FDFBF9] shadow-2xl border-4 border-[#B88655] flex items-center justify-center overflow-hidden p-2.5 transform transition hover:scale-105">
-                    <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
+                    <img src="logo.png" alt="Shikhor Foundation Logo" onerror="this.src='gallery1.jpg'" class="w-full h-full object-contain">
                 </div>
 
                 <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#3B261D] text-[#F6EFE8] text-xs font-bold mb-6 tracking-widest shadow-md">
@@ -360,7 +363,7 @@
                     <div id="liveNoticeContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div id="notice-default-1" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border-l-4 border-[#8C583A] border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
                             <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
-                                <img src="gallery1.jpg" alt="Volunteer & Community Drive" class="w-full h-full object-cover">
+                                <img src="gallery1.jpg" alt="Volunteer & Community Drive" onerror="this.src='logo.png'" class="w-full h-full object-cover">
                             </div>
                             <div class="p-5 flex-1 flex flex-col justify-between">
                                 <div>
@@ -393,7 +396,7 @@
                     <div id="liveNewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div id="news-default-1" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
                             <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
-                                <img src="gallery2.jpg" alt="Standing Together for Communities" class="w-full h-full object-cover">
+                                <img src="gallery1.jpg" alt="Standing Together for Communities" onerror="this.src='logo.png'" class="w-full h-full object-cover">
                             </div>
                             <div class="p-5 flex-1 flex flex-col justify-between">
                                 <div>
@@ -536,7 +539,7 @@
                 <div class="bg-[#FDFBF9] rounded-3xl p-8 sm:p-12 shadow-md border-2 border-[#B88655] max-w-4xl mx-auto mb-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-center hover-lift">
                     <div class="text-center">
                         <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#8C583A] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="zarif.jpg" alt="Md. Shewise Al Islam Zarif" class="w-full h-full object-cover">
+                            <img src="zarif.jpg" alt="Md. Shewise Al Islam Zarif" onerror="this.src='logo.png'" class="w-full h-full object-cover">
                         </div>
                         <h3 class="text-xl font-bold font-heading text-[#231712]">Md. Shewise Al Islam Zarif</h3>
                         <p class="text-sm font-bold text-[#8C583A] mt-1">Founder & CEO / President</p>
@@ -553,31 +556,87 @@
                 <div id="livePanelGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
                         <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="ahsan.jpg" alt="Ahsan Zaman" class="w-full h-full object-cover">
+                            <img src="ahsan.jpg" alt="Ahsan Zaman" onerror="this.src='logo.png'" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Ahsan Zaman</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
                         <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="nafew.jpg" alt="Nafew Khalil" class="w-full h-full object-cover">
+                            <img src="nafew.jpg" alt="Nafew Khalil" onerror="this.src='logo.png'" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Nafew Khalil</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Vice President of Program Organisation</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
                         <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="shakhawat.jpg" alt="Md. Shakhawat Hossain Sayem" class="w-full h-full object-cover">
+                            <img src="shakhawat.jpg" alt="Md. Shakhawat Hossain Sayem" onerror="this.src='logo.png'" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Shakhawat Hossain Sayem</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration & Marketing</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
                         <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
-                            <img src="rikto.png" alt="Rikto Ruddur Lyric" class="w-full h-full object-cover">
+                            <img src="rikto.png" alt="Rikto Ruddur Lyric" onerror="this.src='logo.png'" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Rikto Ruddur Lyric</h4>
                         <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Marketing</p>
+                    </div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <img src="minhajul.jpg" alt="MD. Minhajul Islam" onerror="this.src='logo.png'" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">MD. Minhajul Islam</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts & Finance</p>
+                    </div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <img src="shafi.jpg" alt="Faymul Islam Shafi" onerror="this.src='logo.png'" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Faymul Islam Shafi</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Volunteer</p>
+                    </div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <img src="alif.jpg" alt="Alif" onerror="this.src='logo.png'" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Alif</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
+                    </div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <img src="arafat.jpg" alt="Arafat" onerror="this.src='logo.png'" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Arafat</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
+                    </div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <img src="mayasha.jpg" alt="Mayasha" onerror="this.src='logo.png'" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Mayasha</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
+                    </div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <img src="raiyanul.jpg" alt="Raiyanul" onerror="this.src='logo.png'" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Raiyanul</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
+                    </div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <img src="sayed.jpg" alt="Sayed" onerror="this.src='logo.png'" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Sayed</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
+                    </div>
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <img src="wahid.jpg" alt="Wahid" onerror="this.src='logo.png'" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">Wahid</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Panel Member</p>
                     </div>
                 </div>
             </div>
@@ -597,7 +656,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                     <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
-                            <img src="bkash.png" alt="bKash Logo" class="h-14 object-contain">
+                            <img src="bkash.png" alt="bKash Logo" onerror="this.src='logo.png'" class="h-14 object-contain">
                         </div>
                         <h3 class="text-2xl font-bold font-heading text-[#231712] mb-2">bKash Personal</h3>
                         <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
@@ -615,7 +674,7 @@
 
                     <div class="bg-[#F2E8DF] rounded-3xl p-8 border border-[#D4C3B3] shadow-sm hover-lift text-center">
                         <div class="h-16 flex items-center justify-center mx-auto mb-4">
-                            <img src="nagad.png" alt="Nagad Logo" class="h-14 object-contain">
+                            <img src="nagad.png" alt="Nagad Logo" onerror="this.src='logo.png'" class="h-14 object-contain">
                         </div>
                         <h3 class="text-2xl font-bold font-heading text-[#231712] mb-2">Nagad Personal</h3>
                         <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
@@ -644,13 +703,7 @@
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div onclick="openLightbox('gallery1.jpg', 'Community Support Activity')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
-                        <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    </div>
-                    <div onclick="openLightbox('gallery2.jpg', 'Educational Support Initiative')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
-                        <img src="gallery2.jpg" alt="Educational Support Initiative" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    </div>
-                    <div onclick="openLightbox('gallery3.jpg', 'Volunteer Gathering')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
-                        <img src="gallery3.jpg" alt="Volunteer Gathering" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <img src="gallery1.jpg" alt="Community Support Activity" onerror="this.src='logo.png'" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                     </div>
                 </div>
             </div>
@@ -675,7 +728,7 @@
                 <div>
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 bg-[#FDFBF9] rounded-2xl flex items-center justify-center border border-[#8C583A] overflow-hidden p-1">
-                            <img src="logo.png" alt="Shikhor Foundation Logo" class="w-full h-full object-contain">
+                            <img src="logo.png" alt="Shikhor Foundation Logo" onerror="this.src='gallery1.jpg'" class="w-full h-full object-contain">
                         </div>
                         <span class="text-lg font-bold font-heading tracking-tight">SHIKHOR FOUNDATION</span>
                     </div>
@@ -780,7 +833,7 @@
                 category: "News",
                 date: "Featured",
                 title: "Standing Together for Communities",
-                banner: "gallery2.jpg",
+                banner: "gallery1.jpg",
                 body: "Recent news stories, relief updates, and ground reports from Shikhor Foundation are featured here. Every initiative is driven by compassion, community participation, and transparent action to support families in need.",
                 isNews: true
             }
@@ -809,7 +862,7 @@
         function sanitizeUrl(url, fallback) {
             const cleaned = String(url || "").trim();
             if (!cleaned) return fallback;
-            if (/^(https?:\/\/|data:image\/|\/|\.\/|\.\.\/|[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp|gif))/i.test(cleaned)) {
+            if (/^(https?:\/\/|data:image\/|\/|\.\/|\.\.\/|[a-zA-Z0-9_.-]+\.(jpg|jpeg|png|webp|gif))/i.test(cleaned)) {
                 return cleaned;
             }
             return fallback;
@@ -838,10 +891,10 @@
             iconEl.className = item.isNews ? "fa-regular fa-newspaper" : "fa-solid fa-bullhorn";
 
             const bannerImg = document.getElementById('readerBannerImg');
-            bannerImg.src = item.banner || (item.isNews ? "gallery2.jpg" : "gallery1.jpg");
+            bannerImg.src = item.banner || "gallery1.jpg";
             bannerImg.alt = item.title || "Article Banner";
             bannerImg.onerror = () => {
-                bannerImg.src = item.isNews ? "gallery2.jpg" : "gallery1.jpg";
+                bannerImg.src = "logo.png";
             };
 
             try {
@@ -1010,8 +1063,7 @@
                     ? `${summary}\n\n${fullDetails}`
                     : (fullDetails || summary || title);
                 const rawBanner = row["Image URL"] || row.banner || row["Banner"] || row["Image"] || row["Photo"] || "";
-                const fallbackBanner = isNews ? "gallery2.jpg" : "gallery1.jpg";
-                const banner = sanitizeUrl(rawBanner, fallbackBanner);
+                const banner = sanitizeUrl(rawBanner, "gallery1.jpg");
                 const dateLabel = formatDisplayDate(row["Publish Date"] || row.date, isNews ? "Recent" : "Live");
 
                 const record = {
@@ -1034,7 +1086,7 @@
                 noticeContainer.innerHTML = noticeItems.map(n => `
                     <div id="${escapeHtml(n.id)}" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border-l-4 border-[#8C583A] border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
                         <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
-                            <img src="${escapeHtml(n.banner)}" alt="${escapeHtml(n.title)}" onerror="this.src='gallery1.jpg'" class="w-full h-full object-cover">
+                            <img src="${escapeHtml(n.banner)}" alt="${escapeHtml(n.title)}" onerror="this.src='logo.png'" class="w-full h-full object-cover">
                         </div>
                         <div class="p-5 flex-1 flex flex-col justify-between">
                             <div>
@@ -1057,7 +1109,7 @@
                 newsContainer.innerHTML = newsItems.map(item => `
                     <div id="${escapeHtml(item.id)}" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
                         <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
-                            <img src="${escapeHtml(item.banner)}" alt="${escapeHtml(item.title)}" onerror="this.src='gallery2.jpg'" class="w-full h-full object-cover">
+                            <img src="${escapeHtml(item.banner)}" alt="${escapeHtml(item.title)}" onerror="this.src='logo.png'" class="w-full h-full object-cover">
                         </div>
                         <div class="p-5 flex-1 flex flex-col justify-between">
                             <div>
