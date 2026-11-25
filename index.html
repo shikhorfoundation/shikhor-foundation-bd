@@ -13,12 +13,10 @@
     <link rel="shortcut icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
     <link rel="apple-touch-icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
 
-    <!-- Primary + Fallback CDN Loaders -->
     <script id="tailwindCdn" src="https://cdn.tailwindcss.com" onerror="loadTailwindFallback()"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Built-in Layout & Theme Fallback (Works even if Tailwind CDN is blocked) -->
     <style>
         :root {
             --bg-cream: #F6EFE8;
@@ -48,7 +46,6 @@
 
         .hidden { display: none !important; }
 
-        /* Fallback Layout Classes when Tailwind CDN doesn't load */
         .max-w-7xl { max-width: 80rem; margin-left: auto; margin-right: auto; }
         .max-w-4xl { max-width: 56rem; margin-left: auto; margin-right: auto; }
         .max-w-3xl { max-width: 48rem; margin-left: auto; margin-right: auto; }
@@ -124,7 +121,6 @@
         }
         .highlight-news-card { animation: cardHighlight 2.2s ease-out; }
 
-        /* Modals & Floating Controls Safety */
         #lightboxModal, #articleReaderModal {
             position: fixed;
             inset: 0;
@@ -239,7 +235,6 @@
                 </div>
             </div>
 
-            <!-- Mobile Dropdown Menu -->
             <div id="mobileMenu" class="hidden lg:hidden bg-[#FDFBF9] border-b border-[#D4C3B3] px-6 py-4 space-y-3 text-sm font-semibold text-[#3B261D]">
                 <a href="#notice" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Live Notice</a>
                 <a href="#news" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">News</a>
@@ -322,7 +317,6 @@
                     </a>
                 </div>
 
-                <!-- LIVE IMPACT COUNTER -->
                 <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
                         <h3 id="liveFamiliesCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
@@ -348,7 +342,6 @@
         <section id="notice" class="py-16 bg-[#EFE5DC] border-b border-[#D4C3B3]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
 
-                <!-- LIVE NOTICE BOARD -->
                 <div>
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
                         <div>
@@ -385,7 +378,6 @@
                     </div>
                 </div>
 
-                <!-- NEWS SECTION -->
                 <div id="news" class="scroll-mt-32 pt-4 border-t border-[#D4C3B3]">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
                         <div>
@@ -956,6 +948,7 @@
             if (sec.familiesCount) document.getElementById("liveFamiliesCount").textContent = sec.familiesCount;
             if (sec.volunteersCount) document.getElementById("liveVolunteersCount").textContent = sec.volunteersCount;
             if (sec.eventsCount) document.getElementById("liveEventsCount").textContent = sec.eventsCount;
+            if (sec.heroTitle) document.getElementById("liveHeroTitle").textContent = sec.heroTitle;
             if (sec.heroSubtitle) document.getElementById("liveHeroSubtitle").textContent = sec.heroSubtitle;
             if (sec.aboutText) document.getElementById("liveAboutText").textContent = sec.aboutText;
             if (sec.donationNumber) {
@@ -964,6 +957,33 @@
                 document.getElementById("bkashDialLink").href = `tel:*247*#${sec.donationNumber}#`;
                 document.getElementById("nagadDialLink").href = `tel:*167*#${sec.donationNumber}#`;
             }
+        }
+
+        function renderLiveTeam(teamList) {
+            const grid = document.getElementById("livePanelGrid");
+            if (!grid || !Array.isArray(teamList) || teamList.length === 0) return;
+
+            const panelMembers = teamList.filter(m => {
+                const role = String(m["Designation / Role"] || m.role || "").toLowerCase();
+                return !role.includes("founder") && !role.includes("ceo");
+            });
+
+            if (panelMembers.length === 0) return;
+
+            grid.innerHTML = panelMembers.map(m => {
+                const name = m["Full Name"] || m.name || "Member";
+                const role = m["Designation / Role"] || m.role || "Panel Member";
+                const photo = sanitizeUrl(m["Photo URL"] || m.photo, "logo.png");
+                return `
+                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
+                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4">
+                            <img src="${escapeHtml(photo)}" alt="${escapeHtml(name)}" onerror="this.src='logo.png'" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold font-heading text-[#231712] text-lg">${escapeHtml(name)}</h4>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">${escapeHtml(role)}</p>
+                    </div>
+                `;
+            }).join("");
         }
 
         function renderLiveNoticeAndNews(items) {
@@ -1090,6 +1110,9 @@
                 }
                 const localSections = localStorage.getItem("shikhor_admin_site_sections_v1");
                 if (localSections) applySiteSections(JSON.parse(localSections));
+
+                const localTeam = localStorage.getItem("shikhor_admin_team_v1");
+                if (localTeam) renderLiveTeam(JSON.parse(localTeam));
             } catch (e) {}
         }
 
@@ -1106,6 +1129,9 @@
                     if (data.sections) {
                         applySiteSections(data.sections);
                     }
+                    if (Array.isArray(data.team) && data.team.length > 0) {
+                        renderLiveTeam(data.team);
+                    }
                 }
             } catch (err) {}
         }
@@ -1117,7 +1143,11 @@
         });
 
         window.addEventListener('storage', (e) => {
-            if (e.key === "shikhor_admin_notice_news_v1" || e.key === "shikhor_admin_site_sections_v1") {
+            if (
+                e.key === "shikhor_admin_notice_news_v1" ||
+                e.key === "shikhor_admin_site_sections_v1" ||
+                e.key === "shikhor_admin_team_v1"
+            ) {
                 loadLocalFallbackFromAdmin();
             }
         });
