@@ -8,7 +8,7 @@
     <meta name="description" content="Shikhor Foundation is a community-driven humanitarian initiative built on the power of people helping people. Together for a Better Tomorrow.">
     <meta property="og:site_name" content="Shikhor Foundation">
     <meta property="og:title" content="Shikhor Foundation | Together for a Better Tomorrow">
-
+    
     <!-- Favicon & Google Search Logo Optimization -->
     <link rel="icon" type="image/png" sizes="512x512" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
     <link rel="shortcut icon" href="https://shikhorfoundation.github.io/shikhor-foundation-bd/favicon.png">
@@ -20,7 +20,7 @@
     <style>
         body { font-family: 'Outfit', sans-serif; }
         h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
-
+        
         .hover-lift {
             transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
         }
@@ -28,13 +28,37 @@
             transform: translateY(-7px);
             box-shadow: 0 22px 35px -10px rgba(35, 23, 18, 0.22);
         }
-
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-            animation: fadeIn 0.45s ease-out forwards;
+            animation: fadeIn 0.35s ease-out forwards;
+        }
+
+        /* Breaking News Marquee Ticker */
+        @keyframes tickerScroll {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker-track {
+            display: flex;
+            width: max-content;
+            animation: tickerScroll 28s linear infinite;
+        }
+        .ticker-wrapper:hover .ticker-track {
+            animation-play-state: paused;
+        }
+
+        /* Highlight pulse when jumped from headline */
+        @keyframes cardHighlight {
+            0% { box-shadow: 0 0 0 0 rgba(140, 88, 58, 0.75); border-color: #8C583A; background-color: #FFF6EB; }
+            70% { box-shadow: 0 0 0 12px rgba(140, 88, 58, 0); border-color: #8C583A; background-color: #FFF6EB; }
+            100% { box-shadow: 0 0 0 0 rgba(140, 88, 58, 0); }
+        }
+        .highlight-news-card {
+            animation: cardHighlight 2.2s ease-out;
         }
     </style>
 </head>
@@ -48,6 +72,41 @@
             </button>
             <img id="lightboxImg" src="" alt="Gallery Preview" class="max-h-[80vh] mx-auto rounded-2xl shadow-2xl border-2 border-[#B88655]">
             <p id="lightboxCaption" class="text-[#EFE5DC] text-sm mt-3 font-medium"></p>
+        </div>
+    </div>
+
+    <!-- FULL NEWS / NOTICE READER MODAL -->
+    <div id="articleReaderModal" onclick="if(event.target === this) closeArticleModal()" class="fixed inset-0 z-50 bg-[#1A100C]/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 hidden overflow-y-auto">
+        <div class="bg-[#FDFBF9] text-[#231712] max-w-3xl w-full rounded-3xl border-2 border-[#B88655] shadow-2xl overflow-hidden my-auto animate-fade-in">
+            <div class="bg-[#3B261D] text-white px-5 sm:px-7 py-4 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-[#E6B88A]">
+                    <i id="readerCategoryIcon" class="fa-regular fa-newspaper"></i>
+                    <span id="readerCategory">News</span>
+                    <span class="text-white/40">•</span>
+                    <span id="readerDate" class="text-[#EFE5DC]">Live</span>
+                </div>
+                <button type="button" onclick="closeArticleModal()" class="w-9 h-9 rounded-xl bg-[#5C3D2E] hover:bg-[#8C583A] text-white flex items-center justify-center transition" title="Close">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <div id="readerBannerWrap" class="w-full h-56 sm:h-72 bg-[#EFE5DC] border-b border-[#D4C3B3] overflow-hidden relative">
+                <img id="readerBannerImg" src="gallery2.jpg" alt="News Banner" class="w-full h-full object-cover">
+            </div>
+
+            <div class="p-6 sm:p-8 max-h-[60vh] overflow-y-auto space-y-4">
+                <h2 id="readerTitle" class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] leading-snug"></h2>
+                <div id="readerBody" class="text-sm sm:text-base text-[#4F392E] leading-relaxed whitespace-pre-line"></div>
+            </div>
+
+            <div class="bg-[#F2E8DF] px-6 sm:px-8 py-4 border-t border-[#D4C3B3] flex flex-wrap items-center justify-between gap-3">
+                <button type="button" onclick="copyArticleLink()" id="copyArticleBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
+                    <i class="fa-solid fa-link text-[#8C583A]"></i> Copy Link
+                </button>
+                <button type="button" onclick="closeArticleModal()" class="px-5 py-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold transition">
+                    Back to Website
+                </button>
+            </div>
         </div>
     </div>
 
@@ -68,11 +127,11 @@
                 </a>
 
                 <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-[#5C3D2E]">
+                    <a href="#notice" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Notice</a>
+                    <a href="#news" class="hover:text-[#231712] hover:underline underline-offset-4 transition">News</a>
                     <a href="#about" class="hover:text-[#231712] hover:underline underline-offset-4 transition">About</a>
-                    <a href="#mission" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Mission &amp; Vision</a>
+                    <a href="#mission" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Mission & Vision</a>
                     <a href="#initiatives" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Initiatives</a>
-                    <a href="#news" class="hover:text-[#231712] hover:underline underline-offset-4 transition font-bold text-[#8C583A]">Live News</a>
-                    <a href="#events" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Events</a>
                     <a href="#team" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Team</a>
                     <a href="#donation" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Donation</a>
                     <a href="#gallery" class="hover:text-[#231712] hover:underline underline-offset-4 transition">Gallery</a>
@@ -91,11 +150,11 @@
 
             <!-- Mobile Dropdown Menu -->
             <div id="mobileMenu" class="hidden lg:hidden bg-[#FDFBF9] border-b border-[#D4C3B3] px-6 py-4 space-y-3 text-sm font-semibold text-[#3B261D]">
+                <a href="#notice" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Live Notice</a>
+                <a href="#news" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">News</a>
                 <a href="#about" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">About Us</a>
-                <a href="#mission" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Mission &amp; Vision</a>
+                <a href="#mission" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Mission & Vision</a>
                 <a href="#initiatives" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Initiatives</a>
-                <a href="#news" onclick="toggleMobileMenu()" class="block py-1 text-[#8C583A] font-bold">Live News &amp; Other News</a>
-                <a href="#events" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Events</a>
                 <a href="#team" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Our Team</a>
                 <a href="#donation" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Donation</a>
                 <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
@@ -103,6 +162,43 @@
                 <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
             </div>
         </header>
+
+        <!-- TOP BREAKING HEADLINE BAR (CLICKABLE JUMP TO NEWS/NOTICE) -->
+        <div class="bg-[#231712] text-[#F6EFE8] border-b border-[#8C583A] shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-11 flex items-center gap-3 overflow-hidden">
+                <div class="shrink-0 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#8C583A] text-white text-[11px] font-bold uppercase tracking-wider shadow">
+                    <span class="w-2 h-2 rounded-full bg-[#FFE082] animate-ping"></span>
+                    <span>Latest Headlines</span>
+                </div>
+                <div class="ticker-wrapper relative flex-1 overflow-hidden">
+                    <div id="headlineTickerTrack" class="ticker-track items-center gap-8 text-xs sm:text-sm font-medium">
+                        <button type="button" onclick="jumpToHighlight('notice-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase">Notice</span>
+                            <span>Volunteer & Community Drive — Official Announcements</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
+                        <span class="text-[#8C583A]">•</span>
+                        <button type="button" onclick="jumpToHighlight('news-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded bg-[#5C3D2E] text-white text-[10px] font-bold uppercase">News</span>
+                            <span>Standing Together for Communities — Latest Ground Reports</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
+                        <span class="text-[#8C583A]">•</span>
+                        <button type="button" onclick="jumpToHighlight('notice-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase">Notice</span>
+                            <span>Volunteer & Community Drive — Official Announcements</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
+                        <span class="text-[#8C583A]">•</span>
+                        <button type="button" onclick="jumpToHighlight('news-default-1')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded bg-[#5C3D2E] text-white text-[10px] font-bold uppercase">News</span>
+                            <span>Standing Together for Communities — Latest Ground Reports</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- HERO SECTION -->
         <section class="relative bg-gradient-to-b from-[#E8D9CB] via-[#F2E8DF] to-[#F6EFE8] py-24 lg:py-32 overflow-hidden border-b border-[#D4C3B3]">
@@ -117,10 +213,10 @@
                 <h1 class="text-4xl sm:text-6xl font-extrabold font-heading text-[#231712] tracking-tight max-w-4xl mx-auto leading-tight">
                     A little kindness can grow into a <span class="text-[#8C583A]">better tomorrow.</span>
                 </h1>
-                <p class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed">
+                <p id="liveHeroSubtitle" class="mt-6 text-lg sm:text-xl text-[#4F392E] max-w-2xl mx-auto leading-relaxed">
                     Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.
                 </p>
-
+                
                 <div class="mt-6 flex justify-center items-center gap-4">
                     <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-brands fa-facebook-f text-sm"></i> Facebook Page
@@ -139,18 +235,18 @@
                     </a>
                 </div>
 
-                <!-- LIVE IMPACT COUNTER (Synced with Stats tab) -->
-                <div id="statsGrid" class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                <!-- LIVE IMPACT COUNTER -->
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
+                        <h3 id="liveFamiliesCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">100+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Families Supported</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
+                        <h3 id="liveVolunteersCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">50+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Active Volunteers</p>
                     </div>
                     <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift col-span-2 md:col-span-1">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">10+</h3>
+                        <h3 id="liveEventsCount" class="text-3xl font-extrabold font-heading text-[#8C583A]">10+</h3>
                         <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">Successful Events</p>
                     </div>
                 </div>
@@ -158,6 +254,84 @@
                 <p class="mt-8 text-xs font-bold tracking-widest text-[#6E432B] uppercase">
                     COMPASSION ✳ COMMUNITY ✳ DIGNITY ✳ HOPE ✳ ACTION
                 </p>
+            </div>
+        </section>
+
+        <!-- LIVE NOTICE & NEWS SECTION (COMPACT COVER CARDS -> FULL READER MODAL) -->
+        <section id="notice" class="py-16 bg-[#EFE5DC] border-b border-[#D4C3B3]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
+
+                <!-- LIVE NOTICE BOARD -->
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                        <div>
+                            <span class="inline-flex items-center gap-2 text-[#8C583A] font-bold text-xs uppercase tracking-widest">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                                LIVE NOTICE BOARD
+                            </span>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">Latest Notices & Announcements</h2>
+                        </div>
+                        <span class="px-3.5 py-1.5 rounded-full bg-[#3B261D] text-[#E6B88A] text-xs font-bold tracking-wider uppercase shadow-sm">
+                            Live Updates
+                        </span>
+                    </div>
+
+                    <div id="liveNoticeContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div id="notice-default-1" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border-l-4 border-[#8C583A] border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
+                            <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
+                                <img src="gallery1.jpg" alt="Volunteer & Community Drive" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between text-[11px] font-bold text-[#8C583A] uppercase mb-2">
+                                        <span><i class="fa-solid fa-bullhorn mr-1"></i> Notice</span>
+                                        <span>Live</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4 leading-snug">Volunteer & Community Drive</h3>
+                                </div>
+                                <button type="button" onclick="openArticleByKey('notice-default-1')" class="w-full py-2.5 px-4 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold transition flex items-center justify-center gap-2">
+                                    <span>View Notice</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEWS SECTION (COVER + HEADING + VIEW NEWS BUTTON) -->
+                <div id="news" class="scroll-mt-32 pt-4 border-t border-[#D4C3B3]">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                        <div>
+                            <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block">SHIKHOR HIGHLIGHTS</span>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-[#231712] mt-1">Latest News & Updates</h2>
+                        </div>
+                        <span class="px-3.5 py-1.5 rounded-full bg-[#FDFBF9] text-[#3B261D] border border-[#B88655] text-xs font-bold tracking-wider uppercase">
+                            News Desk
+                        </span>
+                    </div>
+
+                    <div id="liveNewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div id="news-default-1" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
+                            <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
+                                <img src="gallery2.jpg" alt="Standing Together for Communities" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between text-[11px] font-bold text-[#8C583A] uppercase mb-2">
+                                        <span><i class="fa-regular fa-newspaper mr-1"></i> News</span>
+                                        <span>Featured</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold font-heading text-[#231712] mb-4 leading-snug">Standing Together for Communities</h3>
+                                </div>
+                                <button type="button" onclick="openArticleByKey('news-default-1')" class="w-full py-2.5 px-4 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold transition flex items-center justify-center gap-2">
+                                    <span>View News</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -170,7 +344,7 @@
                         <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">
                             We believe in the power of people helping people.
                         </h2>
-                        <p class="mt-6 text-[#4F392E] leading-relaxed text-base sm:text-lg">
+                        <p id="liveAboutText" class="mt-6 text-[#4F392E] leading-relaxed text-base sm:text-lg">
                             Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.
                         </p>
                         <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -207,7 +381,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR DIRECTION</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Mission &amp; Vision</h2>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Mission & Vision</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="bg-[#FDFBF9] p-8 sm:p-10 rounded-3xl shadow-md border border-[#D4C3B3] hover-lift">
@@ -262,129 +436,10 @@
                         <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
                             <i class="fa-solid fa-people-group"></i>
                         </div>
-                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">Community Support &amp; Awareness</h3>
+                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">Community Support & Awareness</h3>
                         <p class="text-[#4F392E] text-sm leading-relaxed">
                             Bringing people together to identify community needs, foster cooperation, and respond with care, responsibility, and unity.
                         </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- LIVE NEWS & OTHER NEWS (OUR NEWS) -->
-        <section id="news" class="py-24 bg-[#F6EFE8] border-y border-[#D4C3B3]">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-14">
-                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">OUR NEWS DESK</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Live News &amp; Other News</h2>
-                    <p class="mt-3 text-sm text-[#4F392E]">Real-time dispatches, urgent announcements, and community updates from Shikhor Foundation.</p>
-                </div>
-
-                <!-- Live News Breaking Ticker Banner -->
-                <div class="bg-[#3B261D] text-[#F6EFE8] rounded-2xl p-4 sm:p-5 mb-10 border border-[#8C583A] shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-center gap-2.5 shrink-0">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8C583A] text-white text-[11px] font-bold uppercase tracking-wider">
-                            <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span> LIVE NEWS
-                        </span>
-                        <span class="text-xs font-bold uppercase tracking-wider text-[#E6B88A]">Our News</span>
-                    </div>
-                    <p id="liveNewsBannerText" class="text-xs sm:text-sm font-medium text-[#FDFBF9] flex-1">
-                        Shikhor Foundation Live Desk: Community support, educational drives, and volunteer updates are synced via our Admin Panel.
-                    </p>
-                </div>
-
-                <!-- Live News & Other News Grid (Populated dynamically from Admin / Google Sheet) -->
-                <div id="liveNewsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-800 text-[10px] font-extrabold uppercase tracking-wider">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span> Live News
-                                </span>
-                                <span class="text-[11px] font-semibold text-[#6E5649]">Our News</span>
-                            </div>
-                            <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">Community Care &amp; Live Dispatch</h3>
-                            <p class="text-xs text-[#4F392E] leading-relaxed">
-                                Publish live news, urgent notices, and other foundation news directly from the Admin Panel without editing HTML code.
-                            </p>
-                        </div>
-                        <div class="mt-5 pt-3 border-t border-[#EFE5DC] text-[11px] font-semibold text-[#8C583A]">
-                            Shikhor Foundation &bull; Live Desk
-                        </div>
-                    </div>
-
-                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#EFE5DC] text-[#3B261D] text-[10px] font-extrabold uppercase tracking-wider">
-                                    Other News
-                                </span>
-                                <span class="text-[11px] font-semibold text-[#6E5649]">Our News</span>
-                            </div>
-                            <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">Volunteer &amp; Relief Updates</h3>
-                            <p class="text-xs text-[#4F392E] leading-relaxed">
-                                All upcoming drives, fundraising milestones, and field reports appear automatically once added through the Admin Panel.
-                            </p>
-                        </div>
-                        <div class="mt-5 pt-3 border-t border-[#EFE5DC] text-[11px] font-semibold text-[#8C583A]">
-                            Shikhor Foundation &bull; Community News
-                        </div>
-                    </div>
-
-                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-dashed border-[#B88655] flex flex-col justify-center items-center text-center">
-                        <div class="w-11 h-11 rounded-2xl bg-[#EFE5DC] text-[#8C583A] flex items-center justify-center text-lg mb-3 border border-[#D4C3B3]">
-                            <i class="fa-solid fa-newspaper"></i>
-                        </div>
-                        <h3 class="text-base font-bold font-heading text-[#231712]">More News Feed</h3>
-                        <p class="text-xs text-[#6E5649] mt-1">
-                            New Live News and Other News entries sync automatically from your connected sheet.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- EVENTS SECTION (Synced with Events tab when items exist) -->
-        <section id="events" class="py-20 bg-[#FDFBF9] border-b border-[#D4C3B3]">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-12">
-                    <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">COMMUNITY DRIVES &amp; PROGRAMS</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Events &amp; Campaigns</h2>
-                    <p class="mt-3 text-sm text-[#4F392E]">Updates and schedules managed from the Admin Panel &amp; Google Sheet.</p>
-                </div>
-                <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="p-7 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
-                        <span class="inline-block px-2.5 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-wider mb-3">Field Initiative</span>
-                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">Winter Relief &amp; Care Drive</h3>
-                        <p class="text-xs text-[#4F392E] leading-relaxed mb-4">
-                            Coordinating essential winter support and community outreach with volunteers across local areas.
-                        </p>
-                        <div class="text-[11px] font-semibold text-[#6E5649] flex items-center justify-between pt-3 border-t border-[#D4C3B3]">
-                            <span><i class="fa-solid fa-location-dot text-[#8C583A] mr-1"></i> Bangladesh</span>
-                            <span class="text-[#8C583A]">Active</span>
-                        </div>
-                    </div>
-                    <div class="p-7 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
-                        <span class="inline-block px-2.5 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-wider mb-3">Education</span>
-                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">Student Learning Support</h3>
-                        <p class="text-xs text-[#4F392E] leading-relaxed mb-4">
-                            Providing study resources, mentorship, and encouragement to underprivileged students.
-                        </p>
-                        <div class="text-[11px] font-semibold text-[#6E5649] flex items-center justify-between pt-3 border-t border-[#D4C3B3]">
-                            <span><i class="fa-solid fa-users text-[#8C583A] mr-1"></i> Shikhor Volunteers</span>
-                            <span class="text-[#8C583A]">Ongoing</span>
-                        </div>
-                    </div>
-                    <div class="p-7 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
-                        <span class="inline-block px-2.5 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-wider mb-3">Community</span>
-                        <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">Volunteer Mobilization</h3>
-                        <p class="text-xs text-[#4F392E] leading-relaxed mb-4">
-                            Onboarding dedicated youth and community members to lead local humanitarian actions.
-                        </p>
-                        <div class="text-[11px] font-semibold text-[#6E5649] flex items-center justify-between pt-3 border-t border-[#D4C3B3]">
-                            <span><i class="fa-solid fa-heart text-[#8C583A] mr-1"></i> Open Call</span>
-                            <span class="text-[#8C583A]">Synced Live</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -395,7 +450,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <span class="text-[#8C583A] font-bold text-xs uppercase tracking-widest block mb-3">THE PEOPLE BEHIND SHIKHOR</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Our Leadership &amp; Panel Members</h2>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Our Leadership & Panel Members</h2>
                 </div>
 
                 <!-- 1. FOUNDER CARD -->
@@ -405,7 +460,7 @@
                             <img src="zarif.jpg" alt="Md. Shewise Al Islam Zarif" class="w-full h-full object-cover">
                         </div>
                         <h3 class="text-xl font-bold font-heading text-[#231712]">Md. Shewise Al Islam Zarif</h3>
-                        <p class="text-sm font-bold text-[#8C583A] mt-1">Founder &amp; CEO / President</p>
+                        <p class="text-sm font-bold text-[#8C583A] mt-1">Founder & CEO / President</p>
                     </div>
                     <div class="md:col-span-2">
                         <span class="text-xs uppercase font-bold text-[#5C3D2E] tracking-wider block mb-2">Message from the Founder</span>
@@ -417,7 +472,7 @@
                 </div>
 
                 <!-- PANEL MEMBERS GRID -->
-                <div id="panelMembersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div id="livePanelGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
                         <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
                             <img src="ahsan.jpg" alt="Ahsan Zaman" class="w-full h-full object-cover">
@@ -439,7 +494,7 @@
                             <img src="shakhawat.jpg" alt="Md. Shakhawat Hossain Sayem" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Md. Shakhawat Hossain Sayem</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration &amp; Marketing<br><span class="text-[10px] text-[#6E5649] font-normal">(Acting IT Secretary)</span></p>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head Of Administration & Marketing<br><span class="text-[10px] text-[#6E5649] font-normal">(Acting IT Secretary)</span></p>
                     </div>
 
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
@@ -447,7 +502,7 @@
                             <img src="minhajul.jpg" alt="MD. Minhajul Islam" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">MD. Minhajul Islam</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts &amp; Finance</p>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Head of Accounts & Finance</p>
                     </div>
 
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
@@ -471,7 +526,7 @@
                             <img src="alif.jpg" alt="Alif Hasan Ayman" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold font-heading text-[#231712] text-lg">Alif Hasan Ayman</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Accounts &amp; Finance</p>
+                        <p class="text-xs font-bold text-[#8C583A] mt-1">Asst. Head Of Accounts & Finance</p>
                     </div>
 
                     <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
@@ -538,10 +593,10 @@
                         <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
                         <div class="bg-[#FDFBF9] py-3 px-6 rounded-xl border border-[#C4AE99] inline-flex items-center gap-3 mb-4 shadow-inner">
                             <span id="bkashNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
-                            <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
+                            <button id="bkashCopyBtn" onclick="copyToClipboard(document.getElementById('bkashNum').innerText, this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
                         <div class="mt-2">
-                            <a href="tel:*247*#*8801956631465#" class="inline-block px-4 py-2 bg-[#E2136F] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
+                            <a id="bkashDialLink" href="tel:*247*#*8801956631465#" class="inline-block px-4 py-2 bg-[#E2136F] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
                                 <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*247#)
                             </a>
                         </div>
@@ -557,10 +612,10 @@
                         <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
                         <div class="bg-[#FDFBF9] py-3 px-6 rounded-xl border border-[#C4AE99] inline-flex items-center gap-3 mb-4 shadow-inner">
                             <span id="nagadNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
-                            <button onclick="copyToClipboard('+8801956631465', this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
+                            <button id="nagadCopyBtn" onclick="copyToClipboard(document.getElementById('nagadNum').innerText, this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
                         <div class="mt-2">
-                            <a href="tel:*167*#*8801956631465#" class="inline-block px-4 py-2 bg-[#F7941D] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
+                            <a id="nagadDialLink" href="tel:*167*#*8801956631465#" class="inline-block px-4 py-2 bg-[#F7941D] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
                                 <i class="fa-solid fa-mobile-screen-button mr-1"></i> Direct Send Money Dial (*167#)
                             </a>
                         </div>
@@ -578,7 +633,7 @@
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-[#231712] tracking-tight">Moments of Humanity</h2>
                     <p class="mt-4 text-[#4F392E] text-sm">Click any photo to view full screen. Every picture tells a story of hope.</p>
                 </div>
-                <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div onclick="openLightbox('gallery1.jpg', 'Community Support Activity')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
                         <img src="gallery1.jpg" alt="Community Support Activity" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
@@ -639,8 +694,10 @@
                 <div>
                     <h4 class="font-bold font-heading text-sm uppercase tracking-wider mb-4 text-[#E6B88A]">Quick Links</h4>
                     <ul class="space-y-2 text-xs text-[#D4C3B3]">
+                        <li><a href="#notice" class="hover:text-white transition">Live Notice</a></li>
+                        <li><a href="#news" class="hover:text-white transition">News</a></li>
                         <li><a href="#about" class="hover:text-white transition">About Us</a></li>
-                        <li><a href="#mission" class="hover:text-white transition">Mission &amp; Vision</a></li>
+                        <li><a href="#mission" class="hover:text-white transition">Mission & Vision</a></li>
                         <li><a href="#donation" class="hover:text-white transition">Donation</a></li>
                         <li><a href="#team" class="hover:text-white transition">Our Team</a></li>
                     </ul>
@@ -715,9 +772,114 @@
         <i class="fa-brands fa-whatsapp text-2xl"></i>
     </a>
 
-    <!-- SCRIPTS -->
+    <!-- PUBLIC VISITOR TRACKING, HEADLINE TICKER, LIVE NOTICE & NEWS SCRIPTS -->
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdQGWhr4C-EZWpiD30MJFSLr-zQUY00PX6HyzlGDuFo3jVdVDe9LfvmuHYrre2WRva/exec";
+        const visitorEnterTime = Date.now();
+
+        const articleStore = {
+            "notice-default-1": {
+                id: "notice-default-1",
+                category: "Notice",
+                date: "Live",
+                title: "Volunteer & Community Drive",
+                banner: "gallery1.jpg",
+                body: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live. Interested volunteers and supporters can stay tuned for schedule updates, field locations, and registration details.",
+                isNews: false
+            },
+            "news-default-1": {
+                id: "news-default-1",
+                category: "News",
+                date: "Featured",
+                title: "Standing Together for Communities",
+                banner: "gallery2.jpg",
+                body: "Recent news stories, relief updates, and ground reports from Shikhor Foundation are featured here. Every initiative is driven by compassion, community participation, and transparent action to support families in need.",
+                isNews: true
+            }
+        };
+
+        let activeArticleId = null;
+
+        function escapeHtml(str) {
+            return String(str || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function sanitizeUrl(url, fallback) {
+            const cleaned = String(url || "").trim();
+            if (!cleaned) return fallback;
+            if (/^(https?:\/\/|\/|\.\/|\.\.\/|[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp|gif))/i.test(cleaned)) {
+                return cleaned;
+            }
+            return fallback;
+        }
+
+        function jumpToHighlight(targetId) {
+            const targetEl = document.getElementById(targetId);
+            if (!targetEl) return;
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetEl.classList.remove('highlight-news-card');
+            void targetEl.offsetWidth;
+            targetEl.classList.add('highlight-news-card');
+        }
+
+        function openArticleByKey(articleKey) {
+            const item = articleStore[articleKey];
+            if (!item) return;
+
+            activeArticleId = articleKey;
+            document.getElementById('readerCategory').textContent = item.category || (item.isNews ? "News" : "Notice");
+            document.getElementById('readerDate').textContent = item.date || "Live";
+            document.getElementById('readerTitle').textContent = item.title || "Update";
+            document.getElementById('readerBody').textContent = item.body || "";
+
+            const iconEl = document.getElementById('readerCategoryIcon');
+            iconEl.className = item.isNews ? "fa-regular fa-newspaper" : "fa-solid fa-bullhorn";
+
+            const bannerImg = document.getElementById('readerBannerImg');
+            bannerImg.src = item.banner || (item.isNews ? "gallery2.jpg" : "gallery1.jpg");
+            bannerImg.alt = item.title || "Article Banner";
+            bannerImg.onerror = () => {
+                bannerImg.src = item.isNews ? "gallery2.jpg" : "gallery1.jpg";
+            };
+
+            try {
+                history.replaceState(null, "", `#article=${encodeURIComponent(articleKey)}`);
+            } catch (e) {}
+
+            const modal = document.getElementById('articleReaderModal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeArticleModal() {
+            const modal = document.getElementById('articleReaderModal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            activeArticleId = null;
+            if (window.location.hash.startsWith("#article=")) {
+                try {
+                    history.replaceState(null, "", "#news");
+                } catch (e) {}
+            }
+        }
+
+        function copyArticleLink() {
+            const btn = document.getElementById('copyArticleBtn');
+            const shareUrl = activeArticleId
+                ? `${window.location.origin}${window.location.pathname}#article=${encodeURIComponent(activeArticleId)}`
+                : window.location.href;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const prevHtml = btn.innerHTML;
+                btn.innerHTML = `<i class="fa-solid fa-check text-green-700"></i> Link Copied!`;
+                setTimeout(() => {
+                    btn.innerHTML = prevHtml;
+                }, 2000);
+            });
+        }
 
         function getReadableDeviceInfo() {
             const ua = navigator.userAgent;
@@ -751,25 +913,233 @@
             return `${deviceType} (${os} - ${browser}) | Screen: ${window.screen.width}x${window.screen.height}`;
         }
 
-        function sendToGoogleSheet(payload) {
+        function sendToGoogleSheet(payload, useBeacon = false) {
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
+            const jsonStr = JSON.stringify(payload);
+
+            if (useBeacon && navigator.sendBeacon) {
+                const blob = new Blob([jsonStr], { type: "text/plain;charset=UTF-8" });
+                navigator.sendBeacon(GOOGLE_SCRIPT_URL, blob);
+                return;
+            }
+
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: jsonStr
             }).catch(err => console.log('Tracking error:', err));
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        function logPublicVisitorEntry() {
+            if (sessionStorage.getItem('shikhor_public_visitor_entered')) return;
+            sessionStorage.setItem('shikhor_public_visitor_entered', '1');
             sendToGoogleSheet({
+                action: "logVisitor",
                 type: "visit",
-                role: "viewer",
-                status: "Viewer Visit",
-                userEmail: "Viewer",
+                status: "Public Visitor Entry",
+                userEmail: "Public Visitor",
                 deviceInfo: getReadableDeviceInfo()
             });
-            syncSiteDataFromBackend();
+        }
+
+        function logPublicVisitorExit() {
+            if (sessionStorage.getItem('shikhor_public_visitor_exited')) return;
+            sessionStorage.setItem('shikhor_public_visitor_exited', '1');
+            const secondsSpent = Math.max(1, Math.round((Date.now() - visitorEnterTime) / 1000));
+            sendToGoogleSheet({
+                action: "logVisitorExit",
+                type: "visitor_exit",
+                status: `Exited after ${secondsSpent}s`,
+                userEmail: "Public Visitor",
+                deviceInfo: `${getReadableDeviceInfo()} | Stayed: ${secondsSpent}s`
+            }, true);
+        }
+
+        function applySiteSections(sec) {
+            if (!sec || typeof sec !== "object") return;
+            if (sec.familiesCount) document.getElementById("liveFamiliesCount").textContent = sec.familiesCount;
+            if (sec.volunteersCount) document.getElementById("liveVolunteersCount").textContent = sec.volunteersCount;
+            if (sec.eventsCount) document.getElementById("liveEventsCount").textContent = sec.eventsCount;
+            if (sec.heroSubtitle) document.getElementById("liveHeroSubtitle").textContent = sec.heroSubtitle;
+            if (sec.aboutText) document.getElementById("liveAboutText").textContent = sec.aboutText;
+            if (sec.donationNumber) {
+                document.getElementById("bkashNum").textContent = sec.donationNumber;
+                document.getElementById("nagadNum").textContent = sec.donationNumber;
+                document.getElementById("bkashDialLink").href = `tel:*247*#${sec.donationNumber}#`;
+                document.getElementById("nagadDialLink").href = `tel:*167*#${sec.donationNumber}#`;
+            }
+        }
+
+        function renderLiveNoticeAndNews(items) {
+            const noticeContainer = document.getElementById('liveNoticeContainer');
+            const newsContainer = document.getElementById('liveNewsContainer');
+            const tickerTrack = document.getElementById('headlineTickerTrack');
+            if (!Array.isArray(items) || items.length === 0) return;
+
+            const publishedItems = items.filter(row => {
+                const status = String(row["Status"] || row.status || "Published").trim().toLowerCase();
+                return status !== "draft" && status !== "archived";
+            });
+
+            const taggedItems = publishedItems.map((row, idx) => {
+                const catVal = row["Category"] || row.category || "Notice";
+                const cat = String(catVal).trim().toLowerCase();
+                const isNews = cat === "news" || cat === "press release";
+                const domId = `${isNews ? 'news' : 'notice'}-item-${idx}`;
+                const title = String(row["Headline / Title"] || row.title || row["Notice ID"] || (isNews ? "News" : "Notice")).trim();
+                const summary = String(row["Summary"] || row.summary || "").trim();
+                const fullDetails = String(row["Full Content"] || row.fullContent || row["Details"] || row["Content"] || "").trim();
+                const body = fullDetails && summary && fullDetails !== summary
+                    ? `${summary}\n\n${fullDetails}`
+                    : (fullDetails || summary || title);
+                const rawBanner = row["Image URL"] || row.banner || row["Banner"] || row["Image"] || row["Photo"] || "";
+                const fallbackBanner = isNews ? "gallery2.jpg" : "gallery1.jpg";
+                const banner = sanitizeUrl(rawBanner, fallbackBanner);
+
+                const record = {
+                    id: domId,
+                    category: catVal,
+                    date: row["Publish Date"] || row.date || (isNews ? "Recent" : "Live"),
+                    title,
+                    banner,
+                    body,
+                    isNews
+                };
+                articleStore[domId] = record;
+                return record;
+            });
+
+            const noticeItems = taggedItems.filter(item => !item.isNews);
+            const newsItems = taggedItems.filter(item => item.isNews);
+
+            if (noticeItems.length > 0 && noticeContainer) {
+                noticeContainer.innerHTML = noticeItems.map(n => `
+                    <div id="${escapeHtml(n.id)}" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border-l-4 border-[#8C583A] border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
+                        <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
+                            <img src="${escapeHtml(n.banner)}" alt="${escapeHtml(n.title)}" onerror="this.src='gallery1.jpg'" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between text-[11px] font-bold text-[#8C583A] uppercase mb-2">
+                                    <span><i class="fa-solid fa-bullhorn mr-1"></i> ${escapeHtml(n.category)}</span>
+                                    <span>${escapeHtml(n.date)}</span>
+                                </div>
+                                <h3 class="text-lg font-bold font-heading text-[#231712] mb-4 leading-snug">${escapeHtml(n.title)}</h3>
+                            </div>
+                            <button type="button" onclick="openArticleByKey('${escapeHtml(n.id)}')" class="w-full py-2.5 px-4 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold transition flex items-center justify-center gap-2">
+                                <span>View Notice</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join("");
+            }
+
+            if (newsItems.length > 0 && newsContainer) {
+                newsContainer.innerHTML = newsItems.map(item => `
+                    <div id="${escapeHtml(item.id)}" class="scroll-mt-36 bg-[#FDFBF9] rounded-2xl border border-[#D4C3B3] shadow-sm hover-lift overflow-hidden flex flex-col">
+                        <div class="h-44 w-full bg-[#F2E8DF] border-b border-[#D4C3B3] overflow-hidden">
+                            <img src="${escapeHtml(item.banner)}" alt="${escapeHtml(item.title)}" onerror="this.src='gallery2.jpg'" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between text-[11px] font-bold text-[#8C583A] uppercase mb-2">
+                                    <span><i class="fa-regular fa-newspaper mr-1"></i> ${escapeHtml(item.category)}</span>
+                                    <span>${escapeHtml(item.date)}</span>
+                                </div>
+                                <h3 class="text-lg font-bold font-heading text-[#231712] mb-4 leading-snug">${escapeHtml(item.title)}</h3>
+                            </div>
+                            <button type="button" onclick="openArticleByKey('${escapeHtml(item.id)}')" class="w-full py-2.5 px-4 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold transition flex items-center justify-center gap-2">
+                                <span>View News</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join("");
+            }
+
+            if (taggedItems.length > 0 && tickerTrack) {
+                const buildTickerButtons = () => taggedItems.map(item => {
+                    const badgeClass = item.isNews ? "bg-[#5C3D2E] text-white" : "bg-[#3B261D] text-[#E6B88A]";
+                    return `
+                        <button type="button" onclick="jumpToHighlight('${escapeHtml(item.id)}')" class="inline-flex items-center gap-2 hover:text-[#E6B88A] transition cursor-pointer whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded ${badgeClass} text-[10px] font-bold uppercase">${escapeHtml(item.category)}</span>
+                            <span>${escapeHtml(item.title)}</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#E6B88A]"></i>
+                        </button>
+                    `;
+                }).join('<span class="text-[#8C583A]">•</span>');
+
+                const singlePass = buildTickerButtons();
+                tickerTrack.innerHTML = `${singlePass}<span class="text-[#8C583A]">•</span>${singlePass}`;
+            }
+
+            checkHashForArticle();
+        }
+
+        function checkHashForArticle() {
+            const hash = window.location.hash || "";
+            if (hash.startsWith("#article=")) {
+                const key = decodeURIComponent(hash.replace("#article=", ""));
+                if (articleStore[key]) {
+                    openArticleByKey(key);
+                }
+            }
+        }
+
+        function loadLocalFallbackFromAdmin() {
+            try {
+                const localItems = localStorage.getItem("shikhor_admin_notice_news_v1");
+                if (localItems) {
+                    const parsed = JSON.parse(localItems);
+                    if (Array.isArray(parsed) && parsed.length > 0) renderLiveNoticeAndNews(parsed);
+                }
+                const localSections = localStorage.getItem("shikhor_admin_site_sections_v1");
+                if (localSections) applySiteSections(JSON.parse(localSections));
+            } catch (e) {}
+        }
+
+        async function loadLiveNoticeAndNews() {
+            loadLocalFallbackFromAdmin();
+            if (!GOOGLE_SCRIPT_URL) return;
+            try {
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`);
+                const data = await res.json();
+                if (data && data.success) {
+                    if (Array.isArray(data.notice) && data.notice.length > 0) {
+                        renderLiveNoticeAndNews(data.notice);
+                    }
+                    if (data.sections) {
+                        applySiteSections(data.sections);
+                    }
+                }
+            } catch (err) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            logPublicVisitorEntry();
+            loadLiveNoticeAndNews();
+            checkHashForArticle();
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === "shikhor_admin_notice_news_v1" || e.key === "shikhor_admin_site_sections_v1") {
+                loadLocalFallbackFromAdmin();
+            }
+        });
+
+        window.addEventListener('hashchange', checkHashForArticle);
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                closeArticleModal();
+                closeLightbox();
+            }
+        });
+
+        window.addEventListener('pagehide', () => {
+            logPublicVisitorExit();
         });
 
         function toggleMobileMenu() {
@@ -799,226 +1169,8 @@
         }
 
         function toggleChatbot() {
-            document.getElementById('chatWindow').classList.toggle('hidden');
-        }
-
-        function cleanVal(val, fallback = "") {
-            if (val === undefined || val === null) return fallback;
-            const s = String(val).trim();
-            if (!s || s.toLowerCase() === "undefined" || s.toLowerCase() === "null") return fallback;
-            return s;
-        }
-
-        function escText(str) {
-            return String(str || "")
-                .replace(/&/g, "&amp;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
-        }
-
-        function renderStats(statsItems) {
-            const statsGrid = document.getElementById("statsGrid");
-            if (!statsGrid || !Array.isArray(statsItems) || !statsItems.length) return;
-
-            const activeStats = statsItems.filter(st => {
-                const status = cleanVal(st.Status || st.status, "Active").toLowerCase();
-                return status !== "inactive" && status !== "hidden" && cleanVal(st["Metric Name"] || st.MetricName || st.metricName || st.Value || st.value);
-            });
-
-            if (!activeStats.length) return;
-
-            activeStats.sort((a, b) => Number(cleanVal(a["Display Order"] || a.DisplayOrder || a.displayOrder, 999)) - Number(cleanVal(b["Display Order"] || b.DisplayOrder || b.displayOrder, 999)));
-
-            statsGrid.innerHTML = activeStats.slice(0, 6).map((st, idx) => {
-                const val = cleanVal(st.Value || st.value, "0");
-                const label = cleanVal(st["Metric Name"] || st.MetricName || st.metricName || st["Unit / Label"] || st.unit, "Impact Metric");
-                const extraCol = (idx === 2 && activeStats.length % 3 === 1) ? " col-span-2 md:col-span-1" : "";
-                return `
-                    <div class="bg-[#FDFBF9] p-6 rounded-2xl border border-[#D4C3B3] shadow-md hover-lift${extraCol}">
-                        <h3 class="text-3xl font-extrabold font-heading text-[#8C583A]">${escText(val)}</h3>
-                        <p class="text-xs text-[#4F392E] mt-1 uppercase font-bold tracking-wider">${escText(label)}</p>
-                    </div>
-                `;
-            }).join("");
-        }
-
-        function renderLiveAndOtherNews(items) {
-            const grid = document.getElementById("liveNewsGrid");
-            const banner = document.getElementById("liveNewsBannerText");
-            if (!grid) return;
-
-            const validItems = (Array.isArray(items) ? items : []).filter(item =>
-                cleanVal(item.Headline || item.headline || item.Title || item.title || item.Summary || item.summary)
-            );
-
-            if (!validItems.length) return;
-
-            const firstLive = validItems.find(it =>
-                cleanVal(it.IsLive || it.islive || it.Category || it.category || it.Type || it.type).toLowerCase().includes("yes") ||
-                cleanVal(it.Category || it.category || it.Type || it.type).toLowerCase().includes("live")
-            ) || validItems[0];
-
-            if (banner && firstLive) {
-                const bTitle = cleanVal(firstLive.Headline || firstLive.headline || firstLive.Title || firstLive.title, "Live Update");
-                const bSum = cleanVal(firstLive.Summary || firstLive.summary || firstLive.Description || firstLive.description || firstLive.Content || firstLive.content, "");
-                banner.textContent = bSum ? `${bTitle}: ${bSum}` : bTitle;
-            }
-
-            grid.innerHTML = validItems.map(item => {
-                const title = cleanVal(item.Headline || item.headline || item.Title || item.title, "News Update");
-                const rawCat = cleanVal(item.Category || item.category || item.Type || item.type, "Other News");
-                const isLiveFlag = cleanVal(item.IsLive || item.islive, "").toLowerCase();
-                const isLive = isLiveFlag === "yes" || isLiveFlag === "true" || rawCat.toLowerCase().includes("live");
-                const badgeLabel = isLive ? "Live News" : rawCat;
-                const dateVal = cleanVal(item.DateTime || item.datetime || item.Date || item.date || item.Time || item.time, "Our News");
-                const body = cleanVal(item.Summary || item.summary || item.Description || item.description || item.Content || item.content, "");
-                const imgUrl = cleanVal(item.ImageURL || item.Image || item.imageurl || item.image, "");
-
-                const badgeHtml = isLive
-                    ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-800 text-[10px] font-extrabold uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span> ${escText(badgeLabel)}</span>`
-                    : `<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#EFE5DC] text-[#3B261D] text-[10px] font-extrabold uppercase tracking-wider">${escText(badgeLabel)}</span>`;
-
-                const imgHtml = imgUrl
-                    ? `<div class="h-44 -mx-8 -mt-8 mb-5 rounded-t-3xl overflow-hidden border-b border-[#E5D7C8] bg-[#F2E8DF]"><img src="${escText(imgUrl)}" alt="${escText(title)}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none';"></div>`
-                    : "";
-
-                return `
-                    <div class="p-8 rounded-3xl bg-[#FDFBF9] border border-[#D4C3B3] hover-lift flex flex-col justify-between overflow-hidden">
-                        <div>
-                            ${imgHtml}
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                ${badgeHtml}
-                                <span class="text-[11px] font-semibold text-[#6E5649]">${escText(dateVal)}</span>
-                            </div>
-                            <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">${escText(title)}</h3>
-                            ${body ? `<p class="text-xs text-[#4F392E] leading-relaxed">${escText(body)}</p>` : ""}
-                        </div>
-                        <div class="mt-5 pt-3 border-t border-[#EFE5DC] text-[11px] font-semibold text-[#8C583A]">
-                            Shikhor Foundation &bull; Our News
-                        </div>
-                    </div>
-                `;
-            }).join("");
-        }
-
-        function renderEvents(eventsItems) {
-            const eventsGrid = document.getElementById("eventsGrid");
-            if (!eventsGrid || !Array.isArray(eventsItems) || !eventsItems.length) return;
-
-            const validEvents = eventsItems.filter(ev => cleanVal(ev.Title || ev.title));
-            if (!validEvents.length) return;
-
-            eventsGrid.innerHTML = validEvents.map(ev => {
-                const title = cleanVal(ev.Title || ev.title, "Event");
-                const cat = cleanVal(ev.Category || ev.category, "Program");
-                const dateStr = cleanVal(ev.Date || ev.date, "");
-                const timeStr = cleanVal(ev.Time || ev.time, "");
-                const loc = cleanVal(ev.Location || ev.location, "Bangladesh");
-                const desc = cleanVal(ev.Description || ev.description, "");
-                const imgUrl = cleanVal(ev["Image URL"] || ev.ImageURL || ev.image, "");
-                const status = cleanVal(ev.Status || ev.status, "Active");
-
-                const imgHtml = imgUrl
-                    ? `<div class="h-40 -mx-7 -mt-7 mb-4 rounded-t-3xl overflow-hidden border-b border-[#D4C3B3]"><img src="${escText(imgUrl)}" alt="${escText(title)}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none';"></div>`
-                    : "";
-
-                return `
-                    <div class="p-7 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift flex flex-col justify-between overflow-hidden">
-                        <div>
-                            ${imgHtml}
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="inline-block px-2.5 py-1 rounded-full bg-[#3B261D] text-[#E6B88A] text-[10px] font-bold uppercase tracking-wider">${escText(cat)}</span>
-                                <span class="text-[11px] font-semibold text-[#6E5649]">${escText([dateStr, timeStr].filter(Boolean).join(" • "))}</span>
-                            </div>
-                            <h3 class="text-xl font-bold font-heading text-[#231712] mb-2">${escText(title)}</h3>
-                            ${desc ? `<p class="text-xs text-[#4F392E] leading-relaxed mb-4">${escText(desc)}</p>` : ""}
-                        </div>
-                        <div class="text-[11px] font-semibold text-[#6E5649] flex items-center justify-between pt-3 border-t border-[#D4C3B3]">
-                            <span><i class="fa-solid fa-location-dot text-[#8C583A] mr-1"></i> ${escText(loc)}</span>
-                            <span class="text-[#8C583A]">${escText(status)}</span>
-                        </div>
-                    </div>
-                `;
-            }).join("");
-        }
-
-        function renderTeam(teamItems) {
-            const panelGrid = document.getElementById("panelMembersGrid");
-            if (!panelGrid || !Array.isArray(teamItems) || !teamItems.length) return;
-
-            const activeTeam = teamItems.filter(m => {
-                const name = cleanVal(m["Full Name"] || m.FullName || m.fullName);
-                const status = cleanVal(m.Status || m.status, "Active").toLowerCase();
-                return name && status !== "inactive" && status !== "hidden";
-            });
-
-            if (!activeTeam.length) return;
-
-            const panelOnly = activeTeam.filter(m =>
-                !cleanVal(m.Designation || m.designation).toLowerCase().includes("founder")
-            );
-            const listToRender = panelOnly.length > 0 ? panelOnly : activeTeam;
-
-            panelGrid.innerHTML = listToRender.map(m => {
-                const name = cleanVal(m["Full Name"] || m.FullName || m.fullName, "Member");
-                const desig = cleanVal(m.Designation || m.designation, "Panel Member");
-                const photo = cleanVal(m["Photo URL"] || m.PhotoURL || m.photo, "logo.png");
-                return `
-                    <div class="bg-[#FDFBF9] p-6 rounded-3xl shadow-sm border border-[#D4C3B3] text-center hover-lift">
-                        <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border-2 border-[#B88655] shadow-md mb-4 transform transition hover:scale-105">
-                            <img src="${escText(photo)}" alt="${escText(name)}" class="w-full h-full object-cover" onerror="this.src='logo.png';">
-                        </div>
-                        <h4 class="font-bold font-heading text-[#231712] text-lg">${escText(name)}</h4>
-                        <p class="text-xs font-bold text-[#8C583A] mt-1">${escText(desig)}</p>
-                    </div>
-                `;
-            }).join("");
-        }
-
-        function renderGallery(galleryItems) {
-            const galleryGrid = document.getElementById("galleryGrid");
-            if (!galleryGrid || !Array.isArray(galleryItems) || !galleryItems.length) return;
-
-            const activeGallery = galleryItems.filter(g => {
-                const url = cleanVal(g["Image URL"] || g.ImageURL || g.image);
-                const status = cleanVal(g.Status || g.status, "Active").toLowerCase();
-                return url && status !== "inactive" && status !== "hidden";
-            });
-
-            if (!activeGallery.length) return;
-
-            activeGallery.sort((a, b) => Number(cleanVal(a["Display Order"] || a.DisplayOrder, 999)) - Number(cleanVal(b["Display Order"] || b.DisplayOrder, 999)));
-
-            galleryGrid.innerHTML = activeGallery.map(g => {
-                const title = cleanVal(g.Title || g.title, "Gallery Photo");
-                const url = cleanVal(g["Image URL"] || g.ImageURL || g.image, "gallery1.jpg");
-                return `
-                    <div onclick="openLightbox('${escText(url)}', '${escText(title)}')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
-                        <img src="${escText(url)}" alt="${escText(title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        <div class="absolute inset-0 bg-[#231712]/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
-                            <i class="fa-solid fa-expand mr-2"></i> View Photo
-                        </div>
-                    </div>
-                `;
-            }).join("");
-        }
-
-        async function syncSiteDataFromBackend() {
-            if (!GOOGLE_SCRIPT_URL) return;
-            try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&t=${Date.now()}`);
-                const data = await res.json();
-                if (!data) return;
-                if (Array.isArray(data.news) && data.news.length > 0) renderLiveAndOtherNews(data.news);
-                if (Array.isArray(data.stats) && data.stats.length > 0) renderStats(data.stats);
-                if (Array.isArray(data.events) && data.events.length > 0) renderEvents(data.events);
-                if (Array.isArray(data.team) && data.team.length > 0) renderTeam(data.team);
-                if (Array.isArray(data.gallery) && data.gallery.length > 0) renderGallery(data.gallery);
-            } catch (err) {
-                // Keep default content if offline or endpoint not yet extended
-            }
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('hidden');
         }
 
         function handleFAQClick(type) {
