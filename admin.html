@@ -1,1027 +1,556 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikhor Foundation | Control Center</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Outfit', sans-serif; background: #F6EFE8; color: #231712; }
-        h1, h2, h3, h4, .font-heading { font-family: 'Playfair Display', serif; }
-        .hidden { display: none !important; }
-        .tab-active { background: #3B261D !important; color: #E6B88A !important; border-color: #3B261D !important; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shikhor Foundation | Admin Control Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen">
+<body class="bg-[#F7F1EB] text-[#231712] min-h-screen font-sans">
 
-    <!-- Hidden File Picker -->
-    <input type="file" id="autoFilePicker" accept="image/*" class="hidden">
-
-    <!-- Toast Notification -->
-    <div id="toastBox" class="hidden fixed bottom-5 right-5 z-50 bg-[#231712] text-[#E6B88A] border border-[#8C583A] px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2.5">
-        <i class="fa-solid fa-circle-check text-green-400 text-base"></i>
-        <span id="toastMsg">Saved & synced!</span>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-[#DFD0C2] p-8">
+      <div class="text-center mb-6">
+        <img src="./logo.png" alt="Shikhor Logo" onerror="this.style.display='none'" class="w-16 h-16 mx-auto rounded-2xl object-cover mb-3 border border-[#D4C3B3]" />
+        <h1 class="text-2xl font-bold text-[#231712]">Shikhor Foundation</h1>
+        <p class="text-sm text-[#7A5643] mt-1">Admin Control Panel Login</p>
+      </div>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#6E4730] mb-1">Admin ID / Email</label>
+          <input id="loginUser" type="text" required placeholder="shikhor@bd" class="w-full px-4 py-2.5 rounded-xl border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#6E4730] mb-1">Password</label>
+          <input id="loginPass" type="password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
+        </div>
+        <p id="loginError" class="text-xs font-semibold text-red-600 hidden"></p>
+        <button type="submit" class="w-full py-3 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-semibold transition">Login to Panel</button>
+      </form>
     </div>
+  </div>
 
-    <!-- USERNAME & PASSWORD LOGIN INTERFACE -->
-    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4">
-        <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="bg-[#FDFBF9] border-2 border-[#B88655] rounded-3xl p-8 max-w-md w-full shadow-2xl text-center">
-            <div class="w-24 h-24 mx-auto rounded-2xl object-contain bg-[#EFE5DC] p-2.5 border border-[#C4AE99] mb-4 flex items-center justify-center">
-                <img id="gateLogoImg" src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-full h-full object-contain" alt="Shikhor Foundation Logo">
-            </div>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-[#8C583A]">SHIKHOR CONTROL SITE</span>
-            <h1 class="text-2xl font-extrabold font-heading text-[#231712] mt-1">Admin Sign In</h1>
-            <p class="text-xs text-[#5C3D2E] mt-1 mb-6">Enter your username and password to control the main website</p>
+  <!-- Main Admin Dashboard -->
+  <div id="adminDashboard" class="hidden">
+    <header class="bg-[#381F12] text-white sticky top-0 z-30 shadow-md">
+      <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <img src="./logo.png" alt="Logo" onerror="this.style.display='none'" class="w-10 h-10 rounded-xl object-cover border border-[#B88655]" />
+          <div>
+            <div class="font-bold text-base leading-tight">Shikhor Admin Control Panel</div>
+            <div id="syncStatusText" class="text-xs text-[#E5C9B0]">Ready</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button id="pushSheetBtn" type="button" onclick="pushAllToSheet(true)" class="px-4 py-2 rounded-xl bg-[#B88655] hover:bg-[#9E6F42] text-[#231712] font-bold text-xs transition">
+            Push To Sheet
+          </button>
+          <button type="button" onclick="logoutAdmin()" class="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs transition">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
 
-            <div class="text-left space-y-4 mb-5">
-                <div>
-                    <label class="block text-xs font-bold text-[#3B261D] mb-1.5">Username</label>
-                    <input type="text" id="adminUsernameInput" required autocomplete="username" placeholder="Enter username" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-[#3B261D] mb-1.5">Password</label>
-                    <input type="password" id="adminPasswordInput" required autocomplete="current-password" placeholder="Enter password" class="w-full px-4 py-3 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm focus:outline-none focus:border-[#8C583A]">
-                </div>
-            </div>
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+      <!-- Tabs -->
+      <div class="flex flex-wrap gap-2">
+        <button type="button" data-tab="teamTab" onclick="switchTab('teamTab')" class="tab-btn px-4 py-2 rounded-xl bg-[#4E2D1C] text-white text-sm font-semibold">Team Panel (<span id="teamCountBadge">14</span>)</button>
+        <button type="button" data-tab="sectionsTab" onclick="switchTab('sectionsTab')" class="tab-btn px-4 py-2 rounded-xl bg-white text-[#4E2D1C] border border-[#D4C3B3] text-sm font-semibold">Site Sections</button>
+        <button type="button" data-tab="noticeTab" onclick="switchTab('noticeTab')" class="tab-btn px-4 py-2 rounded-xl bg-white text-[#4E2D1C] border border-[#D4C3B3] text-sm font-semibold">Notice & News</button>
+      </div>
 
-            <p id="loginErrorMsg" class="hidden text-xs font-bold text-red-700 mb-4">Invalid username or password. Please try again.</p>
+      <!-- Team Tab -->
+      <section id="teamTab" class="tab-panel space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-[#DFD0C2]">
+          <div>
+            <h2 class="text-lg font-bold">Leadership & Panel Members</h2>
+            <p class="text-xs text-[#7A5643]">Display Position 1 = First. Changes auto-save locally and sync to Google Sheet.</p>
+          </div>
+          <button type="button" onclick="addMember()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white text-xs font-bold">+ Add Member</button>
+        </div>
+        <div id="teamGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+      </section>
 
-            <button type="submit" class="w-full py-3 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white font-bold text-sm transition">
-                Sign In to Control Panel <i class="fa-solid fa-arrow-right ml-1"></i>
-            </button>
+      <!-- Sections Tab -->
+      <section id="sectionsTab" class="tab-panel hidden bg-white p-6 rounded-3xl border border-[#DFD0C2] space-y-4">
+        <h2 class="text-lg font-bold">Site Sections & Counters</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-[#6E4730] mb-1">Families Supported</label>
+            <input id="sec_familiesCount" type="text" oninput="updateSectionField('familiesCount', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[#6E4730] mb-1">Active Volunteers</label>
+            <input id="sec_volunteersCount" type="text" oninput="updateSectionField('volunteersCount', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[#6E4730] mb-1">Successful Events</label>
+            <input id="sec_eventsCount" type="text" oninput="updateSectionField('eventsCount', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-[#6E4730] mb-1">Hero Headline</label>
+            <input id="sec_heroTitle" type="text" oninput="updateSectionField('heroTitle', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[#6E4730] mb-1">bKash / Nagad Donation Number</label>
+            <input id="sec_donationNumber" type="text" oninput="updateSectionField('donationNumber', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block text-xs font-bold text-[#6E4730] mb-1">Hero Sub-description</label>
+            <textarea id="sec_heroSubtitle" rows="2" oninput="updateSectionField('heroSubtitle', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm"></textarea>
+          </div>
+          <div class="md:col-span-3">
+            <label class="block text-xs font-bold text-[#6E4730] mb-1">About Us Description</label>
+            <textarea id="sec_aboutText" rows="3" oninput="updateSectionField('aboutText', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm"></textarea>
+          </div>
+        </div>
+      </section>
 
-            <a href="index.html" onclick="persistLocalOnly()" class="inline-block mt-6 text-xs font-bold text-[#8C583A] hover:underline">← Back to Main Website</a>
-        </form>
-    </div>
+      <!-- Notice Tab -->
+      <section id="noticeTab" class="tab-panel hidden bg-white p-6 rounded-3xl border border-[#DFD0C2] space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold">Notices & News</h2>
+          <button type="button" onclick="addNotice()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] text-white text-xs font-bold">+ Add Notice/News</button>
+        </div>
+        <div id="noticeList" class="space-y-3"></div>
+      </section>
+    </main>
+  </div>
 
-    <!-- SEPARATE CONTROL WEBSITE DASHBOARD -->
-    <div id="adminDashboard" class="hidden">
-        <header class="bg-[#FDFBF9] border-b border-[#D4C3B3] shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 min-h-16 py-2.5 flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#EFE5DC] p-1 border border-[#C4AE99] flex items-center justify-center shrink-0">
-                        <img id="admLogoPreview" src="./logo.png" onerror="this.src='./gallery1.jpg'" class="w-full h-full object-contain" alt="Logo">
-                    </div>
-                    <div>
-                        <span class="font-bold font-heading text-base block leading-none">SHIKHOR CONTROL SITE</span>
-                        <span id="syncStatusLabel" class="text-[10px] font-bold text-green-700 uppercase">shikhor@bd • Ready</span>
-                    </div>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" onclick="pickImageFor('logo')" class="px-3 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold">
-                        <i class="fa-solid fa-image text-[#8C583A]"></i> Logo
-                    </button>
-                    <button type="button" onclick="syncFromGoogleSheetOnOpen(true, true)" class="px-3 py-2 rounded-xl bg-[#EFE5DC] hover:bg-[#E2D3C5] text-[#3B261D] border border-[#C4AE99] text-xs font-bold">
-                        <i class="fa-solid fa-rotate text-[#8C583A]"></i> Pull From Sheet
-                    </button>
-                    <button type="button" onclick="autoSaveAndSync('saveAll', {}, true, true)" class="px-3 py-2 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Push To Sheet
-                    </button>
-                    <a href="index.html" target="_blank" onclick="persistLocalOnly()" class="px-3.5 py-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                        Open Main Site ↗
-                    </a>
-                    <button type="button" onclick="logoutAdmin()" class="px-3 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold">
-                        Logout
-                    </button>
-                </div>
-            </div>
+  <script>
+    const GOOGLE_SCRIPT_URL = "PASTE_YOUR_DEPLOYED_APPS_SCRIPT_WEB_APP_URL_HERE";
+    const AUTH_USER = "shikhor@bd";
+    const AUTH_PASS = "shikhor2026"; // Change as needed
 
-            <!-- DEDICATED SECTION NAVIGATION BAR -->
-            <div class="bg-[#F2E8DF] border-t border-[#D4C3B3] overflow-x-auto">
-                <div id="sectionNavTabs" class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-2 whitespace-nowrap">
-                    <button type="button" data-tab="notice" onclick="switchSectionTab('notice')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                        <i class="fa-solid fa-bullhorn mr-1.5"></i> Notice
-                    </button>
-                    <button type="button" data-tab="news" onclick="switchSectionTab('news')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                        <i class="fa-regular fa-newspaper mr-1.5"></i> News
-                    </button>
-                    <button type="button" data-tab="team" onclick="switchSectionTab('team')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                        <i class="fa-solid fa-users mr-1.5"></i> Panel Members
-                    </button>
-                    <button type="button" data-tab="groupwork" onclick="switchSectionTab('groupwork')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                        <i class="fa-solid fa-people-group mr-1.5"></i> Group Work
-                    </button>
-                    <button type="button" data-tab="gallery" onclick="switchSectionTab('gallery')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                        <i class="fa-solid fa-images mr-1.5"></i> Gallery
-                    </button>
-                    <button type="button" data-tab="site" onclick="switchSectionTab('site')" class="sec-tab px-4 py-2 rounded-xl bg-[#FDFBF9] text-[#3B261D] border border-[#C4AE99] text-xs font-bold transition">
-                        <i class="fa-solid fa-sliders mr-1.5"></i> Hero, Stats & Donation
-                    </button>
-                </div>
-            </div>
-        </header>
+    const STORAGE_KEY = "shikhor_admin_state_v1";
+    const SESSION_AUTH_KEY = "shikhor_admin_authed_v1";
+    const SESSION_ID_KEY = "shikhor_admin_session_id_v1";
+    const SESSION_LOGIN_TS_KEY = "shikhor_admin_login_ts_v1";
+    const SESSION_LOGGED_KEY = "shikhor_admin_login_sent_v1";
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    const DEFAULT_TEAM = [
+      { id: "tm-1", name: "Md. Shewise Al Islam Zarif", role: "Founder & CEO / President", photo: "./zarif.jpg", status: "Active" },
+      { id: "tm-2", name: "Ahsan Zaman", role: "Co-Founder & Vice President", photo: "./ahsan.jpg", status: "Active" },
+      { id: "tm-3", name: "Md. Nafew Khalil", role: "Vice President of Program Organisation", photo: "./nafew.jpg", status: "Active" },
+      { id: "tm-4", name: "Md. Shakhawat Hossain Sayem", role: "Head Of Administration & Marketing", photo: "./shakhawat.jpg", status: "Active" },
+      { id: "tm-5", name: "MD. Minhajul Islam", role: "Head of Accounts & Finance", photo: "./minhajul.jpg", status: "Active" },
+      { id: "tm-6", name: "Faymul Islam Shafi", role: "Head Of Volunteer", photo: "./shafi.jpg", status: "Active" },
+      { id: "tm-7", name: "Shaila Ekbal Ritu", role: "Website Administrator", photo: "./logo.png", status: "Active" },
+      { id: "tm-8", name: "Sayed Bin Kamal", role: "Asst. Head Of Administration", photo: "./logo.png", status: "Active" },
+      { id: "tm-9", name: "Alif Hasan Ayman", role: "Asst. Head of Accounts & Finance", photo: "./logo.png", status: "Active" },
+      { id: "tm-10", name: "Rikto Ruddur Lyric", role: "Asst. Head Of Marketing", photo: "./rikto.png", status: "Active" },
+      { id: "tm-11", name: "Mayasha Afrin", role: "Asst. Head of volunteer", photo: "./logo.png", status: "Active" },
+      { id: "tm-12", name: "Wahid Yashfi", role: "Executive member", photo: "./logo.png", status: "Active" },
+      { id: "tm-13", name: "Raiyanul Islam Rahat", role: "Executive Member", photo: "./logo.png", status: "Active" },
+      { id: "tm-14", name: "Arafat Sultan", role: "Executive Member", photo: "./logo.png", status: "Active" }
+    ];
 
-            <!-- SECTION 1: NOTICE ONLY -->
-            <section id="panel-notice" class="admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Notice Manager</h2>
-                        <p class="text-xs text-[#5C3D2E]">Add, edit, upload banner photo, or delete notices.</p>
-                    </div>
-                    <button type="button" onclick="addPostByCategory('Notice')" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                        <i class="fa-solid fa-plus mr-1"></i> Add New Notice
-                    </button>
-                </div>
-                <div id="adminNoticeOnlyList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-            </section>
+    const DEFAULT_SECTIONS = {
+      familiesCount: "50+",
+      volunteersCount: "50+",
+      eventsCount: "10+",
+      heroTitle: "A little kindness can grow into a better tomorrow.",
+      heroSubtitle: "Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.",
+      aboutText: "Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.",
+      donationNumber: "+8801956631465",
+      logoUrl: "./logo.png",
+      founderName: "Md. Shewise Al Islam Zarif",
+      founderRole: "Founder & CEO / President",
+      founderQuote: "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow.",
+      founderPhoto: "./zarif.jpg"
+    };
 
-            <!-- SECTION 2: NEWS ONLY -->
-            <section id="panel-news" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">News Manager</h2>
-                        <p class="text-xs text-[#5C3D2E]">Add, edit, upload banner photo, or delete news stories.</p>
-                    </div>
-                    <button type="button" onclick="addPostByCategory('News')" class="px-4 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
-                        <i class="fa-solid fa-plus mr-1"></i> Add New News
-                    </button>
-                </div>
-                <div id="adminNewsOnlyList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-            </section>
+    const DEFAULT_NOTICE = [
+      {
+        id: "item-notice-1",
+        category: "Notice",
+        status: "Published",
+        date: "25 Nov 2026",
+        title: "Volunteer & Community Drive",
+        image: "./gallery1.jpg",
+        summary: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live.",
+        fullContent: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live. Interested volunteers and supporters can stay tuned for schedule updates, field locations, and registration details."
+      },
+      {
+        id: "item-news-1",
+        category: "News",
+        status: "Published",
+        date: "25 Nov 2026",
+        title: "Standing Together for Communities",
+        image: "./gallery2.jpg",
+        summary: "Recent news stories, relief updates, and ground reports from Shikhor Foundation.",
+        fullContent: "Recent news stories, relief updates, and ground reports from Shikhor Foundation are featured here. Every initiative is driven by compassion, community participation, and transparent action to support families in need."
+      }
+    ];
 
-            <!-- SECTION 3: PANEL MEMBERS & FOUNDER -->
-            <section id="panel-team" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Founder & Panel Members</h2>
-                        <p class="text-xs text-[#5C3D2E]">Manage founder details and add/edit/delete panel members.</p>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button type="button" onclick="saveSiteSections()" class="px-4 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
-                            <i class="fa-solid fa-check mr-1"></i> Save Founder Info
-                        </button>
-                        <button type="button" onclick="addNewMember()" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                            <i class="fa-solid fa-plus mr-1"></i> Add Panel Member
-                        </button>
-                    </div>
-                </div>
+    let state = loadLocalState();
+    let syncTimer = null;
+    let logoutSentForSession = false;
 
-                <div class="bg-[#F2E8DF] rounded-2xl p-5 border border-[#C4AE99] space-y-4">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div class="flex items-center gap-4">
-                            <img id="admFounderPhoto" src="./zarif.jpg" onerror="this.src='./logo.png'" class="w-20 h-20 rounded-2xl object-cover border-2 border-[#8C583A]">
-                            <div>
-                                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#3B261D] text-[#E6B88A]">Founder</span>
-                                <h3 class="font-bold font-heading text-lg text-[#231712] mt-1">Founder Profile & Message</h3>
-                            </div>
-                        </div>
-                        <button type="button" onclick="pickImageFor('founder')" class="px-4 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
-                            <i class="fa-solid fa-camera mr-1"></i> Upload Photo
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input type="text" id="secFounderName" placeholder="Founder Name" class="px-3.5 py-2 rounded-xl border border-[#C4AE99] bg-[#FDFBF9] text-sm">
-                        <input type="text" id="secFounderRole" placeholder="Designation" class="px-3.5 py-2 rounded-xl border border-[#C4AE99] bg-[#FDFBF9] text-sm">
-                    </div>
-                    <textarea id="secFounderQuote" rows="2" placeholder="Message from the Founder" class="w-full px-3.5 py-2 rounded-xl border border-[#C4AE99] bg-[#FDFBF9] text-sm"></textarea>
-                </div>
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
 
-                <div id="adminTeamGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
-            </section>
+    function getDeviceInfo() {
+      const ua = navigator.userAgent || "";
+      let os = "Desktop";
+      if (/Android/i.test(ua)) os = "Android Mobile";
+      else if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS Device";
+      else if (/Windows/i.test(ua)) os = "Windows PC";
+      else if (/Mac OS X/i.test(ua)) os = "macOS";
 
-            <!-- SECTION 4: GROUP WORK / INITIATIVES -->
-            <section id="panel-groupwork" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Group Work & Initiatives</h2>
-                        <p class="text-xs text-[#5C3D2E]">Add, edit, or delete group work programs shown on the main website.</p>
-                    </div>
-                    <button type="button" onclick="addGroupWorkItem()" class="px-4 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                        <i class="fa-solid fa-plus mr-1"></i> Add Group Work
-                    </button>
-                </div>
-                <div id="adminGroupWorkList" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-            </section>
+      let browser = "Browser";
+      if (/Edg\//i.test(ua)) browser = "Microsoft Edge";
+      else if (/Chrome\//i.test(ua)) browser = "Google Chrome";
+      else if (/Firefox\//i.test(ua)) browser = "Firefox";
+      else if (/Safari\//i.test(ua)) browser = "Safari";
 
-            <!-- SECTION 5: GALLERY -->
-            <section id="panel-gallery" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFE5DC] pb-4">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Gallery Manager</h2>
-                        <p class="text-xs text-[#5C3D2E]">Upload photos, edit captions, or delete gallery images.</p>
-                    </div>
-                    <button type="button" onclick="pickImageFor('new-gallery')" class="px-5 py-2.5 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
-                        <i class="fa-solid fa-folder-open mr-1"></i> Upload Picture
-                    </button>
-                </div>
-                <div id="adminGalleryList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
-            </section>
+      return `${os} (${browser}) | Screen: ${window.screen.width}x${window.screen.height}`;
+    }
 
-            <!-- SECTION 6: HERO, STATS, ABOUT & DONATION -->
-            <section id="panel-site" class="hidden admin-panel bg-[#FDFBF9] rounded-3xl p-6 sm:p-8 border border-[#D4C3B3] shadow-sm space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#EFE5DC] pb-4">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#8C583A]">DEDICATED SECTION</span>
-                        <h2 class="text-2xl font-bold font-heading text-[#231712]">Hero, Counters, About & Donation</h2>
-                    </div>
-                    <button type="button" onclick="saveSiteSections()" class="px-5 py-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                        <i class="fa-solid fa-check mr-1"></i> Save Changes
-                    </button>
-                </div>
+    function sendSessionEvent(eventType) {
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.startsWith("PASTE_")) return;
+      const sessionId = sessionStorage.getItem(SESSION_ID_KEY) || "";
+      const loginTs = Number(sessionStorage.getItem(SESSION_LOGIN_TS_KEY) || Date.now());
+      const durationSeconds = Math.max(1, Math.round((Date.now() - loginTs) / 1000));
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-[#3B261D] mb-1">Families Supported</label>
-                        <input type="text" id="secFamiliesCount" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-[#3B261D] mb-1">Active Volunteers</label>
-                        <input type="text" id="secVolunteersCount" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-[#3B261D] mb-1">Successful Events</label>
-                        <input type="text" id="secEventsCount" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm font-semibold">
-                    </div>
-                </div>
+      const payload = JSON.stringify({
+        action: eventType === "login" ? "logAdminLogin" : "logAdminLogout",
+        sessionId,
+        adminUser: AUTH_USER,
+        durationSeconds,
+        deviceInfo: getDeviceInfo()
+      });
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Title</label>
-                        <input type="text" id="secHeroTitle" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-[#3B261D] mb-1">bKash / Nagad Personal Number</label>
-                        <input type="text" id="secDonationNumber" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm font-semibold">
-                    </div>
-                </div>
+      if (eventType === "logout" && navigator.sendBeacon) {
+        try {
+          navigator.sendBeacon(GOOGLE_SCRIPT_URL, new Blob([payload], { type: "text/plain;charset=utf-8" }));
+          return;
+        } catch (_) {}
+      }
 
-                <div>
-                    <label class="block text-xs font-bold text-[#3B261D] mb-1">Hero Subtitle</label>
-                    <textarea id="secHeroSubtitle" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm"></textarea>
-                </div>
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: payload
+      }).catch(() => {});
+    }
 
-                <div>
-                    <label class="block text-xs font-bold text-[#3B261D] mb-1">About Us Description</label>
-                    <textarea id="secAboutText" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-[#C4AE99] bg-[#F6EFE8] text-sm"></textarea>
-                </div>
-            </section>
+    function startAdminSession() {
+      const existingId = sessionStorage.getItem(SESSION_ID_KEY);
+      const alreadySent = sessionStorage.getItem(SESSION_LOGGED_KEY) === "1";
+      logoutSentForSession = false;
 
-        </main>
-    </div>
+      if (!existingId) {
+        sessionStorage.setItem(SESSION_ID_KEY, "ADM-" + Date.now());
+        sessionStorage.setItem(SESSION_LOGIN_TS_KEY, String(Date.now()));
+      }
+      if (!alreadySent) {
+        sessionStorage.setItem(SESSION_LOGGED_KEY, "1");
+        sendSessionEvent("login");
+      }
+    }
 
-    <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyG003wCzu3Qi-JABNPEAG__7KD2zHMucE_YwD3SRX4aD9deXUj0MQ5mA1P0siHi1uT/exec";
-        const AUTH_USER = "shikhor@bd";
-        const AUTH_PASS = "Shikhor_Foundation_Bd";
+    function endAdminSession() {
+      if (logoutSentForSession) return;
+      logoutSentForSession = true;
+      sendSessionEvent("logout");
+      sessionStorage.removeItem(SESSION_AUTH_KEY);
+      sessionStorage.removeItem(SESSION_ID_KEY);
+      sessionStorage.removeItem(SESSION_LOGIN_TS_KEY);
+      sessionStorage.removeItem(SESSION_LOGGED_KEY);
+    }
 
-        const STORAGE_KEYS = {
-            sections: "shikhor_admin_site_sections_v1",
-            team: "shikhor_admin_team_v1",
-            gallery: "shikhor_admin_gallery_v1",
-            notice: "shikhor_admin_notice_news_v1",
-            groupWork: "shikhor_admin_group_work_v1",
-            lastSavedAt: "shikhor_admin_last_saved_at_v1"
-        };
-
-        const DEFAULT_TEAM = [
-            { id: "tm-2", name: "Ahsan Zaman", role: "Vice President", photo: "./ahsan.jpg" },
-            { id: "tm-3", name: "Nafew Khalil", role: "Vice President of Program Organisation", photo: "./nafew.jpg" },
-            { id: "tm-4", name: "Md. Shakhawat Hossain Sayem", role: "Head Of Administration & Marketing", photo: "./shakhawat.jpg" },
-            { id: "tm-7", name: "Rikto Ruddur Lyric", role: "Asst. Head Of Marketing", photo: "./rikto.png" }
-        ];
-
-        let state = {
-            sections: {
-                logoUrl: "./logo.png",
-                familiesCount: "50+",
-                volunteersCount: "50+",
-                eventsCount: "10+",
-                heroTitle: "A little kindness can grow into a better tomorrow.",
-                heroSubtitle: "Rooted in Humanity, Growing with Compassion. We bring people together to support communities, stand beside those facing hardship, and create positive change.",
-                aboutText: "Shikhor Foundation is a community-driven humanitarian initiative built on a simple belief: meaningful change begins when we care for one another. Like the roots of a tree, compassion, unity, and responsibility help communities stand strong.",
-                donationNumber: "+8801956631465",
-                founderName: "Md. Shewise Al Islam Zarif",
-                founderRole: "Founder & CEO / President",
-                founderQuote: "Shikhor Foundation was born from a deep desire to stand beside those in need. Like the roots of a tree that nourish the branches above, our community's compassion empowers every individual to look forward with hope and dignity. Together, we are building a better tomorrow.",
-                founderPhoto: "./zarif.jpg"
-            },
-            team: DEFAULT_TEAM.map(m => ({ ...m })),
-            groupWork: [
-                {
-                    id: "gw-1",
-                    icon: "fa-hands-holding-child",
-                    title: "Humanitarian Assistance",
-                    description: "Supporting people and families experiencing hardship through thoughtful winter clothing distribution, relief packages, and emergency support."
-                },
-                {
-                    id: "gw-2",
-                    icon: "fa-book-open",
-                    title: "Educational Support",
-                    description: "Empowering rural and disadvantaged students by providing essential educational materials, books, and learning guidance for a brighter future."
-                },
-                {
-                    id: "gw-3",
-                    icon: "fa-people-group",
-                    title: "Community Support & Awareness",
-                    description: "Bringing people together to identify community needs, foster cooperation, and respond with care, responsibility, and unity."
-                }
-            ],
-            gallery: [
-                { id: "gal-1", caption: "Community Support Activity", image: "./gallery1.jpg" }
-            ],
-            notice: [
-                {
-                    id: "item-notice-1",
-                    category: "Notice",
-                    status: "Published",
-                    date: "25 Nov 2026",
-                    title: "Volunteer & Community Drive",
-                    image: "./gallery1.jpg",
-                    summary: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live.",
-                    fullContent: "Official notices and upcoming humanitarian drives of Shikhor Foundation are published here live. Interested volunteers and supporters can stay tuned for schedule updates, field locations, and registration details."
-                },
-                {
-                    id: "item-news-1",
-                    category: "News",
-                    status: "Published",
-                    date: "25 Nov 2026",
-                    title: "Standing Together for Communities",
-                    image: "./gallery1.jpg",
-                    summary: "Recent news stories, relief updates, and ground reports from Shikhor Foundation.",
-                    fullContent: "Recent news stories, relief updates, and ground reports from Shikhor Foundation are featured here. Every initiative is driven by compassion, community participation, and transparent action to support families in need."
-                }
-            ]
-        };
-
-        let pendingUploadTarget = null;
-        let currentTab = "team";
-
-        function cleanText(val, fallback = "") {
-            if (val === undefined || val === null) return fallback;
-            const str = String(val).trim();
-            if (!str || str.toLowerCase() === "undefined" || str.toLowerCase() === "null") return fallback;
-            return str;
+    function loadLocalState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            team: Array.isArray(parsed.team) && parsed.team.length ? parsed.team : [...DEFAULT_TEAM],
+            sections: { ...DEFAULT_SECTIONS, ...(parsed.sections || {}) },
+            notice: Array.isArray(parsed.notice) && parsed.notice.length ? parsed.notice : [...DEFAULT_NOTICE]
+          };
         }
+      } catch (_) {}
+      return {
+        team: [...DEFAULT_TEAM],
+        sections: { ...DEFAULT_SECTIONS },
+        notice: [...DEFAULT_NOTICE]
+      };
+    }
 
-        function escapeAttr(str) {
-            return String(str || "")
-                .replace(/&/g, "&amp;")
-                .replace(/"/g, "&quot;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
-        }
+    function saveLocalState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (_) {}
+    }
 
-        function normalizeTeamList(rawList) {
-            if (!Array.isArray(rawList) || rawList.length === 0) {
-                return DEFAULT_TEAM.map(m => ({ ...m }));
-            }
-            const normalized = rawList
-                .map((m, idx) => {
-                    if (!m || typeof m !== "object") return null;
-                    const name = cleanText(m.name || m["Full Name"] || m.fullName || m.title, "");
-                    const role = cleanText(m.role || m["Designation / Role"] || m.designation, "");
-                    const photo = cleanText(m.photo || m["Photo URL"] || m.image, "./logo.png");
-                    const id = cleanText(m.id || m["Member ID"], `tm-${idx + 1}`);
-                    if (!name && !role) return null;
-                    return {
-                        id,
-                        name: name || "Panel Member",
-                        role: role || "Designation",
-                        photo
-                    };
-                })
-                .filter(Boolean);
+    function scheduleAutoSync() {
+      saveLocalState();
+      setSyncStatus("Saving & syncing...", "text-[#FDE68A]");
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => {
+        pushAllToSheet(false);
+      }, 900);
+    }
 
-            return normalized.length > 0 ? normalized : DEFAULT_TEAM.map(m => ({ ...m }));
-        }
+    function setSyncStatus(msg, colorClass = "text-[#E5C9B0]") {
+      const el = document.getElementById("syncStatusText");
+      if (!el) return;
+      el.className = `text-xs ${colorClass}`;
+      el.textContent = msg;
+    }
 
-        function showToast(msg) {
-            const box = document.getElementById("toastBox");
-            document.getElementById("toastMsg").textContent = msg;
-            box.classList.remove("hidden");
-            clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(() => box.classList.add("hidden"), 2600);
-        }
+    async function pushAllToSheet(showAlert = false) {
+      saveLocalState();
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.startsWith("PASTE_")) {
+        setSyncStatus("Local saved (set GOOGLE_SCRIPT_URL to sync)", "text-[#FDE68A]");
+        if (showAlert) alert("Saved locally. Paste your Apps Script Web App URL in GOOGLE_SCRIPT_URL first.");
+        return;
+      }
 
-        function updateSyncStatus(text, isWarning = false) {
-            const el = document.getElementById("syncStatusLabel");
-            if (!el) return;
-            el.textContent = text;
-            el.className = isWarning
-                ? "text-[10px] font-bold text-amber-700 uppercase"
-                : "text-[10px] font-bold text-green-700 uppercase";
-        }
+      const btn = document.getElementById("pushSheetBtn");
+      if (btn) btn.disabled = true;
+      setSyncStatus("Pushing to Google Sheet...", "text-[#FDE68A]");
 
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById("adminUsernameInput").value.trim();
-            const p = document.getElementById("adminPasswordInput").value;
-            const errEl = document.getElementById("loginErrorMsg");
-
-            if (u === AUTH_USER && p === AUTH_PASS) {
-                errEl.classList.add("hidden");
-                sessionStorage.setItem("shikhor_admin_authed", "1");
-                document.getElementById("lockScreen").classList.add("hidden");
-                document.getElementById("adminDashboard").classList.remove("hidden");
-                loadState();
-                populateSectionInputs();
-                switchSectionTab(currentTab);
-                renderAll();
-                syncFromGoogleSheetOnOpen(false, false);
-            } else {
-                errEl.classList.remove("hidden");
-            }
-        }
-
-        function logoutAdmin() {
-            persistLocalOnly();
-            sessionStorage.removeItem("shikhor_admin_authed");
-            document.getElementById("adminDashboard").classList.add("hidden");
-            document.getElementById("lockScreen").classList.remove("hidden");
-            document.getElementById("adminPasswordInput").value = "";
-        }
-
-        function switchSectionTab(tabName) {
-            currentTab = tabName;
-            document.querySelectorAll(".admin-panel").forEach(p => p.classList.add("hidden"));
-            const activePanel = document.getElementById(`panel-${tabName}`);
-            if (activePanel) activePanel.classList.remove("hidden");
-
-            document.querySelectorAll(".sec-tab").forEach(btn => {
-                if (btn.dataset.tab === tabName) btn.classList.add("tab-active");
-                else btn.classList.remove("tab-active");
-            });
-        }
-
-        function loadState() {
-            try {
-                const s = localStorage.getItem(STORAGE_KEYS.sections);
-                if (s) {
-                    const parsedS = JSON.parse(s);
-                    if (parsedS && typeof parsedS === "object") {
-                        Object.keys(parsedS).forEach(k => {
-                            const v = cleanText(parsedS[k], "");
-                            if (v) state.sections[k] = v;
-                        });
-                    }
-                }
-
-                const t = localStorage.getItem(STORAGE_KEYS.team);
-                if (t) state.team = normalizeTeamList(JSON.parse(t));
-
-                const g = localStorage.getItem(STORAGE_KEYS.gallery);
-                if (g) {
-                    const parsedG = JSON.parse(g);
-                    if (Array.isArray(parsedG) && parsedG.length > 0) {
-                        state.gallery = parsedG.map((item, idx) => ({
-                            id: cleanText(item.id, `gal-${idx + 1}`),
-                            caption: cleanText(item.caption, "Gallery Photo"),
-                            image: cleanText(item.image, "./gallery1.jpg")
-                        }));
-                    }
-                }
-
-                const n = localStorage.getItem(STORAGE_KEYS.notice);
-                if (n) {
-                    const parsedN = JSON.parse(n);
-                    if (Array.isArray(parsedN) && parsedN.length > 0) {
-                        state.notice = parsedN.map((item, idx) => ({
-                            id: cleanText(item.id, `item-${idx + 1}`),
-                            category: cleanText(item.category || item.Category, "Notice"),
-                            status: cleanText(item.status || item.Status, "Published"),
-                            date: cleanText(item.date || item["Publish Date"], "25 Nov 2026"),
-                            title: cleanText(item.title || item["Headline / Title"], "Untitled"),
-                            image: cleanText(item.image || item["Image URL"], "./gallery1.jpg"),
-                            summary: cleanText(item.summary || item.Summary, ""),
-                            fullContent: cleanText(item.fullContent || item["Full Content"], "")
-                        }));
-                    }
-                }
-
-                const gw = localStorage.getItem(STORAGE_KEYS.groupWork);
-                if (gw) {
-                    const parsedGw = JSON.parse(gw);
-                    if (Array.isArray(parsedGw) && parsedGw.length > 0) {
-                        state.groupWork = parsedGw.map((item, idx) => ({
-                            id: cleanText(item.id, `gw-${idx + 1}`),
-                            icon: cleanText(item.icon, "fa-hands-holding-child"),
-                            title: cleanText(item.title, "Group Work"),
-                            description: cleanText(item.description, "")
-                        }));
-                    }
-                }
-            } catch (e) {}
-        }
-
-        async function syncFromGoogleSheetOnOpen(notifyUser = false, forceOverwrite = false) {
-            if (!GOOGLE_SCRIPT_URL) return;
-            const lastSaved = Number(localStorage.getItem(STORAGE_KEYS.lastSavedAt) || 0);
-            const recentlyEdited = !forceOverwrite && (Date.now() - lastSaved < 10000);
-
-            try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`, {
-                    cache: "no-store"
-                });
-                const data = await res.json();
-                if (!data || !data.success) {
-                    if (notifyUser) showToast("Sheet response invalid — check Apps Script deployment.");
-                    return;
-                }
-
-                if (recentlyEdited) {
-                    updateSyncStatus("shikhor@bd • Local edits active", true);
-                    return;
-                }
-
-                if (data.sections && Object.keys(data.sections).length > 0) {
-                    Object.keys(data.sections).forEach(k => {
-                        const v = cleanText(data.sections[k], "");
-                        if (v) state.sections[k] = v;
-                    });
-                }
-                if (Array.isArray(data.team) && data.team.length > 0) {
-                    state.team = normalizeTeamList(data.team);
-                }
-                if (Array.isArray(data.groupWork) && data.groupWork.length > 0) {
-                    state.groupWork = data.groupWork.map((item, idx) => ({
-                        id: cleanText(item.id, `gw-${idx + 1}`),
-                        icon: cleanText(item.icon, "fa-hands-holding-child"),
-                        title: cleanText(item.title, "Group Work"),
-                        description: cleanText(item.description, "")
-                    }));
-                }
-                if (Array.isArray(data.gallery) && data.gallery.length > 0) {
-                    state.gallery = data.gallery.map((item, idx) => ({
-                        id: cleanText(item.id, `gal-${idx + 1}`),
-                        caption: cleanText(item.caption, "Gallery Photo"),
-                        image: cleanText(item.image, "./gallery1.jpg")
-                    }));
-                }
-                if (Array.isArray(data.notice) && data.notice.length > 0) {
-                    state.notice = data.notice.map((item, idx) => ({
-                        id: cleanText(item.id, `item-${idx + 1}`),
-                        category: cleanText(item.category || item.Category, "Notice"),
-                        status: cleanText(item.status || item.Status, "Published"),
-                        date: cleanText(item.date || item["Publish Date"], "25 Nov 2026"),
-                        title: cleanText(item.title || item["Headline / Title"], "Untitled"),
-                        image: cleanText(item.image || item["Image URL"], "./gallery1.jpg"),
-                        summary: cleanText(item.summary || item.Summary, ""),
-                        fullContent: cleanText(item.fullContent || item["Full Content"], "")
-                    }));
-                }
-
-                persistLocalOnly();
-                populateSectionInputs();
-                renderAll();
-                updateSyncStatus("shikhor@bd • Synced with Sheet");
-                if (notifyUser) showToast("Pulled latest data from Google Sheet!");
-            } catch (e) {
-                updateSyncStatus("shikhor@bd • Saved Locally", true);
-                if (notifyUser) showToast("Could not reach Google Sheet right now.");
-            }
-        }
-
-        function persistLocalOnly() {
-            try {
-                localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(state.sections));
-                localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(state.team));
-                localStorage.setItem(STORAGE_KEYS.gallery, JSON.stringify(state.gallery));
-                localStorage.setItem(STORAGE_KEYS.notice, JSON.stringify(state.notice));
-                localStorage.setItem(STORAGE_KEYS.groupWork, JSON.stringify(state.groupWork));
-                localStorage.setItem(STORAGE_KEYS.lastSavedAt, String(Date.now()));
-                return true;
-            } catch (e) {
-                showToast("Browser storage full! Remove large photos or use smaller ones.");
-                return false;
-            }
-        }
-
-        function populateSectionInputs() {
-            document.getElementById("secFamiliesCount").value = cleanText(state.sections.familiesCount, "50+");
-            document.getElementById("secVolunteersCount").value = cleanText(state.sections.volunteersCount, "50+");
-            document.getElementById("secEventsCount").value = cleanText(state.sections.eventsCount, "10+");
-            document.getElementById("secHeroTitle").value = cleanText(state.sections.heroTitle, "");
-            document.getElementById("secHeroSubtitle").value = cleanText(state.sections.heroSubtitle, "");
-            document.getElementById("secAboutText").value = cleanText(state.sections.aboutText, "");
-            document.getElementById("secDonationNumber").value = cleanText(state.sections.donationNumber, "+8801956631465");
-            document.getElementById("secFounderName").value = cleanText(state.sections.founderName, "");
-            document.getElementById("secFounderRole").value = cleanText(state.sections.founderRole, "");
-            document.getElementById("secFounderQuote").value = cleanText(state.sections.founderQuote, "");
-        }
-
-        function readSectionInputs() {
-            state.sections.familiesCount = document.getElementById("secFamiliesCount").value.trim() || "50+";
-            state.sections.volunteersCount = document.getElementById("secVolunteersCount").value.trim() || "50+";
-            state.sections.eventsCount = document.getElementById("secEventsCount").value.trim() || "10+";
-            state.sections.heroTitle = document.getElementById("secHeroTitle").value.trim();
-            state.sections.heroSubtitle = document.getElementById("secHeroSubtitle").value.trim();
-            state.sections.aboutText = document.getElementById("secAboutText").value.trim();
-            state.sections.donationNumber = document.getElementById("secDonationNumber").value.trim() || "+8801956631465";
-            state.sections.founderName = document.getElementById("secFounderName").value.trim();
-            state.sections.founderRole = document.getElementById("secFounderRole").value.trim();
-            state.sections.founderQuote = document.getElementById("secFounderQuote").value.trim();
-        }
-
-        function saveSiteSections() {
-            readSectionInputs();
-            autoSaveAndSync("saveAll", {}, true, true);
-            renderAll();
-        }
-
-        function autoSaveAndSync(syncType = "saveAll", extraPayload = {}, notify = true, explicitPush = false) {
-            const savedLocally = persistLocalOnly();
-            if (!savedLocally) return;
-
-            updateSyncStatus("shikhor@bd • Saved Locally & Syncing...");
-
-            if (GOOGLE_SCRIPT_URL) {
-                const payload = JSON.stringify({
-                    action: syncType,
-                    sections: state.sections,
-                    team: state.team,
-                    gallery: state.gallery,
-                    notice: state.notice,
-                    groupWork: state.groupWork,
-                    ...extraPayload
-                });
-
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: payload
-                })
-                .then(r => r.json())
-                .then(res => {
-                    if (res && res.success) {
-                        updateSyncStatus("shikhor@bd • Saved & Synced");
-                        if (notify) showToast(explicitPush ? "Pushed to Google Sheet!" : "Saved & synced!");
-                    } else {
-                        updateSyncStatus("shikhor@bd • Saved Locally", true);
-                        if (notify) showToast("Saved locally (check Sheet script).");
-                    }
-                })
-                .catch(() => {
-                    fetch(GOOGLE_SCRIPT_URL, {
-                        method: "POST",
-                        mode: "no-cors",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: payload
-                    })
-                    .then(() => {
-                        updateSyncStatus("shikhor@bd • Saved Locally & Sent");
-                        if (notify) showToast(explicitPush ? "Pushed to Google Sheet!" : "Saved & synced!");
-                    })
-                    .catch(() => {
-                        updateSyncStatus("shikhor@bd • Saved Locally", true);
-                        if (notify) showToast("Saved locally (offline / sync pending).");
-                    });
-                });
-            } else if (notify) {
-                showToast("Saved locally!");
-            }
-        }
-
-        function compressImageFile(file, maxWidth = 480, quality = 0.55) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        let w = img.width;
-                        let h = img.height;
-                        if (w > maxWidth) {
-                            h = Math.round((h * maxWidth) / w);
-                            w = maxWidth;
-                        }
-                        const canvas = document.createElement("canvas");
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL("image/jpeg", quality));
-                    };
-                    img.onerror = reject;
-                    img.src = ev.target.result;
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function pickImageFor(target) {
-            pendingUploadTarget = target;
-            const picker = document.getElementById("autoFilePicker");
-            picker.value = "";
-            picker.click();
-        }
-
-        document.getElementById("autoFilePicker").addEventListener("change", async (e) => {
-            const file = e.target.files && e.target.files[0];
-            if (!file || !pendingUploadTarget) return;
-
-            try {
-                const dataUrl = await compressImageFile(file);
-                const target = pendingUploadTarget;
-                pendingUploadTarget = null;
-
-                if (target === "logo") {
-                    state.sections.logoUrl = dataUrl;
-                } else if (target === "founder") {
-                    state.sections.founderPhoto = dataUrl;
-                } else if (target === "new-gallery") {
-                    const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ") || "Gallery Photo";
-                    state.gallery.unshift({
-                        id: "gal-" + Date.now(),
-                        caption: cleanTitle,
-                        image: dataUrl
-                    });
-                } else if (target.startsWith("gallery:")) {
-                    const id = target.split(":")[1];
-                    const item = state.gallery.find(g => g.id === id);
-                    if (item) item.image = dataUrl;
-                } else if (target.startsWith("team:")) {
-                    const id = target.split(":")[1];
-                    const member = state.team.find(m => m.id === id);
-                    if (member) member.photo = dataUrl;
-                } else if (target.startsWith("notice:")) {
-                    const id = target.split(":")[1];
-                    const post = state.notice.find(n => n.id === id);
-                    if (post) post.image = dataUrl;
-                }
-
-                renderAll();
-                autoSaveAndSync("saveAll", {}, true);
-            } catch (err) {
-                alert("Could not load this image file.");
-            }
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "saveAll",
+            sections: state.sections,
+            team: state.team,
+            notice: state.notice
+          })
         });
+        setSyncStatus("Synced with Google Sheet", "text-emerald-300");
+        if (showAlert) alert("All changes pushed to Google Sheet successfully!");
+      } catch (err) {
+        setSyncStatus("Sync failed (saved locally)", "text-red-300");
+        if (showAlert) alert("Could not reach Google Sheet. Saved locally.");
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
 
-        function changeItemPosition(listName, itemId, requestedPosition) {
-            const allowedLists = ["team", "groupWork", "gallery", "notice"];
-            if (!allowedLists.includes(listName)) return;
-
-            const list = state[listName];
-            const oldIndex = list.findIndex(item => item.id === itemId);
-            if (oldIndex < 0) return;
-
-            const rawPosition = Number.parseInt(requestedPosition, 10);
-            if (!Number.isFinite(rawPosition)) {
-                renderAll();
-                return;
-            }
-
-            const newIndex = Math.max(0, Math.min(list.length - 1, rawPosition - 1));
-            if (newIndex === oldIndex) return;
-
-            const [item] = list.splice(oldIndex, 1);
-            list.splice(newIndex, 0, item);
-
-            renderAll();
-            autoSaveAndSync("saveAll", {}, true);
+    async function pullFromSheetIfAvailable() {
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.startsWith("PASTE_")) return;
+      try {
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`);
+        const data = await res.json();
+        if (data && data.success) {
+          if (Array.isArray(data.team) && data.team.length > 0) {
+            state.team = data.team.map((m, idx) => ({
+              id: m.id || m["Member ID"] || `tm-${idx + 1}`,
+              name: String(m.name || m["Full Name"] || "").trim(),
+              role: String(m.role || m["Designation / Role"] || "").trim(),
+              photo: String(m.photo || m["Photo URL"] || "./logo.png").trim() || "./logo.png",
+              status: String(m.status || m["Status"] || "Active").trim() || "Active"
+            })).filter(m => m.name);
+          }
+          if (data.sections && typeof data.sections === "object") {
+            state.sections = { ...state.sections, ...data.sections };
+          }
+          if (Array.isArray(data.notice) && data.notice.length > 0) {
+            state.notice = data.notice.map((n, idx) => ({
+              id: n.id || n["Notice ID"] || `item-${idx + 1}`,
+              category: n.category || n["Category"] || "Notice",
+              status: n.status || n["Status"] || "Published",
+              date: n.date || n["Publish Date"] || "",
+              title: n.title || n["Headline / Title"] || "",
+              image: n.image || n["Image URL"] || "./gallery1.jpg",
+              summary: n.summary || n["Summary"] || "",
+              fullContent: n.fullContent || n["Full Content"] || ""
+            }));
+          }
+          saveLocalState();
+          renderAll();
+          setSyncStatus("Loaded latest data from Sheet", "text-emerald-300");
         }
+      } catch (_) {}
+    }
 
-        function addNewMember() {
-            const newId = "tm-" + Date.now();
-            state.team.push({ id: newId, name: "New Panel Member", role: "Panel Member", photo: "./logo.png" });
-            renderAll();
-            autoSaveAndSync("saveAll", {}, true);
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+      document.getElementById(tabId).classList.remove("hidden");
+      document.querySelectorAll(".tab-btn").forEach(b => {
+        if (b.dataset.tab === tabId) {
+          b.className = "tab-btn px-4 py-2 rounded-xl bg-[#4E2D1C] text-white text-sm font-semibold";
+        } else {
+          b.className = "tab-btn px-4 py-2 rounded-xl bg-white text-[#4E2D1C] border border-[#D4C3B3] text-sm font-semibold";
         }
+      });
+    }
 
-        function updateMemberField(id, field, val) {
-            const m = state.team.find(x => x.id === id);
-            if (!m) return;
-            m[field] = cleanText(val, field === "name" ? "Panel Member" : "Designation");
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    function updateMember(index, field, value) {
+      if (!state.team[index]) return;
+      state.team[index][field] = value;
+      scheduleAutoSync();
+    }
 
-        function removeMember(id) {
-            state.team = state.team.filter(m => m.id !== id);
-            renderAll();
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    function moveMember(index, delta) {
+      const target = index + delta;
+      if (target < 0 || target >= state.team.length) return;
+      const temp = state.team[index];
+      state.team[index] = state.team[target];
+      state.team[target] = temp;
+      renderTeam();
+      scheduleAutoSync();
+    }
 
-        function addGroupWorkItem() {
-            const newId = "gw-" + Date.now();
-            state.groupWork.push({
-                id: newId,
-                icon: "fa-hands-holding-child",
-                title: "New Group Work",
-                description: "Describe this group work initiative."
-            });
-            renderAll();
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    function deleteMember(index) {
+      if (!confirm("Remove this member?")) return;
+      state.team.splice(index, 1);
+      renderTeam();
+      scheduleAutoSync();
+    }
 
-        function updateGroupWorkField(id, field, val) {
-            const g = state.groupWork.find(x => x.id === id);
-            if (!g) return;
-            g[field] = val;
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    function addMember() {
+      state.team.push({
+        id: "tm-" + (state.team.length + 1),
+        name: "New Member",
+        role: "Executive Member",
+        photo: "./logo.png",
+        status: "Active"
+      });
+      renderTeam();
+      scheduleAutoSync();
+    }
 
-        function removeGroupWorkItem(id) {
-            state.groupWork = state.groupWork.filter(g => g.id !== id);
-            renderAll();
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    function renderTeam() {
+      const grid = document.getElementById("teamGrid");
+      const badge = document.getElementById("teamCountBadge");
+      if (badge) badge.textContent = String(state.team.length);
+      if (!grid) return;
 
-        function updateGalleryCaption(id, caption) {
-            const g = state.gallery.find(x => x.id === id);
-            if (!g) return;
-            g.caption = caption;
-            autoSaveAndSync("saveAll", {}, true);
-        }
+      grid.innerHTML = state.team.map((m, idx) => `
+        <div class="bg-white p-4 rounded-2xl border border-[#DFD0C2] shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between text-xs font-bold text-[#7A5643]">
+            <span>Position ${idx + 1}</span>
+            <div class="flex gap-1">
+              <button type="button" onclick="moveMember(${idx}, -1)" class="px-2 py-0.5 rounded bg-[#F2E8DF] hover:bg-[#E4D3C3]">↑</button>
+              <button type="button" onclick="moveMember(${idx}, 1)" class="px-2 py-0.5 rounded bg-[#F2E8DF] hover:bg-[#E4D3C3]">↓</button>
+              <button type="button" onclick="deleteMember(${idx})" class="px-2 py-0.5 rounded bg-red-100 text-red-700 hover:bg-red-200">✕</button>
+            </div>
+          </div>
+          <img src="${escapeHtml(m.photo || './logo.png')}" alt="${escapeHtml(m.name)}" onerror="this.src='./logo.png'" class="w-20 h-20 mx-auto rounded-xl object-cover border border-[#D4C3B3]" />
+          <input type="text" value="${escapeHtml(m.name)}" oninput="updateMember(${idx}, 'name', this.value)" placeholder="Full Name" class="w-full px-2.5 py-1.5 rounded-lg border border-[#D4C3B3] text-xs font-semibold" />
+          <input type="text" value="${escapeHtml(m.role)}" oninput="updateMember(${idx}, 'role', this.value)" placeholder="Designation / Role" class="w-full px-2.5 py-1.5 rounded-lg border border-[#D4C3B3] text-xs" />
+          <input type="text" value="${escapeHtml(m.photo || '')}" onchange="updateMember(${idx}, 'photo', this.value); renderTeam();" placeholder="Photo URL (e.g. rikto.png)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#D4C3B3] text-xs text-[#6E4730]" />
+        </div>
+      `).join("");
+    }
 
-        function removeGalleryItem(id) {
-            state.gallery = state.gallery.filter(g => g.id !== id);
-            renderAll();
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    function updateSectionField(key, value) {
+      state.sections[key] = value;
+      scheduleAutoSync();
+    }
 
-        function addPostByCategory(category) {
-            const newId = "item-" + Date.now();
-            state.notice.unshift({
-                id: newId,
-                category,
-                status: "Published",
-                date: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
-                title: category === "News" ? "New News Story" : "New Official Notice",
-                image: "./gallery1.jpg",
-                summary: `Short summary for this ${category.toLowerCase()}.`,
-                fullContent: `Full details for this ${category.toLowerCase()}.`
-            });
-            renderAll();
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    function renderSections() {
+      const fields = ["familiesCount", "volunteersCount", "eventsCount", "heroTitle", "heroSubtitle", "aboutText", "donationNumber"];
+      fields.forEach(k => {
+        const el = document.getElementById("sec_" + k);
+        if (el) el.value = state.sections[k] || "";
+      });
+    }
 
-        function changeNoticePosition(itemId, requestedPosition) {
-            const item = state.notice.find(x => x.id === itemId);
-            if (!item) return;
+    function addNotice() {
+      state.notice.unshift({
+        id: "item-" + Date.now(),
+        category: "Notice",
+        status: "Published",
+        date: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+        title: "New Announcement",
+        image: "./gallery1.jpg",
+        summary: "Short summary here.",
+        fullContent: "Full notice or news content here."
+      });
+      renderNotice();
+      scheduleAutoSync();
+    }
 
-            const category = String(item.category || "Notice").toLowerCase();
-            const sameSection = state.notice.filter(x =>
-                String(x.category || "Notice").toLowerCase() === category
-            );
-            const oldIndex = sameSection.findIndex(x => x.id === itemId);
-            const rawPosition = Number.parseInt(requestedPosition, 10);
+    function updateNotice(index, field, value) {
+      if (!state.notice[index]) return;
+      state.notice[index][field] = value;
+      scheduleAutoSync();
+    }
 
-            if (!Number.isFinite(rawPosition)) {
-                renderAll();
-                return;
-            }
+    function deleteNotice(index) {
+      state.notice.splice(index, 1);
+      renderNotice();
+      scheduleAutoSync();
+    }
 
-            const newIndex = Math.max(0, Math.min(sameSection.length - 1, rawPosition - 1));
-            if (newIndex === oldIndex) return;
+    function renderNotice() {
+      const wrap = document.getElementById("noticeList");
+      if (!wrap) return;
+      wrap.innerHTML = state.notice.map((n, idx) => `
+        <div class="p-4 rounded-2xl border border-[#DFD0C2] bg-[#FAF6F2] space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <input type="text" value="${escapeHtml(n.title)}" oninput="updateNotice(${idx}, 'title', this.value)" class="flex-1 px-3 py-1.5 rounded-lg border border-[#D4C3B3] text-sm font-bold" />
+            <button type="button" onclick="deleteNotice(${idx})" class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold">Delete</button>
+          </div>
+          <textarea rows="2" oninput="updateNotice(${idx}, 'summary', this.value)" class="w-full px-3 py-1.5 rounded-lg border border-[#D4C3B3] text-xs">${escapeHtml(n.summary)}</textarea>
+        </div>
+      `).join("");
+    }
 
-            const [moved] = sameSection.splice(oldIndex, 1);
-            sameSection.splice(newIndex, 0, moved);
+    function renderAll() {
+      renderTeam();
+      renderSections();
+      renderNotice();
+    }
 
-            const reorderedIds = new Set(sameSection.map(x => x.id));
-            const orderedCategoryItems = sameSection;
-            let categoryIndex = 0;
-            state.notice = state.notice.map(existing =>
-                reorderedIds.has(existing.id) ? orderedCategoryItems[categoryIndex++] : existing
-            );
+    function showDashboard() {
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("adminDashboard").classList.remove("hidden");
+      renderAll();
+      startAdminSession();
+      pullFromSheetIfAvailable();
+    }
 
-            renderAll();
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    function logoutAdmin() {
+      endAdminSession();
+      document.getElementById("adminDashboard").classList.add("hidden");
+      document.getElementById("loginScreen").classList.remove("hidden");
+    }
 
-        function updateNoticeField(id, field, val) {
-            const n = state.notice.find(x => x.id === id);
-            if (!n) return;
-            n[field] = val;
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const u = document.getElementById("loginUser").value.trim();
+      const p = document.getElementById("loginPass").value;
+      const errEl = document.getElementById("loginError");
+      if (u === AUTH_USER && p === AUTH_PASS) {
+        errEl.classList.add("hidden");
+        sessionStorage.setItem(SESSION_AUTH_KEY, "1");
+        showDashboard();
+      } else {
+        errEl.textContent = "Invalid Admin ID or Password.";
+        errEl.classList.remove("hidden");
+      }
+    });
 
-        function removeNoticeItem(id) {
-            state.notice = state.notice.filter(n => n.id !== id);
-            renderAll();
-            autoSaveAndSync("saveAll", {}, true);
-        }
+    window.addEventListener("pagehide", () => {
+      if (sessionStorage.getItem(SESSION_AUTH_KEY) === "1") {
+        endAdminSession();
+      }
+    });
 
-        function renderPostCards(list) {
-            if (!list.length) {
-                return `<div class="col-span-full p-6 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3] text-center text-xs text-[#5C3D2E]">No items in this section yet. Click the Add button above to create one.</div>`;
-            }
-            return list.map((n, index) => `
-                <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-3">
-                    <div>
-                        <label class="block text-[10px] font-bold text-[#5C3D2E]">Display Position (1 = First in this section)</label>
-                        <input type="number" min="1" max="${list.length}" value="${index + 1}" onchange="changeNoticePosition('${escapeAttr(n.id)}', this.value)" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <img src="${escapeAttr(cleanText(n.image, './gallery1.jpg'))}" onerror="this.src='./logo.png'" class="w-20 h-20 rounded-xl object-cover border border-[#C4AE99] shrink-0">
-                        <div class="flex-1 space-y-2">
-                            <select onchange="updateNoticeField('${escapeAttr(n.id)}', 'status', this.value)" class="px-2.5 py-1 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
-                                <option value="Published" ${n.status === 'Published' ? 'selected' : ''}>Published</option>
-                                <option value="Draft" ${n.status === 'Draft' ? 'selected' : ''}>Draft</option>
-                            </select>
-                            <input type="text" value="${escapeAttr(cleanText(n.title, ''))}" onchange="updateNoticeField('${escapeAttr(n.id)}', 'title', this.value)" placeholder="Title" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
-                        </div>
-                    </div>
-                    <input type="text" value="${escapeAttr(cleanText(n.summary, ''))}" onchange="updateNoticeField('${escapeAttr(n.id)}', 'summary', this.value)" placeholder="Short summary" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">
-                    <textarea rows="2" onchange="updateNoticeField('${escapeAttr(n.id)}', 'fullContent', this.value)" placeholder="Full details" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">${escapeAttr(cleanText(n.fullContent, ''))}</textarea>
-                    <div class="flex items-center justify-between gap-2">
-                        <button type="button" onclick="pickImageFor('notice:${escapeAttr(n.id)}')" class="px-3.5 py-2 rounded-xl bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold">
-                            <i class="fa-solid fa-image mr-1"></i> Upload Photo
-                        </button>
-                        <button type="button" onclick="removeNoticeItem('${escapeAttr(n.id)}')" class="px-3 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
-                            <i class="fa-solid fa-trash mr-1"></i> Delete
-                        </button>
-                    </div>
-                </div>
-            `).join("");
-        }
-
-        function renderAll() {
-            const logoSrc = cleanText(state.sections.logoUrl, "./logo.png");
-            document.getElementById("admLogoPreview").src = logoSrc;
-            document.getElementById("gateLogoImg").src = logoSrc;
-            document.getElementById("admFounderPhoto").src = cleanText(state.sections.founderPhoto, "./zarif.jpg");
-
-            const noticeItems = state.notice.filter(x => String(x.category).toLowerCase() !== "news");
-            const newsItems = state.notice.filter(x => String(x.category).toLowerCase() === "news");
-
-            document.getElementById("adminNoticeOnlyList").innerHTML = renderPostCards(noticeItems);
-            document.getElementById("adminNewsOnlyList").innerHTML = renderPostCards(newsItems);
-
-            const cleanTeam = normalizeTeamList(state.team);
-            state.team = cleanTeam;
-
-            document.getElementById("adminTeamGrid").innerHTML = cleanTeam.map(m => {
-                const safeName = cleanText(m.name, "Panel Member");
-                const safeRole = cleanText(m.role, "Designation");
-                const safePhoto = cleanText(m.photo, "./logo.png");
-                return `
-                    <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-2.5">
-                        <label class="block text-[10px] font-bold text-[#5C3D2E]">Display Position (1 = First)</label>
-                        <input type="number" min="1" max="${cleanTeam.length}" value="${cleanTeam.indexOf(m) + 1}" onchange="changeItemPosition('team', '${escapeAttr(m.id)}', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
-                        <img src="${escapeAttr(safePhoto)}" onerror="this.src='./logo.png'" class="w-24 h-24 mx-auto rounded-2xl object-cover border-2 border-[#B88655]">
-                        <input type="text" value="${escapeAttr(safeName)}" onchange="updateMemberField('${escapeAttr(m.id)}', 'name', this.value)" placeholder="Member Name" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
-                        <input type="text" value="${escapeAttr(safeRole)}" onchange="updateMemberField('${escapeAttr(m.id)}', 'role', this.value)" placeholder="Designation" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px] text-center">
-                        <div class="flex items-center gap-2 pt-1">
-                            <button type="button" onclick="pickImageFor('team:${escapeAttr(m.id)}')" class="flex-1 py-2 px-2 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                                <i class="fa-solid fa-image mr-1"></i> Photo
-                            </button>
-                            <button type="button" onclick="removeMember('${escapeAttr(m.id)}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join("");
-
-            document.getElementById("adminGroupWorkList").innerHTML = state.groupWork.map((g, index) => `
-                <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-2.5">
-                    <label class="block text-[10px] font-bold text-[#5C3D2E]">Display Position (1 = First)</label>
-                    <input type="number" min="1" max="${state.groupWork.length}" value="${index + 1}" onchange="changeItemPosition('groupWork', '${escapeAttr(g.id)}', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
-                    <input type="text" value="${escapeAttr(cleanText(g.title, ''))}" onchange="updateGroupWorkField('${escapeAttr(g.id)}', 'title', this.value)" placeholder="Group Work Title" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
-                    <input type="text" value="${escapeAttr(cleanText(g.icon, 'fa-hands-holding-child'))}" onchange="updateGroupWorkField('${escapeAttr(g.id)}', 'icon', this.value)" placeholder="Icon (e.g. fa-hands-holding-child)" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px]">
-                    <textarea rows="3" onchange="updateGroupWorkField('${escapeAttr(g.id)}', 'description', this.value)" placeholder="Description" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">${escapeAttr(cleanText(g.description, ''))}</textarea>
-                    <div class="flex justify-end">
-                        <button type="button" onclick="removeGroupWorkItem('${escapeAttr(g.id)}')" class="px-3 py-1.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
-                            <i class="fa-solid fa-trash mr-1"></i> Delete
-                        </button>
-                    </div>
-                </div>
-            `).join("");
-
-            document.getElementById("adminGalleryList").innerHTML = state.gallery.map((g, index) => `
-                <div class="bg-[#F2E8DF] rounded-2xl overflow-hidden border border-[#D4C3B3] flex flex-col justify-between">
-                    <div class="p-3 pb-0">
-                        <label class="block text-[10px] font-bold text-[#5C3D2E]">Display Position (1 = First)</label>
-                        <input type="number" min="1" max="${state.gallery.length}" value="${index + 1}" onchange="changeItemPosition('gallery', '${escapeAttr(g.id)}', this.value)" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
-                    </div>
-                    <img src="${escapeAttr(cleanText(g.image, './gallery1.jpg'))}" onerror="this.src='./logo.png'" class="w-full h-40 object-cover">
-                    <div class="p-3 space-y-2">
-                        <input type="text" value="${escapeAttr(cleanText(g.caption, ''))}" onchange="updateGalleryCaption('${escapeAttr(g.id)}', this.value)" placeholder="Caption" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-semibold">
-                        <div class="flex items-center gap-2">
-                            <button type="button" onclick="pickImageFor('gallery:${escapeAttr(g.id)}')" class="flex-1 py-2 px-2.5 rounded-xl bg-[#3B261D] hover:bg-[#231712] text-white text-xs font-bold">
-                                <i class="fa-solid fa-image mr-1"></i> Change Photo
-                            </button>
-                            <button type="button" onclick="removeGalleryItem('${escapeAttr(g.id)}')" class="py-2 px-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join("");
-        }
-
-        window.addEventListener("DOMContentLoaded", () => {
-            loadState();
-            const logoSrc = cleanText(state.sections.logoUrl, "./logo.png");
-            document.getElementById("gateLogoImg").src = logoSrc;
-
-            if (sessionStorage.getItem("shikhor_admin_authed") === "1") {
-                document.getElementById("lockScreen").classList.add("hidden");
-                document.getElementById("adminDashboard").classList.remove("hidden");
-                populateSectionInputs();
-                switchSectionTab(currentTab);
-                renderAll();
-                syncFromGoogleSheetOnOpen(false, false);
-            }
-        });
-    </script>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (sessionStorage.getItem(SESSION_AUTH_KEY) === "1") {
+        showDashboard();
+      }
+    });
+  </script>
 </body>
 </html>
