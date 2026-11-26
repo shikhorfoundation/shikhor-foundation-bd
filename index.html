@@ -155,7 +155,7 @@
 <body class="bg-[#F6EFE8] text-[#231712] antialiased selection:bg-[#5C3D2E] selection:text-white">
 
     <!-- IMAGE LIGHTBOX MODAL -->
-    <div id="lightboxModal" onclick="closeLightbox()" class="hidden">
+    <div id="lightboxModal" onclick="if(event.target === this) closeLightbox()" class="hidden">
         <div class="relative max-w-4xl w-full text-center">
             <button type="button" onclick="closeLightbox()" class="px-3 py-1.5 rounded-lg bg-[#3B261D] text-white text-xs font-bold mb-3">
                 <i class="fa-solid fa-xmark"></i> Close
@@ -229,7 +229,7 @@
                 </nav>
 
                 <div class="flex items-center gap-2.5">
-                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 bg-[#8C583A] hover:bg-[#6E432B] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-solid fa-hands-helping"></i>
                         <span>Join Volunteer</span>
                     </a>
@@ -254,7 +254,7 @@
                 <a href="#gallery" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Gallery</a>
                 <a href="#contact" onclick="toggleMobileMenu()" class="block py-1 hover:text-[#8C583A]">Contact</a>
                 <a href="admin.html" class="block py-1 text-[#8C583A]">Admin Panel</a>
-                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" rel="noopener" class="block text-center py-2.5 bg-[#8C583A] text-white rounded-xl mt-2">Join as Volunteer</a>
             </div>
         </header>
 
@@ -299,16 +299,16 @@
                 </p>
 
                 <div class="mt-6 flex justify-center items-center gap-4">
-                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-brands fa-facebook-f text-sm"></i> Facebook Page
                     </a>
-                    <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    <a href="https://www.instagram.com/shikhor_foundation" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5">
                         <i class="fa-brands fa-instagram text-sm"></i> Instagram
                     </a>
                 </div>
 
                 <div class="mt-10 flex flex-wrap justify-center gap-4">
-                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1">
+                    <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" rel="noopener" class="px-8 py-4 bg-[#3B261D] hover:bg-[#231712] text-white font-semibold rounded-xl shadow-xl transition transform hover:-translate-y-1">
                         Join as Volunteer <i class="fa-solid fa-arrow-right ml-2"></i>
                     </a>
                     <a href="#donation" class="px-8 py-4 bg-[#FDFBF9] hover:bg-[#EFE5DC] text-[#3B261D] font-semibold rounded-xl border-2 border-[#B88655] shadow-md transition transform hover:-translate-y-1">
@@ -601,7 +601,7 @@
                         <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
                         <div class="bg-[#FDFBF9] py-3 px-6 rounded-xl border border-[#C4AE99] inline-flex items-center gap-3 mb-4 shadow-inner">
                             <span id="bkashNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
-                            <button id="bkashCopyBtn" onclick="copyToClipboard(document.getElementById('bkashNum').innerText, this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
+                            <button type="button" id="bkashCopyBtn" onclick="copyToClipboard(document.getElementById('bkashNum').innerText, this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
                         <div class="mt-2">
                             <a id="bkashDialLink" href="tel:*247*#*8801956631465#" class="inline-block px-4 py-2 bg-[#E2136F] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
@@ -619,7 +619,7 @@
                         <p class="text-xs text-[#6E5649] mb-6">Send Money</p>
                         <div class="bg-[#FDFBF9] py-3 px-6 rounded-xl border border-[#C4AE99] inline-flex items-center gap-3 mb-4 shadow-inner">
                             <span id="nagadNum" class="text-lg font-bold text-[#3B261D] tracking-wider">+8801956631465</span>
-                            <button id="nagadCopyBtn" onclick="copyToClipboard(document.getElementById('nagadNum').innerText, this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
+                            <button type="button" id="nagadCopyBtn" onclick="copyToClipboard(document.getElementById('nagadNum').innerText, this)" class="text-xs bg-[#3B261D] text-white px-3 py-1.5 rounded-lg hover:bg-[#231712] transition">Copy</button>
                         </div>
                         <div class="mt-2">
                             <a id="nagadDialLink" href="tel:*167*#*8801956631465#" class="inline-block px-4 py-2 bg-[#F7941D] text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
@@ -641,7 +641,7 @@
                     <p class="mt-4 text-[#4F392E] text-sm">Click any photo to view full screen. Every picture tells a story of hope.</p>
                 </div>
                 <div id="liveGalleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div onclick="openLightbox('./gallery1.jpg', 'Community Support Activity')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                    <div data-src="./gallery1.jpg" data-caption="Community Support Activity" onclick="openLightboxFromEl(this)" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
                         <img src="./gallery1.jpg" alt="Community Support Activity" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                     </div>
                 </div>
@@ -655,7 +655,7 @@
                 <p class="text-[#E8D9CB] max-w-xl mx-auto mb-8 text-sm sm:text-base">
                     Join our team of dedicated volunteers and help us spread compassion where it's needed most.
                 </p>
-                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1">
+                <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" rel="noopener" class="inline-block px-8 py-4 bg-[#E6B88A] text-[#231712] font-bold rounded-xl shadow-lg hover:bg-white transition transform hover:-translate-y-1">
                     Apply as a Volunteer Now ↗
                 </a>
             </div>
@@ -675,8 +675,8 @@
                         Rooted in Humanity, Growing with Compassion. Together for a Better Tomorrow.
                     </p>
                     <div class="flex items-center gap-3">
-                        <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" class="px-3 py-1.5 rounded-lg bg-[#1877F2] text-white text-xs font-bold">Facebook</a>
-                        <a href="https://www.instagram.com/shikhor_foundation" target="_blank" class="px-3 py-1.5 rounded-lg bg-[#8C583A] text-white text-xs font-bold">Instagram</a>
+                        <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-[#1877F2] text-white text-xs font-bold">Facebook</a>
+                        <a href="https://www.instagram.com/shikhor_foundation" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-[#8C583A] text-white text-xs font-bold">Instagram</a>
                     </div>
                 </div>
                 <div>
@@ -744,15 +744,13 @@
         <i class="fa-solid fa-arrow-up"></i>
     </button>
 
-    <a href="https://wa.me/8801956631465" target="_blank" class="fab-wa" title="Chat on WhatsApp">
+    <a href="https://wa.me/8801956631465" target="_blank" rel="noopener" class="fab-wa" title="Chat on WhatsApp">
         <i class="fa-brands fa-whatsapp text-2xl"></i>
     </a>
 
     <script>
         function loadTailwindFallback() {
-            const s = document.createElement("script");
-            s.src = "https://cdn.jsdelivr.net/npm/tailwindcss@3.4.16";
-            document.head.appendChild(s);
+            // Custom CSS rules are already inline in <style>, so no external CDN fallback script is needed.
         }
 
         function handleImgError(imgEl, fallbackSrc) {
@@ -761,7 +759,7 @@
             imgEl.src = fallbackSrc || "./logo.png";
         }
 
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyG003wCzu3Qi-JABNPEAG__7KD2zHMucE_YwD3SRX4aD9deXUj0MQ5mA1P0siHi1uT/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec";
         const visitorEnterTime = Date.now();
 
         const articleStore = {
@@ -862,7 +860,7 @@
             const shareUrl = activeArticleId
                 ? `${window.location.origin}${window.location.pathname}#article=${encodeURIComponent(activeArticleId)}`
                 : window.location.href;
-            navigator.clipboard.writeText(shareUrl).then(() => {
+            navigator.clipboard?.writeText(shareUrl).then(() => {
                 const prevHtml = btn.innerHTML;
                 btn.innerHTML = `<i class="fa-solid fa-check text-green-700"></i> Link Copied!`;
                 setTimeout(() => { btn.innerHTML = prevHtml; }, 2000);
@@ -912,7 +910,7 @@
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                headers: { 'Content-Type': 'application/json' },
                 body: jsonStr
             }).catch(() => {});
         }
@@ -987,14 +985,20 @@
             const grid = document.getElementById("liveInitiativesGrid");
             if (!grid || !Array.isArray(list) || list.length === 0) return;
 
-            grid.innerHTML = list.map(item => {
-                const icon = item.icon || "fa-hands-holding-child";
-                const title = item.title || "Group Work";
-                const desc = item.description || "";
+            const activeItems = list.filter(item => {
+                const status = String(item["Status"] || item.status || "Active").trim().toLowerCase();
+                return status !== "inactive" && status !== "archived" && status !== "draft";
+            });
+            if (activeItems.length === 0) return;
+
+            grid.innerHTML = activeItems.map(item => {
+                const rawIcon = String(item["Icon"] || item.icon || "fa-hands-holding-child").replace(/^fa-solid\s+/i, "").trim();
+                const title = item["Title"] || item.title || "Group Work";
+                const desc = item["Description"] || item.description || item["Location"] || item.location || "";
                 return `
                     <div class="p-8 rounded-3xl bg-[#F2E8DF] border border-[#D4C3B3] hover-lift">
                         <div class="w-12 h-12 bg-[#3B261D] text-white rounded-xl flex items-center justify-center text-lg mb-6 shadow-sm">
-                            <i class="fa-solid ${escapeHtml(icon)}"></i>
+                            <i class="fa-solid ${escapeHtml(rawIcon)}"></i>
                         </div>
                         <h3 class="text-xl font-bold font-heading text-[#231712] mb-3">${escapeHtml(title)}</h3>
                         <p class="text-[#4F392E] text-sm leading-relaxed">${escapeHtml(desc)}</p>
@@ -1007,11 +1011,18 @@
             const grid = document.getElementById("liveGalleryGrid");
             if (!grid || !Array.isArray(galleryList) || galleryList.length === 0) return;
 
-            grid.innerHTML = galleryList.map((item, i) => {
-                const src = sanitizeUrl(item.image || item.url || item.src || item.photo, "./gallery1.jpg");
-                const caption = item.caption || item.title || `Moment ${i + 1}`;
+            const activeItems = galleryList.filter(item => {
+                const status = String(item["Status"] || item.status || "Active").trim().toLowerCase();
+                return status !== "inactive" && status !== "archived" && status !== "draft";
+            });
+            if (activeItems.length === 0) return;
+
+            grid.innerHTML = activeItems.map((item, i) => {
+                const rawImg = item["Image URL"] || item.image || item.url || item.src || item.photo || "";
+                const src = sanitizeUrl(rawImg, "./gallery1.jpg");
+                const caption = item["Title / Caption"] || item.caption || item.title || `Moment ${i + 1}`;
                 return `
-                    <div onclick="openLightbox('${escapeHtml(src)}', '${escapeHtml(caption)}')" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
+                    <div data-src="${escapeHtml(src)}" data-caption="${escapeHtml(caption)}" onclick="openLightboxFromEl(this)" class="h-64 rounded-3xl bg-[#FDFBF9] border-2 border-[#D4C3B3] overflow-hidden shadow-md hover-lift cursor-pointer relative group">
                         <img src="${escapeHtml(src)}" alt="${escapeHtml(caption)}" onerror="handleImgError(this, './logo.png')" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                     </div>
                 `;
@@ -1022,7 +1033,12 @@
             const grid = document.getElementById("livePanelGrid");
             if (!grid || !Array.isArray(teamList) || teamList.length === 0) return;
 
-            const founderObj = teamList.find(m => {
+            const activeMembers = teamList.filter(m => {
+                const status = String(m["Status"] || m.status || "Active").trim().toLowerCase();
+                return status !== "inactive" && status !== "archived";
+            });
+
+            const founderObj = activeMembers.find(m => {
                 const role = String(m["Designation / Role"] || m.role || "").toLowerCase();
                 return role.includes("founder") || role.includes("ceo");
             });
@@ -1042,7 +1058,7 @@
                 }
             }
 
-            const panelMembers = teamList.filter(m => {
+            const panelMembers = activeMembers.filter(m => {
                 const role = String(m["Designation / Role"] || m.role || "").toLowerCase();
                 return !role.includes("founder") && !role.includes("ceo");
             });
@@ -1204,7 +1220,7 @@
             loadLocalFallbackFromAdmin();
             if (!GOOGLE_SCRIPT_URL) return;
             try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`, { cache: "no-store" });
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`);
                 const data = await res.json();
                 if (data && data.success) {
                     if (Array.isArray(data.notice) && data.notice.length > 0) {
@@ -1254,6 +1270,10 @@
         window.addEventListener('pagehide', () => { logPublicVisitorExit(); });
 
         function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('hidden'); }
+        function openLightboxFromEl(el) {
+            if (!el) return;
+            openLightbox(el.dataset.src || "./gallery1.jpg", el.dataset.caption || "Gallery Photo");
+        }
         function openLightbox(src, caption) {
             const img = document.getElementById('lightboxImg');
             img.dataset.fallbackApplied = "";
@@ -1263,7 +1283,7 @@
         }
         function closeLightbox() { document.getElementById('lightboxModal').classList.add('hidden'); }
         function copyToClipboard(text, btn) {
-            navigator.clipboard.writeText(text).then(() => {
+            navigator.clipboard?.writeText(text).then(() => {
                 const originalText = btn.innerText;
                 btn.innerText = "Copied!";
                 setTimeout(() => { btn.innerText = originalText; }, 2000);
@@ -1276,13 +1296,13 @@
             let botA = "";
             if (type === 'volunteer') {
                 userQ = "How to join as a volunteer?";
-                botA = `Click <strong>"Join Volunteer"</strong> in the menu or <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" style="color:#8C583A;font-weight:700;text-decoration:underline;">Fill Volunteer Form</a>.`;
+                botA = `Click <strong>"Join Volunteer"</strong> in the menu or <a href="https://forms.gle/G841ht9aQ9ca1ja86" target="_blank" rel="noopener" style="color:#8C583A;font-weight:700;text-decoration:underline;">Fill Volunteer Form</a>.`;
             } else if (type === 'donation') {
                 userQ = "How to make a donation?";
                 botA = `Donate via bKash or Nagad Personal: <strong>+8801956631465</strong> (Send Money).`;
             } else {
                 userQ = "Need custom help? (Social Links)";
-                botA = `Reach us on <a href="https://wa.me/8801956631465" target="_blank" style="font-weight:700;text-decoration:underline;">WhatsApp</a>, <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" style="font-weight:700;text-decoration:underline;">Facebook</a>, or <a href="https://www.instagram.com/shikhor_foundation" target="_blank" style="font-weight:700;text-decoration:underline;">Instagram</a>.`;
+                botA = `Reach us on <a href="https://wa.me/8801956631465" target="_blank" rel="noopener" style="font-weight:700;text-decoration:underline;">WhatsApp</a>, <a href="https://www.facebook.com/Shikhor.Foundation.For.BD" target="_blank" rel="noopener" style="font-weight:700;text-decoration:underline;">Facebook</a>, or <a href="https://www.instagram.com/shikhor_foundation" target="_blank" rel="noopener" style="font-weight:700;text-decoration:underline;">Instagram</a>.`;
             }
             chatMessages.innerHTML += `
                 <div style="background:#3B261D;color:#fff;padding:10px;border-radius:14px;align-self:flex-end;max-width:85%;">${userQ}</div>
