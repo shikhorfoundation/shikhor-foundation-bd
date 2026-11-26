@@ -335,7 +335,7 @@
 
   <script>
     // =========================================================================
-    // CONFIGURATION — Replace APPS_SCRIPT_URL with your deployed Web App URL
+    // CONFIGURATION
     // =========================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyG003wCzu3Qi-JABNPEAG__7KD2zHMucE_YwD3SRX4aD9deXUj0MQ5mA1P0siHi1uT/exec";
     const ADMIN_ID = "shikhor@bd";
@@ -464,7 +464,7 @@
       return Boolean(APPS_SCRIPT_URL) && !APPS_SCRIPT_URL.includes("REPLACE_WITH_YOUR_DEPLOYMENT_ID");
     }
 
-    // --- Image File Explorer Upload Helper ---
+    // --- Image File Explorer Upload Helper (Auto-fit under Google Sheet 50k cell limit) ---
     function triggerImageUpload(targetType, fieldOrIndex) {
       pendingUploadTarget = { targetType, fieldOrIndex };
       const picker = document.getElementById("imageFilePicker");
@@ -473,29 +473,37 @@
       picker.click();
     }
 
-    function readFileAsOptimizedDataUrl(file, maxDim = 900, quality = 0.82) {
+    function readFileAsSheetSafeDataUrl(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
           const img = new Image();
           img.onload = () => {
-            let { width, height } = img;
-            if (width > maxDim || height > maxDim) {
-              if (width >= height) {
-                height = Math.round((height * maxDim) / width);
-                width = maxDim;
-              } else {
-                width = Math.round((width * maxDim) / height);
-                height = maxDim;
+            let maxDim = 420;
+            let quality = 0.78;
+            let out = "";
+
+            for (let attempt = 0; attempt < 5; attempt++) {
+              let { width, height } = img;
+              if (width > maxDim || height > maxDim) {
+                if (width >= height) {
+                  height = Math.round((height * maxDim) / width);
+                  width = maxDim;
+                } else {
+                  width = Math.round((width * maxDim) / height);
+                  height = maxDim;
+                }
               }
+              const canvas = document.createElement("canvas");
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, width, height);
+              out = canvas.toDataURL("image/jpeg", quality);
+              if (out.length <= 45000) break;
+              maxDim = Math.round(maxDim * 0.78);
+              quality = Math.max(0.45, quality - 0.1);
             }
-            const canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, width, height);
-            const mime = file.type === "image/png" ? "image/png" : "image/jpeg";
-            const out = mime === "image/png" ? canvas.toDataURL("image/png") : canvas.toDataURL("image/jpeg", quality);
             resolve(out);
           };
           img.onerror = () => resolve(reader.result);
@@ -513,7 +521,7 @@
       if (!file || !target) return;
 
       try {
-        const dataUrl = await readFileAsOptimizedDataUrl(file);
+        const dataUrl = await readFileAsSheetSafeDataUrl(file);
         if (target.targetType === "team") {
           const idx = target.fieldOrIndex;
           if (state.team[idx]) {
@@ -540,7 +548,7 @@
             scheduleAutoSync(`Uploaded gallery image #${idx + 1}`);
           }
         }
-        showToast(`Uploaded "${file.name}"`);
+        showToast(`Uploaded "${file.name}" & syncing to Sheet...`);
       } catch (_) {
         showToast("Could not read selected image.", true);
       }
@@ -709,6 +717,10 @@
         });
         appendLocalLog(`Admin logged in (Session ${sid})`);
       }
+
+      const initialElapsed = Math.max(0, Math.round((Date.now() - startMs) / 1000));
+      const badgeEl = document.getElementById("sessionTimerBadge");
+      if (badgeEl) badgeEl.textContent = `Session: ${formatDuration(initialElapsed)}`;
 
       clearInterval(sessionTimerInterval);
       sessionTimerInterval = setInterval(() => {
@@ -1257,9 +1269,11 @@
       }
     });
 
-    window.addEventListener("pagehide", () => {
+    // Only close/logout when the tab or browser is actually closing (not on refresh or bfcache)
+    window.addEventListener("pagehide", (event) => {
+      if (event.persisted) return;
       if (sessionStorage.getItem(AUTH_FLAG) === "1") {
-        finishAdminSession("Tab/Page Exit");
+        finishAdminSession("Tab/Browser Close");
       }
     });
 
