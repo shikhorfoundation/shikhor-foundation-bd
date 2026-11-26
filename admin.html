@@ -5,130 +5,338 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shikhor Foundation | Admin Control Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .card-hover { transition: transform 0.16s ease, box-shadow 0.16s ease; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(56, 31, 18, 0.14); }
+    .custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #C7AE96; border-radius: 9999px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #F4ECE4; }
+  </style>
 </head>
-<body class="bg-[#F7F1EB] text-[#231712] min-h-screen font-sans">
+<body class="bg-[#F6EFE8] text-[#231712] min-h-screen custom-scroll">
+
+  <!-- Toast Banner -->
+  <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden max-w-sm bg-[#231712] text-white px-4 py-3 rounded-2xl shadow-xl border border-[#B88655] text-xs font-semibold flex items-center gap-2.5">
+    <span id="toastIcon" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0"></span>
+    <span id="toastMessage">Saved</span>
+  </div>
 
   <!-- Login Screen -->
   <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-[#DFD0C2] p-8">
-      <div class="text-center mb-6">
-        <img src="./logo.png" alt="Shikhor Logo" onerror="this.style.display='none'" class="w-16 h-16 mx-auto rounded-2xl object-cover mb-3 border border-[#D4C3B3]" />
-        <h1 class="text-2xl font-bold text-[#231712]">Shikhor Foundation</h1>
-        <p class="text-sm text-[#7A5643] mt-1">Admin Control Panel Login</p>
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-[#DECBB9] p-8 space-y-6">
+      <div class="text-center space-y-2">
+        <img id="loginLogo" src="./logo.png" alt="Shikhor Foundation" onerror="this.style.display='none'" class="w-16 h-16 mx-auto rounded-2xl object-cover border border-[#DECBB9] shadow-sm" />
+        <h1 class="text-2xl font-extrabold text-[#231712]">Shikhor Foundation</h1>
+        <p class="text-xs font-medium text-[#7A5643]">Control Panel &amp; Session Manager</p>
       </div>
+
       <form id="loginForm" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-[#6E4730] mb-1">Admin ID / Email</label>
-          <input id="loginUser" type="text" required placeholder="shikhor@bd" class="w-full px-4 py-2.5 rounded-xl border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-[#6E4730] mb-1">Admin ID</label>
+          <input id="loginUser" type="text" required autocomplete="username" placeholder="shikhor@bd" class="w-full px-4 py-2.5 rounded-xl border border-[#DECBB9] bg-[#FCF9F6] text-sm focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-[#6E4730] mb-1">Password</label>
-          <input id="loginPass" type="password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-[#D4C3B3] focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-[#6E4730] mb-1">Password</label>
+          <input id="loginPass" type="password" required autocomplete="current-password" placeholder="Enter password" class="w-full px-4 py-2.5 rounded-xl border border-[#DECBB9] bg-[#FCF9F6] text-sm focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
         </div>
-        <p id="loginError" class="text-xs font-semibold text-red-600 hidden"></p>
-        <button type="submit" class="w-full py-3 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-semibold transition">Login to Panel</button>
+        <div id="loginError" class="hidden text-xs font-semibold text-red-700 bg-red-50 border border-red-200 px-3 py-2 rounded-xl"></div>
+        <button type="submit" class="w-full py-3 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-sm shadow transition cursor-pointer">
+          Sign In &amp; Start Session
+        </button>
       </form>
     </div>
   </div>
 
-  <!-- Main Admin Dashboard -->
-  <div id="adminDashboard" class="hidden">
-    <header class="bg-[#381F12] text-white sticky top-0 z-30 shadow-md">
-      <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+  <!-- Admin Dashboard -->
+  <div id="adminApp" class="hidden min-h-screen flex flex-col">
+    <!-- Top Header -->
+    <header class="bg-[#381F12] text-white sticky top-0 z-30 shadow-md border-b border-[#5B3622]">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <img src="./logo.png" alt="Logo" onerror="this.style.display='none'" class="w-10 h-10 rounded-xl object-cover border border-[#B88655]" />
+          <img id="headerLogo" src="./logo.png" alt="Logo" onerror="this.style.display='none'" class="w-10 h-10 rounded-xl object-cover border border-[#B88655]" />
           <div>
-            <div class="font-bold text-base leading-tight">Shikhor Admin Control Panel</div>
-            <div id="syncStatusText" class="text-xs text-[#E5C9B0]">Ready</div>
+            <div class="font-bold text-sm sm:text-base leading-tight">Shikhor Foundation Admin</div>
+            <div class="flex flex-wrap items-center gap-2 text-[11px] text-[#E5C9B0]">
+              <span id="syncIndicator">Ready</span>
+              <span>•</span>
+              <span id="sessionTimerBadge">Session: 0s</span>
+            </div>
           </div>
         </div>
-        <div class="flex items-center gap-2.5">
-          <button id="pushSheetBtn" type="button" onclick="pushAllToSheet(true)" class="px-4 py-2 rounded-xl bg-[#B88655] hover:bg-[#9E6F42] text-[#231712] font-bold text-xs transition">
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="pullLatestFromSheet(true)" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition cursor-pointer">
+            Pull Sheet
+          </button>
+          <button id="pushBtn" type="button" onclick="pushAllToSheet(true)" class="px-4 py-2 rounded-xl bg-[#B88655] hover:bg-[#9E6F42] text-[#231712] font-extrabold text-xs transition cursor-pointer">
             Push To Sheet
           </button>
-          <button type="button" onclick="logoutAdmin()" class="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs transition">
+          <button type="button" onclick="logoutAdmin()" class="px-3.5 py-2 rounded-xl bg-red-600/85 hover:bg-red-600 text-white font-bold text-xs transition cursor-pointer">
             Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="bg-[#2B170D] border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center gap-1.5 overflow-x-auto">
+          <button type="button" data-tab="tabTeam" onclick="switchTab('tabTeam')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-[#B88655] text-[#231712]">
+            Team Panel (<span id="badgeTeamCount">14</span>)
+          </button>
+          <button type="button" data-tab="tabSections" onclick="switchTab('tabSections')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
+            Site Sections &amp; Stats
+          </button>
+          <button type="button" data-tab="tabGroupWork" onclick="switchTab('tabGroupWork')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
+            Group Work (<span id="badgeGroupCount">6</span>)
+          </button>
+          <button type="button" data-tab="tabGallery" onclick="switchTab('tabGallery')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
+            Gallery (<span id="badgeGalleryCount">7</span>)
+          </button>
+          <button type="button" data-tab="tabNotice" onclick="switchTab('tabNotice')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
+            Notice &amp; News (<span id="badgeNoticeCount">2</span>)
+          </button>
+          <button type="button" data-tab="tabFunding" onclick="switchTab('tabFunding')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
+            Funding (<span id="badgeFundingCount">0</span>)
+          </button>
+          <button type="button" data-tab="tabSessions" onclick="switchTab('tabSessions')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
+            Admin Sessions
+          </button>
+          <button type="button" data-tab="tabAudit" onclick="switchTab('tabAudit')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
+            Audit Logs
           </button>
         </div>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
-      <!-- Tabs -->
-      <div class="flex flex-wrap gap-2">
-        <button type="button" data-tab="teamTab" onclick="switchTab('teamTab')" class="tab-btn px-4 py-2 rounded-xl bg-[#4E2D1C] text-white text-sm font-semibold">Team Panel (<span id="teamCountBadge">14</span>)</button>
-        <button type="button" data-tab="sectionsTab" onclick="switchTab('sectionsTab')" class="tab-btn px-4 py-2 rounded-xl bg-white text-[#4E2D1C] border border-[#D4C3B3] text-sm font-semibold">Site Sections</button>
-        <button type="button" data-tab="noticeTab" onclick="switchTab('noticeTab')" class="tab-btn px-4 py-2 rounded-xl bg-white text-[#4E2D1C] border border-[#D4C3B3] text-sm font-semibold">Notice & News</button>
-      </div>
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
 
-      <!-- Team Tab -->
-      <section id="teamTab" class="tab-panel space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-[#DFD0C2]">
+      <!-- 1. TEAM PANEL TAB -->
+      <section id="tabTeam" class="panel-section space-y-4">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex flex-wrap items-center justify-between gap-4 shadow-sm">
           <div>
-            <h2 class="text-lg font-bold">Leadership & Panel Members</h2>
-            <p class="text-xs text-[#7A5643]">Display Position 1 = First. Changes auto-save locally and sync to Google Sheet.</p>
+            <h2 class="text-lg font-extrabold text-[#231712]">Leadership &amp; Panel Members</h2>
+            <p class="text-xs text-[#7A5643]">Display Position 1 = First. Founder/CEO automatically displays in the Founder spotlight on the homepage.</p>
           </div>
-          <button type="button" onclick="addMember()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white text-xs font-bold">+ Add Member</button>
+          <div class="flex flex-wrap items-center gap-2">
+            <input id="teamSearch" type="text" oninput="renderTeam()" placeholder="Search member or role..." class="px-3 py-2 rounded-xl border border-[#DECBB9] bg-[#FCF9F6] text-xs w-48 focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
+            <button type="button" onclick="resetDefaultTeam()" class="px-3 py-2 rounded-xl border border-[#DECBB9] hover:bg-[#F6EFE8] text-[#4E2D1C] font-bold text-xs cursor-pointer">
+              Restore 14 Default
+            </button>
+            <button type="button" onclick="addTeamMember()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
+              + Add Member
+            </button>
+          </div>
         </div>
-        <div id="teamGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+        <div id="teamGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
       </section>
 
-      <!-- Sections Tab -->
-      <section id="sectionsTab" class="tab-panel hidden bg-white p-6 rounded-3xl border border-[#DFD0C2] space-y-4">
-        <h2 class="text-lg font-bold">Site Sections & Counters</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- 2. SITE SECTIONS TAB -->
+      <section id="tabSections" class="panel-section hidden space-y-4">
+        <div class="bg-white p-6 rounded-3xl border border-[#DECBB9] shadow-sm space-y-5">
           <div>
-            <label class="block text-xs font-bold text-[#6E4730] mb-1">Families Supported</label>
-            <input id="sec_familiesCount" type="text" oninput="updateSectionField('familiesCount', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
+            <h2 class="text-lg font-extrabold text-[#231712]">Site Sections, Counters &amp; Branding</h2>
+            <p class="text-xs text-[#7A5643]">Updates sync to the Site_Sections worksheet.</p>
           </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-[#6E4730] mb-1">Families Supported</label>
+              <input id="sec_familiesCount" type="text" oninput="updateSection('familiesCount', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#6E4730] mb-1">Active Volunteers</label>
+              <input id="sec_volunteersCount" type="text" oninput="updateSection('volunteersCount', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#6E4730] mb-1">Successful Events</label>
+              <input id="sec_eventsCount" type="text" oninput="updateSection('eventsCount', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-[#6E4730] mb-1">Hero Headline</label>
+              <input id="sec_heroTitle" type="text" oninput="updateSection('heroTitle', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#6E4730] mb-1">bKash / Nagad Donation Number</label>
+              <input id="sec_donationNumber" type="text" oninput="updateSection('donationNumber', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
+            </div>
+          </div>
+
           <div>
-            <label class="block text-xs font-bold text-[#6E4730] mb-1">Active Volunteers</label>
-            <input id="sec_volunteersCount" type="text" oninput="updateSectionField('volunteersCount', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-[#6E4730] mb-1">Successful Events</label>
-            <input id="sec_eventsCount" type="text" oninput="updateSectionField('eventsCount', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
-          </div>
-          <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-[#6E4730] mb-1">Hero Headline</label>
-            <input id="sec_heroTitle" type="text" oninput="updateSectionField('heroTitle', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-[#6E4730] mb-1">bKash / Nagad Donation Number</label>
-            <input id="sec_donationNumber" type="text" oninput="updateSectionField('donationNumber', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm" />
-          </div>
-          <div class="md:col-span-3">
             <label class="block text-xs font-bold text-[#6E4730] mb-1">Hero Sub-description</label>
-            <textarea id="sec_heroSubtitle" rows="2" oninput="updateSectionField('heroSubtitle', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm"></textarea>
+            <textarea id="sec_heroSubtitle" rows="2" oninput="updateSection('heroSubtitle', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm"></textarea>
           </div>
-          <div class="md:col-span-3">
+
+          <div>
             <label class="block text-xs font-bold text-[#6E4730] mb-1">About Us Description</label>
-            <textarea id="sec_aboutText" rows="3" oninput="updateSectionField('aboutText', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#D4C3B3] text-sm"></textarea>
+            <textarea id="sec_aboutText" rows="3" oninput="updateSection('aboutText', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-[#EFE4D8]">
+            <div>
+              <label class="block text-xs font-bold text-[#6E4730] mb-1">Site Logo URL</label>
+              <input id="sec_logoUrl" type="text" oninput="updateSection('logoUrl', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#6E4730] mb-1">Founder Name</label>
+              <input id="sec_founderName" type="text" oninput="updateSection('founderName', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#6E4730] mb-1">Founder Photo URL</label>
+              <input id="sec_founderPhoto" type="text" oninput="updateSection('founderPhoto', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#6E4730] mb-1">Founder Message / Quote</label>
+            <textarea id="sec_founderQuote" rows="3" oninput="updateSection('founderQuote', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm"></textarea>
           </div>
         </div>
       </section>
 
-      <!-- Notice Tab -->
-      <section id="noticeTab" class="tab-panel hidden bg-white p-6 rounded-3xl border border-[#DFD0C2] space-y-4">
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold">Notices & News</h2>
-          <button type="button" onclick="addNotice()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] text-white text-xs font-bold">+ Add Notice/News</button>
+      <!-- 3. GROUP WORK TAB -->
+      <section id="tabGroupWork" class="panel-section hidden space-y-4">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex items-center justify-between gap-4 shadow-sm">
+          <div>
+            <h2 class="text-lg font-extrabold text-[#231712]">Group Work &amp; Initiatives</h2>
+            <p class="text-xs text-[#7A5643]">Manage humanitarian drives and community projects (Group_Work).</p>
+          </div>
+          <button type="button" onclick="addGroupWork()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
+            + Add Initiative
+          </button>
         </div>
-        <div id="noticeList" class="space-y-3"></div>
+        <div id="groupWorkList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </section>
+
+      <!-- 4. GALLERY TAB -->
+      <section id="tabGallery" class="panel-section hidden space-y-4">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex items-center justify-between gap-4 shadow-sm">
+          <div>
+            <h2 class="text-lg font-extrabold text-[#231712]">Event Gallery</h2>
+            <p class="text-xs text-[#7A5643]">Manage gallery photos and captions (Gallery).</p>
+          </div>
+          <button type="button" onclick="addGalleryItem()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
+            + Add Photo
+          </button>
+        </div>
+        <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </section>
+
+      <!-- 5. NOTICE & NEWS TAB -->
+      <section id="tabNotice" class="panel-section hidden space-y-4">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex items-center justify-between gap-4 shadow-sm">
+          <div>
+            <h2 class="text-lg font-extrabold text-[#231712]">Notices &amp; News</h2>
+            <p class="text-xs text-[#7A5643]">Publish and edit official notices and news updates (Notice_News).</p>
+          </div>
+          <button type="button" onclick="addNoticeItem()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
+            + Add Notice / News
+          </button>
+        </div>
+        <div id="noticeList" class="space-y-4"></div>
+      </section>
+
+      <!-- 6. FUNDING TAB -->
+      <section id="tabFunding" class="panel-section hidden space-y-4">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex flex-wrap items-center justify-between gap-4 shadow-sm">
+          <div>
+            <h2 class="text-lg font-extrabold text-[#231712]">Donation &amp; Funding Ledger</h2>
+            <p class="text-xs text-[#7A5643]">Manage donor transactions synced with the Funding worksheet.</p>
+          </div>
+          <button type="button" onclick="addFundingItem()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
+            + Add Contribution
+          </button>
+        </div>
+        <div id="fundingList" class="space-y-3"></div>
+      </section>
+
+      <!-- 7. ADMIN SESSIONS TAB -->
+      <section id="tabSessions" class="panel-section hidden space-y-4">
+        <div class="bg-white p-6 rounded-3xl border border-[#DECBB9] shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 class="text-lg font-extrabold text-[#231712]">Admin Sessions Tracker</h2>
+              <p class="text-xs text-[#7A5643]">Records login time, logout/exit time, duration, active status, and device info in Admin Sessions.</p>
+            </div>
+            <div id="currentSessionCard" class="px-4 py-2 rounded-2xl bg-[#F6EFE8] border border-[#DECBB9] text-xs font-semibold text-[#4E2D1C]">
+              Active Session ID: <span id="activeSessionIdText" class="font-bold">—</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="p-4 rounded-2xl bg-[#FCF9F6] border border-[#E8D8C8]">
+              <div class="text-[#7A5643] font-semibold">Admin Account</div>
+              <div id="sessAdminUser" class="text-sm font-extrabold text-[#231712] mt-0.5">shikhor@bd</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#FCF9F6] border border-[#E8D8C8]">
+              <div class="text-[#7A5643] font-semibold">Login Timestamp</div>
+              <div id="sessLoginTime" class="text-sm font-extrabold text-[#231712] mt-0.5">—</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#FCF9F6] border border-[#E8D8C8]">
+              <div class="text-[#7A5643] font-semibold">Device Information</div>
+              <div id="sessDeviceInfo" class="text-xs font-bold text-[#231712] mt-1 break-all">—</div>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-[#381F12] text-white">
+                  <th class="p-3 rounded-tl-xl">Session ID</th>
+                  <th class="p-3">Admin User</th>
+                  <th class="p-3">Event</th>
+                  <th class="p-3">Duration</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 rounded-tr-xl">Device</th>
+                </tr>
+              </thead>
+              <tbody id="sessionHistoryBody" class="divide-y divide-[#EADACF] bg-[#FCF9F6]"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. AUDIT LOGS TAB -->
+      <section id="tabAudit" class="panel-section hidden space-y-4">
+        <div class="bg-white p-6 rounded-3xl border border-[#DECBB9] shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-extrabold text-[#231712]">Local Activity &amp; Sync Log</h2>
+              <p class="text-xs text-[#7A5643]">Recent actions performed in this browser session (server Audit_Logs also records sheet syncs).</p>
+            </div>
+            <button type="button" onclick="clearLocalLogs()" class="px-3 py-1.5 rounded-xl border border-[#DECBB9] text-xs font-bold text-[#6E4730] hover:bg-[#F6EFE8] cursor-pointer">
+              Clear Local Log
+            </button>
+          </div>
+          <div id="auditLogList" class="space-y-2 text-xs"></div>
+        </div>
+      </section>
+
     </main>
   </div>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "PASTE_YOUR_DEPLOYED_APPS_SCRIPT_WEB_APP_URL_HERE";
-    const AUTH_USER = "shikhor@bd";
-    const AUTH_PASS = "shikhor2026"; // Change as needed
+    // =========================================================================
+    // CONFIGURATION — Replace APPS_SCRIPT_URL with your deployed Web App URL
+    // =========================================================================
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_REPLACE_WITH_YOUR_DEPLOYMENT_ID/exec";
+    const ADMIN_ID = "shikhor@bd";
+    const ADMIN_PASSWORD = "shikhor2026";
 
-    const STORAGE_KEY = "shikhor_admin_state_v1";
-    const SESSION_AUTH_KEY = "shikhor_admin_authed_v1";
-    const SESSION_ID_KEY = "shikhor_admin_session_id_v1";
-    const SESSION_LOGIN_TS_KEY = "shikhor_admin_login_ts_v1";
-    const SESSION_LOGGED_KEY = "shikhor_admin_login_sent_v1";
+    const STORAGE_STATE_KEY = "shikhor_foundation_admin_state_v2";
+    const STORAGE_LOGS_KEY = "shikhor_foundation_local_logs_v2";
+    const STORAGE_SESSIONS_KEY = "shikhor_foundation_session_history_v2";
+
+    const AUTH_FLAG = "shikhor_admin_logged_in_v2";
+    const SESSION_ID_KEY = "shikhor_admin_current_sid_v2";
+    const SESSION_START_KEY = "shikhor_admin_session_start_v2";
+    const SESSION_LOGIN_STR_KEY = "shikhor_admin_login_str_v2";
+    const SESSION_LOGIN_SENT_KEY = "shikhor_admin_login_sent_v2";
 
     const DEFAULT_TEAM = [
       { id: "tm-1", name: "Md. Shewise Al Islam Zarif", role: "Founder & CEO / President", photo: "./zarif.jpg", status: "Active" },
@@ -162,6 +370,25 @@
       founderPhoto: "./zarif.jpg"
     };
 
+    const DEFAULT_GROUP_WORK = [
+      { id: "PRJ-001", title: "Winter Warmth Drive 2026", description: "Distribution of warm blankets, winter jackets, and thermal clothing to vulnerable families and elderly individuals facing severe cold waves." },
+      { id: "PRJ-002", title: "Emergency Flood Relief & Clean Water Initiative", description: "Deployment of dry food rations, clean drinking water packets, water purification tablets, and emergency medical kits to flood-affected communities." },
+      { id: "PRJ-003", title: "Hope for Education: Student Backpacks & Stationery", description: "Providing essential educational supplies including backpacks, notebooks, geometry sets, and merit-based micro-stipends to underprivileged students." },
+      { id: "PRJ-004", title: "Ramadan Food Basket & Iftar Sharing", description: "Distributing comprehensive monthly food baskets containing rice, lentils, cooking oil, chickpeas, and dates to daily-wage workers and impoverished families." },
+      { id: "PRJ-005", title: "Free Health Screening & Primary Medicine Camp", description: "Organizing medical consultations with volunteer doctors, basic diagnostic checkups, essential prescription distribution, and community hygiene counseling." },
+      { id: "PRJ-006", title: "Youth Volunteer Empowerment & First Aid Workshop", description: "Skill-building workshop training youth volunteers in emergency first-aid response, community coordination, disaster logistics, and leadership." }
+    ];
+
+    const DEFAULT_GALLERY = [
+      { id: "GAL-001", caption: "Winter Relief Blanket Distribution Drive", image: "./gallery1.jpg" },
+      { id: "GAL-002", caption: "Emergency Flood Relief Packaging & Dispatch", image: "./gallery2.jpg" },
+      { id: "GAL-003", caption: "Smiling Children at School Supply Distribution", image: "./gallery3.jpg" },
+      { id: "GAL-004", caption: "Volunteer Field Coordination & Strategy Session", image: "./gallery4.jpg" },
+      { id: "GAL-005", caption: "Ramadan Food Basket Distribution Ceremony", image: "./gallery5.jpg" },
+      { id: "GAL-006", caption: "Youth Volunteer Relief Team on Ground in Rangpur", image: "./gallery6.jpg" },
+      { id: "GAL-007", caption: "Health Camp Primary Checkup & Medicine Handover", image: "./gallery7.jpg" }
+    ];
+
     const DEFAULT_NOTICE = [
       {
         id: "item-notice-1",
@@ -185,19 +412,45 @@
       }
     ];
 
-    let state = loadLocalState();
-    let syncTimer = null;
-    let logoutSentForSession = false;
+    let state = loadState();
+    let localLogs = loadLocalLogs();
+    let sessionHistory = loadSessionHistory();
+    let autoSyncTimeout = null;
+    let sessionTimerInterval = null;
+    let logoutDispatched = false;
 
-    function escapeHtml(str) {
-      return String(str || "")
+    function esc(v) {
+      return String(v || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
     }
 
-    function getDeviceInfo() {
+    function showToast(msg, isError = false) {
+      const banner = document.getElementById("toastBanner");
+      const icon = document.getElementById("toastIcon");
+      const text = document.getElementById("toastMessage");
+      if (!banner || !icon || !text) return;
+      icon.className = `w-2.5 h-2.5 rounded-full shrink-0 ${isError ? "bg-red-400" : "bg-emerald-400"}`;
+      text.textContent = msg;
+      banner.classList.remove("hidden");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => banner.classList.add("hidden"), 2800);
+    }
+
+    function setSyncText(msg, colorClass = "text-[#E5C9B0]") {
+      const el = document.getElementById("syncIndicator");
+      if (!el) return;
+      el.className = colorClass;
+      el.textContent = msg;
+    }
+
+    function isScriptUrlConfigured() {
+      return Boolean(APPS_SCRIPT_URL) && !APPS_SCRIPT_URL.includes("REPLACE_WITH_YOUR_DEPLOYMENT_ID");
+    }
+
+    function getDeviceSummary() {
       const ua = navigator.userAgent || "";
       let os = "Desktop";
       if (/Android/i.test(ua)) os = "Android Mobile";
@@ -214,142 +467,250 @@
       return `${os} (${browser}) | Screen: ${window.screen.width}x${window.screen.height}`;
     }
 
-    function sendSessionEvent(eventType) {
-      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.startsWith("PASTE_")) return;
-      const sessionId = sessionStorage.getItem(SESSION_ID_KEY) || "";
-      const loginTs = Number(sessionStorage.getItem(SESSION_LOGIN_TS_KEY) || Date.now());
-      const durationSeconds = Math.max(1, Math.round((Date.now() - loginTs) / 1000));
-
-      const payload = JSON.stringify({
-        action: eventType === "login" ? "logAdminLogin" : "logAdminLogout",
-        sessionId,
-        adminUser: AUTH_USER,
-        durationSeconds,
-        deviceInfo: getDeviceInfo()
-      });
-
-      if (eventType === "logout" && navigator.sendBeacon) {
-        try {
-          navigator.sendBeacon(GOOGLE_SCRIPT_URL, new Blob([payload], { type: "text/plain;charset=utf-8" }));
-          return;
-        } catch (_) {}
-      }
-
-      fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: payload
-      }).catch(() => {});
+    function formatDuration(sec) {
+      const total = Math.max(0, Math.round(Number(sec) || 0));
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      if (h > 0) return `${h}h ${m}m ${s}s`;
+      if (m > 0) return `${m}m ${s}s`;
+      return `${s}s`;
     }
 
-    function startAdminSession() {
-      const existingId = sessionStorage.getItem(SESSION_ID_KEY);
-      const alreadySent = sessionStorage.getItem(SESSION_LOGGED_KEY) === "1";
-      logoutSentForSession = false;
-
-      if (!existingId) {
-        sessionStorage.setItem(SESSION_ID_KEY, "ADM-" + Date.now());
-        sessionStorage.setItem(SESSION_LOGIN_TS_KEY, String(Date.now()));
-      }
-      if (!alreadySent) {
-        sessionStorage.setItem(SESSION_LOGGED_KEY, "1");
-        sendSessionEvent("login");
-      }
-    }
-
-    function endAdminSession() {
-      if (logoutSentForSession) return;
-      logoutSentForSession = true;
-      sendSessionEvent("logout");
-      sessionStorage.removeItem(SESSION_AUTH_KEY);
-      sessionStorage.removeItem(SESSION_ID_KEY);
-      sessionStorage.removeItem(SESSION_LOGIN_TS_KEY);
-      sessionStorage.removeItem(SESSION_LOGGED_KEY);
-    }
-
-    function loadLocalState() {
+    function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_STATE_KEY);
         if (raw) {
-          const parsed = JSON.parse(raw);
+          const p = JSON.parse(raw);
           return {
-            team: Array.isArray(parsed.team) && parsed.team.length ? parsed.team : [...DEFAULT_TEAM],
-            sections: { ...DEFAULT_SECTIONS, ...(parsed.sections || {}) },
-            notice: Array.isArray(parsed.notice) && parsed.notice.length ? parsed.notice : [...DEFAULT_NOTICE]
+            team: Array.isArray(p.team) && p.team.length ? p.team : [...DEFAULT_TEAM],
+            sections: { ...DEFAULT_SECTIONS, ...(p.sections || {}) },
+            groupWork: Array.isArray(p.groupWork) && p.groupWork.length ? p.groupWork : [...DEFAULT_GROUP_WORK],
+            gallery: Array.isArray(p.gallery) && p.gallery.length ? p.gallery : [...DEFAULT_GALLERY],
+            notice: Array.isArray(p.notice) && p.notice.length ? p.notice : [...DEFAULT_NOTICE],
+            funding: Array.isArray(p.funding) ? p.funding : []
           };
         }
       } catch (_) {}
       return {
         team: [...DEFAULT_TEAM],
         sections: { ...DEFAULT_SECTIONS },
-        notice: [...DEFAULT_NOTICE]
+        groupWork: [...DEFAULT_GROUP_WORK],
+        gallery: [...DEFAULT_GALLERY],
+        notice: [...DEFAULT_NOTICE],
+        funding: []
       };
     }
 
-    function saveLocalState() {
+    function saveStateToStorage() {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(state));
       } catch (_) {}
     }
 
-    function scheduleAutoSync() {
-      saveLocalState();
-      setSyncStatus("Saving & syncing...", "text-[#FDE68A]");
-      clearTimeout(syncTimer);
-      syncTimer = setTimeout(() => {
-        pushAllToSheet(false);
+    function loadLocalLogs() {
+      try {
+        const raw = localStorage.getItem(STORAGE_LOGS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function appendLocalLog(actionText) {
+      const entry = {
+        time: new Date().toLocaleString("en-GB", { hour12: false }),
+        user: ADMIN_ID,
+        action: actionText
+      };
+      localLogs.unshift(entry);
+      localLogs = localLogs.slice(0, 60);
+      try {
+        localStorage.setItem(STORAGE_LOGS_KEY, JSON.stringify(localLogs));
+      } catch (_) {}
+      renderAuditLogs();
+    }
+
+    function clearLocalLogs() {
+      localLogs = [];
+      localStorage.removeItem(STORAGE_LOGS_KEY);
+      renderAuditLogs();
+    }
+
+    function loadSessionHistory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_SESSIONS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function recordSessionHistory(row) {
+      sessionHistory.unshift(row);
+      sessionHistory = sessionHistory.slice(0, 30);
+      try {
+        localStorage.setItem(STORAGE_SESSIONS_KEY, JSON.stringify(sessionHistory));
+      } catch (_) {}
+      renderSessionTab();
+    }
+
+    function postToAppsScript(payloadObj, preferBeacon = false) {
+      if (!isScriptUrlConfigured()) return Promise.resolve(false);
+      const bodyStr = JSON.stringify(payloadObj);
+
+      if (preferBeacon && navigator.sendBeacon) {
+        try {
+          const ok = navigator.sendBeacon(APPS_SCRIPT_URL, new Blob([bodyStr], { type: "text/plain;charset=utf-8" }));
+          if (ok) return Promise.resolve(true);
+        } catch (_) {}
+      }
+
+      return fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: bodyStr
+      }).then(() => true).catch(() => false);
+    }
+
+    function beginAdminSession() {
+      logoutDispatched = false;
+      let sid = sessionStorage.getItem(SESSION_ID_KEY);
+      let startMs = Number(sessionStorage.getItem(SESSION_START_KEY) || 0);
+      let loginStr = sessionStorage.getItem(SESSION_LOGIN_STR_KEY) || "";
+
+      if (!sid || !startMs) {
+        sid = "ADM-" + Date.now();
+        startMs = Date.now();
+        loginStr = new Date(startMs).toLocaleString("en-GB", { hour12: false });
+        sessionStorage.setItem(SESSION_ID_KEY, sid);
+        sessionStorage.setItem(SESSION_START_KEY, String(startMs));
+        sessionStorage.setItem(SESSION_LOGIN_STR_KEY, loginStr);
+      }
+
+      const dev = getDeviceSummary();
+      document.getElementById("activeSessionIdText").textContent = sid;
+      document.getElementById("sessAdminUser").textContent = ADMIN_ID;
+      document.getElementById("sessLoginTime").textContent = loginStr;
+      document.getElementById("sessDeviceInfo").textContent = dev;
+
+      if (sessionStorage.getItem(SESSION_LOGIN_SENT_KEY) !== "1") {
+        sessionStorage.setItem(SESSION_LOGIN_SENT_KEY, "1");
+        postToAppsScript({
+          action: "logAdminLogin",
+          sessionId: sid,
+          adminUser: ADMIN_ID,
+          deviceInfo: dev
+        });
+        recordSessionHistory({
+          sessionId: sid,
+          adminUser: ADMIN_ID,
+          event: "Login",
+          duration: "0s",
+          status: "Active",
+          device: dev
+        });
+        appendLocalLog(`Admin logged in (Session ${sid})`);
+      }
+
+      clearInterval(sessionTimerInterval);
+      sessionTimerInterval = setInterval(() => {
+        const elapsed = Math.max(1, Math.round((Date.now() - startMs) / 1000));
+        const badge = document.getElementById("sessionTimerBadge");
+        if (badge) badge.textContent = `Session: ${formatDuration(elapsed)}`;
+      }, 1000);
+    }
+
+    function finishAdminSession(reason = "Logout") {
+      if (logoutDispatched) return;
+      logoutDispatched = true;
+      clearInterval(sessionTimerInterval);
+
+      const sid = sessionStorage.getItem(SESSION_ID_KEY) || ("ADM-" + Date.now());
+      const startMs = Number(sessionStorage.getItem(SESSION_START_KEY) || Date.now());
+      const durationSeconds = Math.max(1, Math.round((Date.now() - startMs) / 1000));
+      const dev = getDeviceSummary();
+
+      postToAppsScript({
+        action: "logAdminLogout",
+        sessionId: sid,
+        adminUser: ADMIN_ID,
+        durationSeconds,
+        deviceInfo: dev
+      }, true);
+
+      recordSessionHistory({
+        sessionId: sid,
+        adminUser: ADMIN_ID,
+        event: reason,
+        duration: formatDuration(durationSeconds),
+        status: "Logged Out",
+        device: dev
+      });
+
+      sessionStorage.removeItem(AUTH_FLAG);
+      sessionStorage.removeItem(SESSION_ID_KEY);
+      sessionStorage.removeItem(SESSION_START_KEY);
+      sessionStorage.removeItem(SESSION_LOGIN_STR_KEY);
+      sessionStorage.removeItem(SESSION_LOGIN_SENT_KEY);
+    }
+
+    function scheduleAutoSync(summaryText = "Updated panel data") {
+      saveStateToStorage();
+      setSyncText("Saving changes...", "text-amber-300");
+      clearTimeout(autoSyncTimeout);
+      autoSyncTimeout = setTimeout(() => {
+        pushAllToSheet(false, summaryText);
       }, 900);
     }
 
-    function setSyncStatus(msg, colorClass = "text-[#E5C9B0]") {
-      const el = document.getElementById("syncStatusText");
-      if (!el) return;
-      el.className = `text-xs ${colorClass}`;
-      el.textContent = msg;
-    }
-
-    async function pushAllToSheet(showAlert = false) {
-      saveLocalState();
-      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.startsWith("PASTE_")) {
-        setSyncStatus("Local saved (set GOOGLE_SCRIPT_URL to sync)", "text-[#FDE68A]");
-        if (showAlert) alert("Saved locally. Paste your Apps Script Web App URL in GOOGLE_SCRIPT_URL first.");
+    async function pushAllToSheet(showAlert = false, summaryText = "Synced admin panel data") {
+      saveStateToStorage();
+      if (!isScriptUrlConfigured()) {
+        setSyncText("Local only (configure APPS_SCRIPT_URL)", "text-amber-300");
+        if (showAlert) showToast("Saved locally. Add your Apps Script Web App URL in code.", true);
         return;
       }
 
-      const btn = document.getElementById("pushSheetBtn");
+      const btn = document.getElementById("pushBtn");
       if (btn) btn.disabled = true;
-      setSyncStatus("Pushing to Google Sheet...", "text-[#FDE68A]");
+      setSyncText("Syncing to Google Sheet...", "text-amber-300");
 
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "saveAll",
-            sections: state.sections,
-            team: state.team,
-            notice: state.notice
-          })
-        });
-        setSyncStatus("Synced with Google Sheet", "text-emerald-300");
-        if (showAlert) alert("All changes pushed to Google Sheet successfully!");
-      } catch (err) {
-        setSyncStatus("Sync failed (saved locally)", "text-red-300");
-        if (showAlert) alert("Could not reach Google Sheet. Saved locally.");
-      } finally {
-        if (btn) btn.disabled = false;
+      const ok = await postToAppsScript({
+        action: "saveAll",
+        adminUser: ADMIN_ID,
+        details: summaryText,
+        sections: state.sections,
+        team: state.team,
+        groupWork: state.groupWork,
+        gallery: state.gallery,
+        notice: state.notice,
+        funding: state.funding
+      });
+
+      if (btn) btn.disabled = false;
+      if (ok) {
+        setSyncText("Synced with Google Sheet", "text-emerald-300");
+        appendLocalLog(summaryText);
+        if (showAlert) showToast("All changes pushed to Google Sheet!");
+      } else {
+        setSyncText("Sync error (saved locally)", "text-red-300");
+        if (showAlert) showToast("Could not reach Google Sheet. Saved locally.", true);
       }
     }
 
-    async function pullFromSheetIfAvailable() {
-      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.startsWith("PASTE_")) return;
+    async function pullLatestFromSheet(showAlert = false) {
+      if (!isScriptUrlConfigured()) {
+        if (showAlert) showToast("Configure APPS_SCRIPT_URL first.", true);
+        return;
+      }
+      setSyncText("Fetching from Sheet...", "text-amber-300");
       try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`);
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`);
         const data = await res.json();
         if (data && data.success) {
-          if (Array.isArray(data.team) && data.team.length > 0) {
+          if (Array.isArray(data.team) && data.team.length) {
             state.team = data.team.map((m, idx) => ({
               id: m.id || m["Member ID"] || `tm-${idx + 1}`,
               name: String(m.name || m["Full Name"] || "").trim(),
@@ -361,7 +722,13 @@
           if (data.sections && typeof data.sections === "object") {
             state.sections = { ...state.sections, ...data.sections };
           }
-          if (Array.isArray(data.notice) && data.notice.length > 0) {
+          if (Array.isArray(data.groupWork) && data.groupWork.length) {
+            state.groupWork = data.groupWork;
+          }
+          if (Array.isArray(data.gallery) && data.gallery.length) {
+            state.gallery = data.gallery;
+          }
+          if (Array.isArray(data.notice) && data.notice.length) {
             state.notice = data.notice.map((n, idx) => ({
               id: n.id || n["Notice ID"] || `item-${idx + 1}`,
               category: n.category || n["Category"] || "Notice",
@@ -373,156 +740,398 @@
               fullContent: n.fullContent || n["Full Content"] || ""
             }));
           }
-          saveLocalState();
-          renderAll();
-          setSyncStatus("Loaded latest data from Sheet", "text-emerald-300");
+          if (Array.isArray(data.funding)) {
+            state.funding = data.funding;
+          }
+          saveStateToStorage();
+          renderAllTabs();
+          setSyncText("Synced from Sheet", "text-emerald-300");
+          appendLocalLog("Pulled latest records from Google Sheet");
+          if (showAlert) showToast("Latest data loaded from Google Sheet!");
         }
-      } catch (_) {}
+      } catch (_) {
+        setSyncText("Fetch failed", "text-red-300");
+        if (showAlert) showToast("Unable to fetch data from Sheet.", true);
+      }
     }
 
     function switchTab(tabId) {
-      document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
-      document.getElementById(tabId).classList.remove("hidden");
-      document.querySelectorAll(".tab-btn").forEach(b => {
-        if (b.dataset.tab === tabId) {
-          b.className = "tab-btn px-4 py-2 rounded-xl bg-[#4E2D1C] text-white text-sm font-semibold";
+      document.querySelectorAll(".panel-section").forEach(sec => sec.classList.add("hidden"));
+      const target = document.getElementById(tabId);
+      if (target) target.classList.remove("hidden");
+
+      document.querySelectorAll(".nav-tab").forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.className = "nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-[#B88655] text-[#231712]";
         } else {
-          b.className = "tab-btn px-4 py-2 rounded-xl bg-white text-[#4E2D1C] border border-[#D4C3B3] text-sm font-semibold";
+          btn.className = "nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10";
         }
       });
     }
 
-    function updateMember(index, field, value) {
-      if (!state.team[index]) return;
-      state.team[index][field] = value;
-      scheduleAutoSync();
+    // --- Team Actions ---
+    function updateTeamField(idx, field, val) {
+      if (!state.team[idx]) return;
+      state.team[idx][field] = val;
+      scheduleAutoSync(`Updated team member #${idx + 1} (${field})`);
     }
 
-    function moveMember(index, delta) {
-      const target = index + delta;
+    function moveTeam(idx, delta) {
+      const target = idx + delta;
       if (target < 0 || target >= state.team.length) return;
-      const temp = state.team[index];
-      state.team[index] = state.team[target];
-      state.team[target] = temp;
+      [state.team[idx], state.team[target]] = [state.team[target], state.team[idx]];
       renderTeam();
-      scheduleAutoSync();
+      scheduleAutoSync(`Reordered team member to position ${target + 1}`);
     }
 
-    function deleteMember(index) {
-      if (!confirm("Remove this member?")) return;
-      state.team.splice(index, 1);
+    function deleteTeam(idx) {
+      if (!confirm("Remove this member from the panel?")) return;
+      const removed = state.team.splice(idx, 1)[0];
       renderTeam();
-      scheduleAutoSync();
+      scheduleAutoSync(`Removed member: ${removed ? removed.name : "Member"}`);
     }
 
-    function addMember() {
+    function addTeamMember() {
+      const nextNum = state.team.length + 1;
       state.team.push({
-        id: "tm-" + (state.team.length + 1),
-        name: "New Member",
+        id: "tm-" + nextNum,
+        name: "New Panel Member",
         role: "Executive Member",
         photo: "./logo.png",
         status: "Active"
       });
       renderTeam();
-      scheduleAutoSync();
+      scheduleAutoSync("Added new team member");
+    }
+
+    function resetDefaultTeam() {
+      if (!confirm("Restore the standard 14 members list?")) return;
+      state.team = DEFAULT_TEAM.map(x => ({ ...x }));
+      renderTeam();
+      scheduleAutoSync("Restored default 14 team members");
     }
 
     function renderTeam() {
+      const q = (document.getElementById("teamSearch")?.value || "").trim().toLowerCase();
+      document.getElementById("badgeTeamCount").textContent = String(state.team.length);
       const grid = document.getElementById("teamGrid");
-      const badge = document.getElementById("teamCountBadge");
-      if (badge) badge.textContent = String(state.team.length);
       if (!grid) return;
 
-      grid.innerHTML = state.team.map((m, idx) => `
-        <div class="bg-white p-4 rounded-2xl border border-[#DFD0C2] shadow-sm space-y-2.5">
+      const entries = state.team
+        .map((m, idx) => ({ m, idx }))
+        .filter(({ m }) => !q || m.name.toLowerCase().includes(q) || m.role.toLowerCase().includes(q));
+
+      grid.innerHTML = entries.map(({ m, idx }) => `
+        <div class="bg-white p-4 rounded-2xl border border-[#DECBB9] shadow-sm card-hover space-y-2.5">
           <div class="flex items-center justify-between text-xs font-bold text-[#7A5643]">
             <span>Position ${idx + 1}</span>
-            <div class="flex gap-1">
-              <button type="button" onclick="moveMember(${idx}, -1)" class="px-2 py-0.5 rounded bg-[#F2E8DF] hover:bg-[#E4D3C3]">↑</button>
-              <button type="button" onclick="moveMember(${idx}, 1)" class="px-2 py-0.5 rounded bg-[#F2E8DF] hover:bg-[#E4D3C3]">↓</button>
-              <button type="button" onclick="deleteMember(${idx})" class="px-2 py-0.5 rounded bg-red-100 text-red-700 hover:bg-red-200">✕</button>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="moveTeam(${idx}, -1)" title="Move Up" class="px-2 py-0.5 rounded bg-[#F2E8DF] hover:bg-[#E3D1C0] cursor-pointer">↑</button>
+              <button type="button" onclick="moveTeam(${idx}, 1)" title="Move Down" class="px-2 py-0.5 rounded bg-[#F2E8DF] hover:bg-[#E3D1C0] cursor-pointer">↓</button>
+              <button type="button" onclick="deleteTeam(${idx})" title="Delete" class="px-2 py-0.5 rounded bg-red-100 text-red-700 hover:bg-red-200 cursor-pointer">✕</button>
             </div>
           </div>
-          <img src="${escapeHtml(m.photo || './logo.png')}" alt="${escapeHtml(m.name)}" onerror="this.src='./logo.png'" class="w-20 h-20 mx-auto rounded-xl object-cover border border-[#D4C3B3]" />
-          <input type="text" value="${escapeHtml(m.name)}" oninput="updateMember(${idx}, 'name', this.value)" placeholder="Full Name" class="w-full px-2.5 py-1.5 rounded-lg border border-[#D4C3B3] text-xs font-semibold" />
-          <input type="text" value="${escapeHtml(m.role)}" oninput="updateMember(${idx}, 'role', this.value)" placeholder="Designation / Role" class="w-full px-2.5 py-1.5 rounded-lg border border-[#D4C3B3] text-xs" />
-          <input type="text" value="${escapeHtml(m.photo || '')}" onchange="updateMember(${idx}, 'photo', this.value); renderTeam();" placeholder="Photo URL (e.g. rikto.png)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#D4C3B3] text-xs text-[#6E4730]" />
+
+          <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden bg-[#F2E8DF] border border-[#C7AE96]">
+            <img src="${esc(m.photo || './logo.png')}" alt="${esc(m.name)}" onerror="this.src='./logo.png'" class="w-full h-full object-cover" />
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-[#8C583A] mb-0.5">Full Name</label>
+            <input type="text" value="${esc(m.name)}" oninput="updateTeamField(${idx}, 'name', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#DECBB9] text-xs font-bold text-[#231712]" />
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-[#8C583A] mb-0.5">Designation / Role</label>
+            <input type="text" value="${esc(m.role)}" oninput="updateTeamField(${idx}, 'role', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#DECBB9] text-xs text-[#4E2D1C]" />
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-[#8C583A] mb-0.5">Photo URL</label>
+            <input type="text" value="${esc(m.photo || '')}" onchange="updateTeamField(${idx}, 'photo', this.value); renderTeam();" class="w-full px-2.5 py-1.5 rounded-lg border border-[#DECBB9] text-xs text-[#6E4730]" />
+          </div>
         </div>
       `).join("");
     }
 
-    function updateSectionField(key, value) {
-      state.sections[key] = value;
-      scheduleAutoSync();
+    // --- Site Sections ---
+    function updateSection(key, val) {
+      state.sections[key] = val;
+      if (key === "logoUrl" && val) {
+        const l1 = document.getElementById("loginLogo");
+        const l2 = document.getElementById("headerLogo");
+        if (l1) l1.src = val;
+        if (l2) l2.src = val;
+      }
+      scheduleAutoSync(`Updated section: ${key}`);
     }
 
     function renderSections() {
-      const fields = ["familiesCount", "volunteersCount", "eventsCount", "heroTitle", "heroSubtitle", "aboutText", "donationNumber"];
-      fields.forEach(k => {
+      const keys = [
+        "familiesCount", "volunteersCount", "eventsCount",
+        "heroTitle", "donationNumber", "heroSubtitle",
+        "aboutText", "logoUrl", "founderName", "founderPhoto", "founderQuote"
+      ];
+      keys.forEach(k => {
         const el = document.getElementById("sec_" + k);
         if (el) el.value = state.sections[k] || "";
       });
     }
 
-    function addNotice() {
+    // --- Group Work ---
+    function addGroupWork() {
+      const n = state.groupWork.length + 1;
+      state.groupWork.push({
+        id: "PRJ-" + String(n).padStart(3, "0"),
+        title: "New Community Initiative",
+        description: "Describe the humanitarian activity and target beneficiaries."
+      });
+      renderGroupWork();
+      scheduleAutoSync("Added new Group Work initiative");
+    }
+
+    function updateGroupWork(idx, field, val) {
+      if (!state.groupWork[idx]) return;
+      state.groupWork[idx][field] = val;
+      scheduleAutoSync(`Updated initiative #${idx + 1}`);
+    }
+
+    function deleteGroupWork(idx) {
+      state.groupWork.splice(idx, 1);
+      renderGroupWork();
+      scheduleAutoSync("Deleted Group Work initiative");
+    }
+
+    function renderGroupWork() {
+      document.getElementById("badgeGroupCount").textContent = String(state.groupWork.length);
+      const wrap = document.getElementById("groupWorkList");
+      if (!wrap) return;
+      wrap.innerHTML = state.groupWork.map((g, idx) => `
+        <div class="bg-white p-4 rounded-2xl border border-[#DECBB9] space-y-2.5 shadow-sm">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-extrabold text-[#8C583A]">${esc(g.id || `PRJ-${idx + 1}`)}</span>
+            <button type="button" onclick="deleteGroupWork(${idx})" class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold cursor-pointer">Delete</button>
+          </div>
+          <input type="text" value="${esc(g.title)}" oninput="updateGroupWork(${idx}, 'title', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#DECBB9] text-sm font-bold" />
+          <textarea rows="3" oninput="updateGroupWork(${idx}, 'description', this.value)" class="w-full px-3 py-2 rounded-xl border border-[#DECBB9] text-xs">${esc(g.description)}</textarea>
+        </div>
+      `).join("");
+    }
+
+    // --- Gallery ---
+    function addGalleryItem() {
+      const n = state.gallery.length + 1;
+      state.gallery.push({
+        id: "GAL-" + String(n).padStart(3, "0"),
+        caption: "New Event Moment",
+        image: "./gallery1.jpg"
+      });
+      renderGallery();
+      scheduleAutoSync("Added new gallery item");
+    }
+
+    function updateGallery(idx, field, val) {
+      if (!state.gallery[idx]) return;
+      state.gallery[idx][field] = val;
+      scheduleAutoSync(`Updated gallery item #${idx + 1}`);
+    }
+
+    function deleteGallery(idx) {
+      state.gallery.splice(idx, 1);
+      renderGallery();
+      scheduleAutoSync("Deleted gallery item");
+    }
+
+    function renderGallery() {
+      document.getElementById("badgeGalleryCount").textContent = String(state.gallery.length);
+      const grid = document.getElementById("galleryGrid");
+      if (!grid) return;
+      grid.innerHTML = state.gallery.map((g, idx) => `
+        <div class="bg-white p-4 rounded-2xl border border-[#DECBB9] space-y-2.5 shadow-sm">
+          <img src="${esc(g.image || './gallery1.jpg')}" alt="${esc(g.caption)}" onerror="this.src='./logo.png'" class="w-full h-36 object-cover rounded-xl border border-[#DECBB9]" />
+          <input type="text" value="${esc(g.caption)}" oninput="updateGallery(${idx}, 'caption', this.value)" placeholder="Caption" class="w-full px-3 py-1.5 rounded-lg border border-[#DECBB9] text-xs font-bold" />
+          <input type="text" value="${esc(g.image)}" onchange="updateGallery(${idx}, 'image', this.value); renderGallery();" placeholder="Image URL" class="w-full px-3 py-1.5 rounded-lg border border-[#DECBB9] text-xs" />
+          <div class="text-right">
+            <button type="button" onclick="deleteGallery(${idx})" class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold cursor-pointer">Delete</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // --- Notice & News ---
+    function addNoticeItem() {
       state.notice.unshift({
         id: "item-" + Date.now(),
         category: "Notice",
         status: "Published",
         date: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
-        title: "New Announcement",
+        title: "New Official Notice",
         image: "./gallery1.jpg",
-        summary: "Short summary here.",
-        fullContent: "Full notice or news content here."
+        summary: "Short summary of the announcement.",
+        fullContent: "Full details of the notice or news update."
       });
       renderNotice();
-      scheduleAutoSync();
+      scheduleAutoSync("Added new notice/news post");
     }
 
-    function updateNotice(index, field, value) {
-      if (!state.notice[index]) return;
-      state.notice[index][field] = value;
-      scheduleAutoSync();
+    function updateNotice(idx, field, val) {
+      if (!state.notice[idx]) return;
+      state.notice[idx][field] = val;
+      scheduleAutoSync(`Updated notice #${idx + 1}`);
     }
 
-    function deleteNotice(index) {
-      state.notice.splice(index, 1);
+    function deleteNotice(idx) {
+      state.notice.splice(idx, 1);
       renderNotice();
-      scheduleAutoSync();
+      scheduleAutoSync("Deleted notice/news post");
     }
 
     function renderNotice() {
+      document.getElementById("badgeNoticeCount").textContent = String(state.notice.length);
       const wrap = document.getElementById("noticeList");
       if (!wrap) return;
       wrap.innerHTML = state.notice.map((n, idx) => `
-        <div class="p-4 rounded-2xl border border-[#DFD0C2] bg-[#FAF6F2] space-y-2">
-          <div class="flex items-center justify-between gap-2">
-            <input type="text" value="${escapeHtml(n.title)}" oninput="updateNotice(${idx}, 'title', this.value)" class="flex-1 px-3 py-1.5 rounded-lg border border-[#D4C3B3] text-sm font-bold" />
-            <button type="button" onclick="deleteNotice(${idx})" class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold">Delete</button>
+        <div class="bg-white p-4 rounded-2xl border border-[#DECBB9] space-y-2.5 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <select onchange="updateNotice(${idx}, 'category', this.value)" class="px-2.5 py-1.5 rounded-lg border border-[#DECBB9] text-xs font-bold bg-[#FCF9F6]">
+                <option value="Notice" ${n.category === "Notice" ? "selected" : ""}>Notice</option>
+                <option value="News" ${n.category === "News" ? "selected" : ""}>News</option>
+              </select>
+              <input type="text" value="${esc(n.date || '')}" oninput="updateNotice(${idx}, 'date', this.value)" placeholder="Date" class="px-2.5 py-1.5 rounded-lg border border-[#DECBB9] text-xs" />
+            </div>
+            <button type="button" onclick="deleteNotice(${idx})" class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold cursor-pointer">Delete</button>
           </div>
-          <textarea rows="2" oninput="updateNotice(${idx}, 'summary', this.value)" class="w-full px-3 py-1.5 rounded-lg border border-[#D4C3B3] text-xs">${escapeHtml(n.summary)}</textarea>
+          <input type="text" value="${esc(n.title)}" oninput="updateNotice(${idx}, 'title', this.value)" placeholder="Headline" class="w-full px-3 py-2 rounded-xl border border-[#DECBB9] text-sm font-bold" />
+          <textarea rows="2" oninput="updateNotice(${idx}, 'summary', this.value)" placeholder="Summary" class="w-full px-3 py-2 rounded-xl border border-[#DECBB9] text-xs">${esc(n.summary)}</textarea>
+          <textarea rows="3" oninput="updateNotice(${idx}, 'fullContent', this.value)" placeholder="Full Content" class="w-full px-3 py-2 rounded-xl border border-[#DECBB9] text-xs">${esc(n.fullContent || n.summary)}</textarea>
         </div>
       `).join("");
     }
 
-    function renderAll() {
-      renderTeam();
-      renderSections();
-      renderNotice();
+    // --- Funding ---
+    function addFundingItem() {
+      const n = state.funding.length + 1;
+      state.funding.unshift({
+        id: "TXN-" + String(n).padStart(3, "0"),
+        date: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+        donorName: "Anonymous Supporter",
+        donorContact: "",
+        method: "bKash",
+        amount: "500",
+        purpose: "General Relief",
+        reference: "",
+        status: "Verified",
+        remarks: ""
+      });
+      renderFunding();
+      scheduleAutoSync("Added new funding record");
     }
 
-    function showDashboard() {
+    function updateFunding(idx, field, val) {
+      if (!state.funding[idx]) return;
+      state.funding[idx][field] = val;
+      scheduleAutoSync(`Updated funding entry #${idx + 1}`);
+    }
+
+    function deleteFunding(idx) {
+      state.funding.splice(idx, 1);
+      renderFunding();
+      scheduleAutoSync("Deleted funding record");
+    }
+
+    function renderFunding() {
+      const badge = document.getElementById("badgeFundingCount");
+      if (badge) badge.textContent = String(state.funding.length);
+      const wrap = document.getElementById("fundingList");
+      if (!wrap) return;
+      if (!state.funding.length) {
+        wrap.innerHTML = `<div class="bg-white p-6 rounded-2xl border border-[#DECBB9] text-xs text-[#7A5643]">No funding entries yet. Click "+ Add Contribution" to record a donation.</div>`;
+        return;
+      }
+      wrap.innerHTML = state.funding.map((f, idx) => `
+        <div class="bg-white p-4 rounded-2xl border border-[#DECBB9] space-y-2.5 shadow-sm text-xs">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-mono font-bold text-[#8C583A]">${esc(f.id || `TXN-${idx + 1}`)}</span>
+            <button type="button" onclick="deleteFunding(${idx})" class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 font-bold cursor-pointer">Delete</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <input type="text" value="${esc(f.donorName || '')}" oninput="updateFunding(${idx}, 'donorName', this.value)" placeholder="Donor Name" class="px-3 py-1.5 rounded-lg border border-[#DECBB9]" />
+            <input type="text" value="${esc(f.amount || '')}" oninput="updateFunding(${idx}, 'amount', this.value)" placeholder="Amount" class="px-3 py-1.5 rounded-lg border border-[#DECBB9] font-bold" />
+            <input type="text" value="${esc(f.method || '')}" oninput="updateFunding(${idx}, 'method', this.value)" placeholder="Method (bKash/Nagad)" class="px-3 py-1.5 rounded-lg border border-[#DECBB9]" />
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <input type="text" value="${esc(f.purpose || '')}" oninput="updateFunding(${idx}, 'purpose', this.value)" placeholder="Purpose" class="px-3 py-1.5 rounded-lg border border-[#DECBB9]" />
+            <input type="text" value="${esc(f.reference || '')}" oninput="updateFunding(${idx}, 'reference', this.value)" placeholder="TrxID / Reference" class="px-3 py-1.5 rounded-lg border border-[#DECBB9]" />
+            <input type="text" value="${esc(f.status || 'Verified')}" oninput="updateFunding(${idx}, 'status', this.value)" placeholder="Status" class="px-3 py-1.5 rounded-lg border border-[#DECBB9]" />
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // --- Sessions & Audit Logs ---
+    function renderSessionTab() {
+      const tbody = document.getElementById("sessionHistoryBody");
+      if (!tbody) return;
+      if (!sessionHistory.length) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-[#7A5643]">No session history recorded yet in this browser.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = sessionHistory.map(r => `
+        <tr>
+          <td class="p-3 font-mono font-bold">${esc(r.sessionId)}</td>
+          <td class="p-3 font-semibold">${esc(r.adminUser)}</td>
+          <td class="p-3">${esc(r.event)}</td>
+          <td class="p-3 font-bold">${esc(r.duration)}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${r.status === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-700'}">${esc(r.status)}</span></td>
+          <td class="p-3 text-[#6E4730]">${esc(r.device)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderAuditLogs() {
+      const wrap = document.getElementById("auditLogList");
+      if (!wrap) return;
+      if (!localLogs.length) {
+        wrap.innerHTML = `<div class="p-4 rounded-xl bg-[#FCF9F6] border border-[#E8D8C8] text-[#7A5643]">No local activity entries yet.</div>`;
+        return;
+      }
+      wrap.innerHTML = localLogs.map(item => `
+        <div class="p-3 rounded-xl bg-[#FCF9F6] border border-[#E8D8C8] flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="font-bold text-[#231712]">${esc(item.action)}</span>
+            <span class="text-[#7A5643] ml-2">by ${esc(item.user)}</span>
+          </div>
+          <span class="text-[11px] font-mono text-[#8C583A]">${esc(item.time)}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderAllTabs() {
+      renderTeam();
+      renderSections();
+      renderGroupWork();
+      renderGallery();
+      renderNotice();
+      renderFunding();
+      renderSessionTab();
+      renderAuditLogs();
+    }
+
+    function enterDashboard() {
       document.getElementById("loginScreen").classList.add("hidden");
-      document.getElementById("adminDashboard").classList.remove("hidden");
-      renderAll();
-      startAdminSession();
-      pullFromSheetIfAvailable();
+      document.getElementById("adminApp").classList.remove("hidden");
+      renderAllTabs();
+      beginAdminSession();
+      pullLatestFromSheet(false);
     }
 
     function logoutAdmin() {
-      endAdminSession();
-      document.getElementById("adminDashboard").classList.add("hidden");
+      finishAdminSession("Logout");
+      document.getElementById("adminApp").classList.add("hidden");
       document.getElementById("loginScreen").classList.remove("hidden");
+      document.getElementById("loginPass").value = "";
+      showToast("Logged out and session duration saved.");
     }
 
     document.getElementById("loginForm").addEventListener("submit", (e) => {
@@ -530,10 +1139,10 @@
       const u = document.getElementById("loginUser").value.trim();
       const p = document.getElementById("loginPass").value;
       const errEl = document.getElementById("loginError");
-      if (u === AUTH_USER && p === AUTH_PASS) {
+      if (u === ADMIN_ID && p === ADMIN_PASSWORD) {
         errEl.classList.add("hidden");
-        sessionStorage.setItem(SESSION_AUTH_KEY, "1");
-        showDashboard();
+        sessionStorage.setItem(AUTH_FLAG, "1");
+        enterDashboard();
       } else {
         errEl.textContent = "Invalid Admin ID or Password.";
         errEl.classList.remove("hidden");
@@ -541,14 +1150,14 @@
     });
 
     window.addEventListener("pagehide", () => {
-      if (sessionStorage.getItem(SESSION_AUTH_KEY) === "1") {
-        endAdminSession();
+      if (sessionStorage.getItem(AUTH_FLAG) === "1") {
+        finishAdminSession("Tab/Page Exit");
       }
     });
 
     window.addEventListener("DOMContentLoaded", () => {
-      if (sessionStorage.getItem(SESSION_AUTH_KEY) === "1") {
-        showDashboard();
+      if (sessionStorage.getItem(AUTH_FLAG) === "1") {
+        enterDashboard();
       }
     });
   </script>
