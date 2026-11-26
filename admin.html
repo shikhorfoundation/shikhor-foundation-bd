@@ -731,6 +731,32 @@
             }
         });
 
+        // Change an item's display position (1 = first). The array order is
+        // the display order, so the same order is saved locally and sent to Sheets.
+        function changeItemPosition(listName, itemId, requestedPosition) {
+            const allowedLists = ["team", "groupWork", "gallery", "notice"];
+            if (!allowedLists.includes(listName)) return;
+
+            const list = state[listName];
+            const oldIndex = list.findIndex(item => item.id === itemId);
+            if (oldIndex < 0) return;
+
+            const rawPosition = Number.parseInt(requestedPosition, 10);
+            if (!Number.isFinite(rawPosition)) {
+                renderAll();
+                return;
+            }
+
+            const newIndex = Math.max(0, Math.min(list.length - 1, rawPosition - 1));
+            if (newIndex === oldIndex) return;
+
+            const [item] = list.splice(oldIndex, 1);
+            list.splice(newIndex, 0, item);
+
+            renderAll();
+            autoSaveAndSync("saveAll", {}, true);
+        }
+
         function addNewMember() {
             const newId = "tm-" + Date.now();
             state.team.push({ id: newId, name: "New Panel Member", role: "Panel Member", photo: "./logo.png" });
@@ -805,6 +831,41 @@
             autoSaveAndSync("saveAll", {}, true);
         }
 
+        function changeNoticePosition(itemId, requestedPosition) {
+            const item = state.notice.find(x => x.id === itemId);
+            if (!item) return;
+
+            const category = String(item.category || "Notice").toLowerCase();
+            const sameSection = state.notice.filter(x =>
+                String(x.category || "Notice").toLowerCase() === category
+            );
+            const oldIndex = sameSection.findIndex(x => x.id === itemId);
+            const rawPosition = Number.parseInt(requestedPosition, 10);
+
+            if (!Number.isFinite(rawPosition)) {
+                renderAll();
+                return;
+            }
+
+            const newIndex = Math.max(0, Math.min(sameSection.length - 1, rawPosition - 1));
+            if (newIndex === oldIndex) return;
+
+            const [moved] = sameSection.splice(oldIndex, 1);
+            sameSection.splice(newIndex, 0, moved);
+
+            // Rebuild the combined array while preserving the positions of the
+            // other category's entries as much as possible.
+            const reorderedIds = new Set(sameSection.map(x => x.id));
+            const orderedCategoryItems = sameSection;
+            let categoryIndex = 0;
+            state.notice = state.notice.map(existing =>
+                reorderedIds.has(existing.id) ? orderedCategoryItems[categoryIndex++] : existing
+            );
+
+            renderAll();
+            autoSaveAndSync("saveAll", {}, true);
+        }
+
         function updateNoticeField(id, field, val) {
             const n = state.notice.find(x => x.id === id);
             if (!n) return;
@@ -822,8 +883,12 @@
             if (!list.length) {
                 return `<div class="col-span-full p-6 rounded-2xl bg-[#F2E8DF] border border-[#D4C3B3] text-center text-xs text-[#5C3D2E]">No items in this section yet. Click the Add button above to create one.</div>`;
             }
-            return list.map(n => `
+            return list.map((n, index) => `
                 <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-[#5C3D2E]">Display Position (1 = First in this section)</label>
+                        <input type="number" min="1" max="${list.length}" value="${index + 1}" onchange="changeNoticePosition('${escapeAttr(n.id)}', this.value)" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
+                    </div>
                     <div class="flex items-center gap-3">
                         <img src="${escapeAttr(cleanText(n.image, './gallery1.jpg'))}" onerror="this.src='./logo.png'" class="w-20 h-20 rounded-xl object-cover border border-[#C4AE99] shrink-0">
                         <div class="flex-1 space-y-2">
@@ -869,6 +934,8 @@
                 const safePhoto = cleanText(m.photo, "./logo.png");
                 return `
                     <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-2.5">
+                        <label class="block text-[10px] font-bold text-[#5C3D2E]">Display Position (1 = First)</label>
+                        <input type="number" min="1" max="${cleanTeam.length}" value="${cleanTeam.indexOf(m) + 1}" onchange="changeItemPosition('team', '${escapeAttr(m.id)}', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
                         <img src="${escapeAttr(safePhoto)}" onerror="this.src='./logo.png'" class="w-24 h-24 mx-auto rounded-2xl object-cover border-2 border-[#B88655]">
                         <input type="text" value="${escapeAttr(safeName)}" onchange="updateMemberField('${escapeAttr(m.id)}', 'name', this.value)" placeholder="Member Name" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
                         <input type="text" value="${escapeAttr(safeRole)}" onchange="updateMemberField('${escapeAttr(m.id)}', 'role', this.value)" placeholder="Designation" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px] text-center">
@@ -884,8 +951,10 @@
                 `;
             }).join("");
 
-            document.getElementById("adminGroupWorkList").innerHTML = state.groupWork.map(g => `
+            document.getElementById("adminGroupWorkList").innerHTML = state.groupWork.map((g, index) => `
                 <div class="bg-[#F2E8DF] rounded-2xl p-4 border border-[#D4C3B3] space-y-2.5">
+                    <label class="block text-[10px] font-bold text-[#5C3D2E]">Display Position (1 = First)</label>
+                    <input type="number" min="1" max="${state.groupWork.length}" value="${index + 1}" onchange="changeItemPosition('groupWork', '${escapeAttr(g.id)}', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
                     <input type="text" value="${escapeAttr(cleanText(g.title, ''))}" onchange="updateGroupWorkField('${escapeAttr(g.id)}', 'title', this.value)" placeholder="Group Work Title" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold">
                     <input type="text" value="${escapeAttr(cleanText(g.icon, 'fa-hands-holding-child'))}" onchange="updateGroupWorkField('${escapeAttr(g.id)}', 'icon', this.value)" placeholder="Icon (e.g. fa-hands-holding-child)" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-[11px]">
                     <textarea rows="3" onchange="updateGroupWorkField('${escapeAttr(g.id)}', 'description', this.value)" placeholder="Description" class="w-full px-3 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs">${escapeAttr(cleanText(g.description, ''))}</textarea>
@@ -897,8 +966,12 @@
                 </div>
             `).join("");
 
-            document.getElementById("adminGalleryList").innerHTML = state.gallery.map(g => `
+            document.getElementById("adminGalleryList").innerHTML = state.gallery.map((g, index) => `
                 <div class="bg-[#F2E8DF] rounded-2xl overflow-hidden border border-[#D4C3B3] flex flex-col justify-between">
+                    <div class="p-3 pb-0">
+                        <label class="block text-[10px] font-bold text-[#5C3D2E]">Display Position (1 = First)</label>
+                        <input type="number" min="1" max="${state.gallery.length}" value="${index + 1}" onchange="changeItemPosition('gallery', '${escapeAttr(g.id)}', this.value)" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-bold text-center">
+                    </div>
                     <img src="${escapeAttr(cleanText(g.image, './gallery1.jpg'))}" onerror="this.src='./logo.png'" class="w-full h-40 object-cover">
                     <div class="p-3 space-y-2">
                         <input type="text" value="${escapeAttr(cleanText(g.caption, ''))}" onchange="updateGalleryCaption('${escapeAttr(g.id)}', this.value)" placeholder="Caption" class="w-full px-2.5 py-1.5 rounded-lg border border-[#C4AE99] bg-[#FDFBF9] text-xs font-semibold">
