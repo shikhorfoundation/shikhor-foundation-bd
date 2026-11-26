@@ -761,7 +761,7 @@
             imgEl.src = fallbackSrc || "./logo.png";
         }
 
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Of1u39SRTKwR13X2md1HB-IhnckMzxumwZB4VLnCx_BFvxRKSpElhN3y_jiLYSOX/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyG003wCzu3Qi-JABNPEAG__7KD2zHMucE_YwD3SRX4aD9deXUj0MQ5mA1P0siHi1uT/exec";
         const visitorEnterTime = Date.now();
 
         const articleStore = {
@@ -912,7 +912,7 @@
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: jsonStr
             }).catch(() => {});
         }
@@ -1204,7 +1204,7 @@
             loadLocalFallbackFromAdmin();
             if (!GOOGLE_SCRIPT_URL) return;
             try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`);
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPublicData&t=${Date.now()}`, { cache: "no-store" });
                 const data = await res.json();
                 if (data && data.success) {
                     if (Array.isArray(data.notice) && data.notice.length > 0) {
