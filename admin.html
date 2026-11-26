@@ -1,339 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shikhor Foundation | Admin Control Panel</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .card-hover { transition: transform 0.16s ease, box-shadow 0.16s ease; }
-    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(56, 31, 18, 0.14); }
-    .custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: #C7AE96; border-radius: 9999px; }
-    .custom-scroll::-webkit-scrollbar-track { background: #F4ECE4; }
-  </style>
-</head>
-<body class="bg-[#F6EFE8] text-[#231712] min-h-screen custom-scroll">
-
-  <!-- Hidden File Picker for Image Upload Buttons -->
-  <input id="imageFilePicker" type="file" accept="image/*" class="hidden" />
-
-  <!-- Toast Banner -->
-  <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden max-w-sm bg-[#231712] text-white px-4 py-3 rounded-2xl shadow-xl border border-[#B88655] text-xs font-semibold flex items-center gap-2.5">
-    <span id="toastIcon" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0"></span>
-    <span id="toastMessage">Saved</span>
-  </div>
-
-  <!-- Login Screen -->
-  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-[#DECBB9] p-8 space-y-6">
-      <div class="text-center space-y-2">
-        <img id="loginLogo" src="./logo.png" alt="Shikhor Foundation" onerror="this.style.display='none'" class="w-16 h-16 mx-auto rounded-2xl object-cover border border-[#DECBB9] shadow-sm" />
-        <h1 class="text-2xl font-extrabold text-[#231712]">Shikhor Foundation</h1>
-        <p class="text-xs font-medium text-[#7A5643]">Control Panel &amp; Session Manager</p>
-      </div>
-
-      <form id="loginForm" class="space-y-4">
-        <div>
-          <label class="block text-[11px] font-bold uppercase tracking-wider text-[#6E4730] mb-1">Admin ID</label>
-          <input id="loginUser" type="text" required autocomplete="username" placeholder="username" class="w-full px-4 py-2.5 rounded-xl border border-[#DECBB9] bg-[#FCF9F6] text-sm focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase tracking-wider text-[#6E4730] mb-1">Password</label>
-          <input id="loginPass" type="password" required autocomplete="current-password" placeholder="Enter password" class="w-full px-4 py-2.5 rounded-xl border border-[#DECBB9] bg-[#FCF9F6] text-sm focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
-        </div>
-        <div id="loginError" class="hidden text-xs font-semibold text-red-700 bg-red-50 border border-red-200 px-3 py-2 rounded-xl"></div>
-        <button type="submit" class="w-full py-3 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-sm shadow transition cursor-pointer">
-          Sign In &amp; Start Session
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Admin Dashboard -->
-  <div id="adminApp" class="hidden min-h-screen flex flex-col">
-    <!-- Top Header -->
-    <header class="bg-[#381F12] text-white sticky top-0 z-30 shadow-md border-b border-[#5B3622]">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <img id="headerLogo" src="./logo.png" alt="Logo" onerror="this.style.display='none'" class="w-10 h-10 rounded-xl object-cover border border-[#B88655]" />
-          <div>
-            <div class="font-bold text-sm sm:text-base leading-tight">Shikhor Foundation Admin</div>
-            <div class="flex flex-wrap items-center gap-2 text-[11px] text-[#E5C9B0]">
-              <span id="syncIndicator">Ready</span>
-              <span>•</span>
-              <span id="sessionTimerBadge">Session: 0s</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" onclick="pullLatestFromSheet(true)" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition cursor-pointer">
-            Pull Sheet
-          </button>
-          <button id="pushBtn" type="button" onclick="pushAllToSheet(true)" class="px-4 py-2 rounded-xl bg-[#B88655] hover:bg-[#9E6F42] text-[#231712] font-extrabold text-xs transition cursor-pointer">
-            Push To Sheet
-          </button>
-          <button type="button" onclick="logoutAdmin()" class="px-3.5 py-2 rounded-xl bg-red-600/85 hover:bg-red-600 text-white font-bold text-xs transition cursor-pointer">
-            Logout
-          </button>
-        </div>
-      </div>
-
-      <!-- Navigation Tabs -->
-      <div class="bg-[#2B170D] border-t border-white/10">
-        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center gap-1.5 overflow-x-auto">
-          <button type="button" data-tab="tabTeam" onclick="switchTab('tabTeam')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-[#B88655] text-[#231712]">
-            Team Panel (<span id="badgeTeamCount">14</span>)
-          </button>
-          <button type="button" data-tab="tabSections" onclick="switchTab('tabSections')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
-            Site Sections &amp; Stats
-          </button>
-          <button type="button" data-tab="tabGroupWork" onclick="switchTab('tabGroupWork')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
-            Group Work (<span id="badgeGroupCount">6</span>)
-          </button>
-          <button type="button" data-tab="tabGallery" onclick="switchTab('tabGallery')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
-            Gallery (<span id="badgeGalleryCount">7</span>)
-          </button>
-          <button type="button" data-tab="tabNotice" onclick="switchTab('tabNotice')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
-            Notice &amp; News (<span id="badgeNoticeCount">2</span>)
-          </button>
-          <button type="button" data-tab="tabFunding" onclick="switchTab('tabFunding')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
-            Funding (<span id="badgeFundingCount">0</span>)
-          </button>
-          <button type="button" data-tab="tabSessions" onclick="switchTab('tabSessions')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
-            Admin Sessions
-          </button>
-          <button type="button" data-tab="tabAudit" onclick="switchTab('tabAudit')" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-[#E5C9B0] hover:bg-white/10">
-            Audit Logs
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
-
-      <!-- 1. TEAM PANEL TAB -->
-      <section id="tabTeam" class="panel-section space-y-4">
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex flex-wrap items-center justify-between gap-4 shadow-sm">
-          <div>
-            <h2 class="text-lg font-extrabold text-[#231712]">Leadership &amp; Panel Members</h2>
-            <p class="text-xs text-[#7A5643]">Display Position 1 = First. Founder/CEO automatically displays in the Founder spotlight on the homepage.</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <input id="teamSearch" type="text" oninput="renderTeam()" placeholder="Search member or role..." class="px-3 py-2 rounded-xl border border-[#DECBB9] bg-[#FCF9F6] text-xs w-48 focus:outline-none focus:ring-2 focus:ring-[#8C583A]" />
-            <button type="button" onclick="resetDefaultTeam()" class="px-3 py-2 rounded-xl border border-[#DECBB9] hover:bg-[#F6EFE8] text-[#4E2D1C] font-bold text-xs cursor-pointer">
-              Restore 14 Default
-            </button>
-            <button type="button" onclick="addTeamMember()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
-              + Add Member
-            </button>
-          </div>
-        </div>
-
-        <div id="teamGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
-      </section>
-
-      <!-- 2. SITE SECTIONS TAB -->
-      <section id="tabSections" class="panel-section hidden space-y-4">
-        <div class="bg-white p-6 rounded-3xl border border-[#DECBB9] shadow-sm space-y-5">
-          <div>
-            <h2 class="text-lg font-extrabold text-[#231712]">Site Sections, Counters &amp; Branding</h2>
-            <p class="text-xs text-[#7A5643]">Updates sync to the Site_Sections worksheet.</p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-[#6E4730] mb-1">Families Supported</label>
-              <input id="sec_familiesCount" type="text" oninput="updateSection('familiesCount', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#6E4730] mb-1">Active Volunteers</label>
-              <input id="sec_volunteersCount" type="text" oninput="updateSection('volunteersCount', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#6E4730] mb-1">Successful Events</label>
-              <input id="sec_eventsCount" type="text" oninput="updateSection('eventsCount', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-[#6E4730] mb-1">Hero Headline</label>
-              <input id="sec_heroTitle" type="text" oninput="updateSection('heroTitle', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#6E4730] mb-1">bKash / Nagad Donation Number</label>
-              <input id="sec_donationNumber" type="text" oninput="updateSection('donationNumber', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-[#6E4730] mb-1">Hero Sub-description</label>
-            <textarea id="sec_heroSubtitle" rows="2" oninput="updateSection('heroSubtitle', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm"></textarea>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-[#6E4730] mb-1">About Us Description</label>
-            <textarea id="sec_aboutText" rows="3" oninput="updateSection('aboutText', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm"></textarea>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-[#EFE4D8]">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-1">
-                <label class="block text-xs font-bold text-[#6E4730]">Site Logo URL</label>
-                <button type="button" onclick="triggerImageUpload('section', 'logoUrl')" class="px-2.5 py-1 rounded-lg bg-[#4E2D1C] hover:bg-[#381F12] text-white text-[11px] font-bold cursor-pointer">
-                  Upload Images
-                </button>
-              </div>
-              <input id="sec_logoUrl" type="text" oninput="updateSection('logoUrl', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#6E4730] mb-1">Founder Name</label>
-              <input id="sec_founderName" type="text" oninput="updateSection('founderName', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
-            </div>
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-1">
-                <label class="block text-xs font-bold text-[#6E4730]">Founder Photo URL</label>
-                <button type="button" onclick="triggerImageUpload('section', 'founderPhoto')" class="px-2.5 py-1 rounded-lg bg-[#4E2D1C] hover:bg-[#381F12] text-white text-[11px] font-bold cursor-pointer">
-                  Upload Images
-                </button>
-              </div>
-              <input id="sec_founderPhoto" type="text" oninput="updateSection('founderPhoto', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-[#6E4730] mb-1">Founder Message / Quote</label>
-            <textarea id="sec_founderQuote" rows="3" oninput="updateSection('founderQuote', this.value)" class="w-full px-3.5 py-2 rounded-xl border border-[#DECBB9] text-sm"></textarea>
-          </div>
-        </div>
-      </section>
-
-      <!-- 3. GROUP WORK TAB -->
-      <section id="tabGroupWork" class="panel-section hidden space-y-4">
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex items-center justify-between gap-4 shadow-sm">
-          <div>
-            <h2 class="text-lg font-extrabold text-[#231712]">Group Work &amp; Initiatives</h2>
-            <p class="text-xs text-[#7A5643]">Manage humanitarian drives and community projects (Group_Work).</p>
-          </div>
-          <button type="button" onclick="addGroupWork()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
-            + Add Initiative
-          </button>
-        </div>
-        <div id="groupWorkList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      </section>
-
-      <!-- 4. GALLERY TAB -->
-      <section id="tabGallery" class="panel-section hidden space-y-4">
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex items-center justify-between gap-4 shadow-sm">
-          <div>
-            <h2 class="text-lg font-extrabold text-[#231712]">Event Gallery</h2>
-            <p class="text-xs text-[#7A5643]">Manage gallery photos and captions (Gallery).</p>
-          </div>
-          <button type="button" onclick="addGalleryItem()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
-            + Add Photo
-          </button>
-        </div>
-        <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-      </section>
-
-      <!-- 5. NOTICE & NEWS TAB -->
-      <section id="tabNotice" class="panel-section hidden space-y-4">
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex items-center justify-between gap-4 shadow-sm">
-          <div>
-            <h2 class="text-lg font-extrabold text-[#231712]">Notices &amp; News</h2>
-            <p class="text-xs text-[#7A5643]">Publish and edit official notices and news updates (Notice_News).</p>
-          </div>
-          <button type="button" onclick="addNoticeItem()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
-            + Add Notice / News
-          </button>
-        </div>
-        <div id="noticeList" class="space-y-4"></div>
-      </section>
-
-      <!-- 6. FUNDING TAB -->
-      <section id="tabFunding" class="panel-section hidden space-y-4">
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DECBB9] flex flex-wrap items-center justify-between gap-4 shadow-sm">
-          <div>
-            <h2 class="text-lg font-extrabold text-[#231712]">Donation &amp; Funding Ledger</h2>
-            <p class="text-xs text-[#7A5643]">Manage donor transactions synced with the Funding worksheet.</p>
-          </div>
-          <button type="button" onclick="addFundingItem()" class="px-4 py-2 rounded-xl bg-[#4E2D1C] hover:bg-[#381F12] text-white font-bold text-xs cursor-pointer">
-            + Add Contribution
-          </button>
-        </div>
-        <div id="fundingList" class="space-y-3"></div>
-      </section>
-
-      <!-- 7. ADMIN SESSIONS TAB -->
-      <section id="tabSessions" class="panel-section hidden space-y-4">
-        <div class="bg-white p-6 rounded-3xl border border-[#DECBB9] shadow-sm space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 class="text-lg font-extrabold text-[#231712]">Admin Sessions Tracker</h2>
-              <p class="text-xs text-[#7A5643]">Records login time, logout/exit time, duration, active status, and device info in Admin Sessions.</p>
-            </div>
-            <div id="currentSessionCard" class="px-4 py-2 rounded-2xl bg-[#F6EFE8] border border-[#DECBB9] text-xs font-semibold text-[#4E2D1C]">
-              Active Session ID: <span id="activeSessionIdText" class="font-bold">—</span>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-            <div class="p-4 rounded-2xl bg-[#FCF9F6] border border-[#E8D8C8]">
-              <div class="text-[#7A5643] font-semibold">Admin Account</div>
-              <div id="sessAdminUser" class="text-sm font-extrabold text-[#231712] mt-0.5">shikhor@bd</div>
-            </div>
-            <div class="p-4 rounded-2xl bg-[#FCF9F6] border border-[#E8D8C8]">
-              <div class="text-[#7A5643] font-semibold">Login Timestamp</div>
-              <div id="sessLoginTime" class="text-sm font-extrabold text-[#231712] mt-0.5">—</div>
-            </div>
-            <div class="p-4 rounded-2xl bg-[#FCF9F6] border border-[#E8D8C8]">
-              <div class="text-[#7A5643] font-semibold">Device Information</div>
-              <div id="sessDeviceInfo" class="text-xs font-bold text-[#231712] mt-1 break-all">—</div>
-            </div>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-[#381F12] text-white">
-                  <th class="p-3 rounded-tl-xl">Session ID</th>
-                  <th class="p-3">Admin User</th>
-                  <th class="p-3">Event</th>
-                  <th class="p-3">Duration</th>
-                  <th class="p-3">Status</th>
-                  <th class="p-3 rounded-tr-xl">Device</th>
-                </tr>
-              </thead>
-              <tbody id="sessionHistoryBody" class="divide-y divide-[#EADACF] bg-[#FCF9F6]"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- 8. AUDIT LOGS TAB -->
-      <section id="tabAudit" class="panel-section hidden space-y-4">
-        <div class="bg-white p-6 rounded-3xl border border-[#DECBB9] shadow-sm space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="text-lg font-extrabold text-[#231712]">Local Activity &amp; Sync Log</h2>
-              <p class="text-xs text-[#7A5643]">Recent actions performed in this browser session (server Audit_Logs also records sheet syncs).</p>
-            </div>
-            <button type="button" onclick="clearLocalLogs()" class="px-3 py-1.5 rounded-xl border border-[#DECBB9] text-xs font-bold text-[#6E4730] hover:bg-[#F6EFE8] cursor-pointer">
-              Clear Local Log
-            </button>
-          </div>
-          <div id="auditLogList" class="space-y-2 text-xs"></div>
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <script>
+<script>
     // =========================================================================
     // CONFIGURATION
     // =========================================================================
@@ -345,11 +10,14 @@
     const STORAGE_LOGS_KEY = "shikhor_foundation_local_logs_v2";
     const STORAGE_SESSIONS_KEY = "shikhor_foundation_session_history_v2";
 
-    const AUTH_FLAG = "shikhor_admin_logged_in_v2";
-    const SESSION_ID_KEY = "shikhor_admin_current_sid_v2";
-    const SESSION_START_KEY = "shikhor_admin_session_start_v2";
-    const SESSION_LOGIN_STR_KEY = "shikhor_admin_login_str_v2";
-    const SESSION_LOGIN_SENT_KEY = "shikhor_admin_login_sent_v2";
+    // Persistent login across reloads; closed automatically when tab/browser closes
+    const AUTH_FLAG = "shikhor_admin_logged_in_v3";
+    const SESSION_ID_KEY = "shikhor_admin_current_sid_v3";
+    const SESSION_START_KEY = "shikhor_admin_session_start_v3";
+    const SESSION_LOGIN_STR_KEY = "shikhor_admin_login_str_v3";
+    const SESSION_LOGIN_SENT_KEY = "shikhor_admin_login_sent_v3";
+    const SESSION_HEARTBEAT_KEY = "shikhor_admin_last_heartbeat_v3";
+    const HEARTBEAT_MAX_AGE_MS = 6000;
 
     const DEFAULT_TEAM = [
       { id: "tm-1", name: "Md. Shewise Al Islam Zarif", role: "Founder & CEO / President", photo: "./zarif.jpg", status: "Active" },
@@ -430,6 +98,7 @@
     let sessionHistory = loadSessionHistory();
     let autoSyncTimeout = null;
     let sessionTimerInterval = null;
+    let heartbeatInterval = null;
     let logoutDispatched = false;
     let pendingUploadTarget = null;
 
@@ -678,19 +347,75 @@
       }).then(() => true).catch(() => false);
     }
 
+    function clearStoredSessionKeys() {
+      localStorage.removeItem(AUTH_FLAG);
+      localStorage.removeItem(SESSION_ID_KEY);
+      localStorage.removeItem(SESSION_START_KEY);
+      localStorage.removeItem(SESSION_LOGIN_STR_KEY);
+      localStorage.removeItem(SESSION_LOGIN_SENT_KEY);
+      localStorage.removeItem(SESSION_HEARTBEAT_KEY);
+    }
+
+    function touchHeartbeat() {
+      if (localStorage.getItem(AUTH_FLAG) === "1") {
+        localStorage.setItem(SESSION_HEARTBEAT_KEY, String(Date.now()));
+      }
+    }
+
+    function startHeartbeatLoop() {
+      touchHeartbeat();
+      clearInterval(heartbeatInterval);
+      heartbeatInterval = setInterval(touchHeartbeat, 2000);
+    }
+
+    function closeStaleSessionIfBrowserWasClosed() {
+      if (localStorage.getItem(AUTH_FLAG) !== "1") return false;
+      const lastBeat = Number(localStorage.getItem(SESSION_HEARTBEAT_KEY) || 0);
+      const now = Date.now();
+      // If no heartbeat for >6s, the previous tab/browser was closed rather than reloaded
+      if (!lastBeat || (now - lastBeat) > HEARTBEAT_MAX_AGE_MS) {
+        const sid = localStorage.getItem(SESSION_ID_KEY) || ("ADM-" + Date.now());
+        const startMs = Number(localStorage.getItem(SESSION_START_KEY) || lastBeat || now);
+        const endMs = lastBeat || now;
+        const durationSeconds = Math.max(1, Math.round((endMs - startMs) / 1000));
+        const dev = getDeviceSummary();
+
+        postToAppsScript({
+          action: "logAdminLogout",
+          sessionId: sid,
+          adminUser: ADMIN_ID,
+          durationSeconds,
+          deviceInfo: dev
+        }, true);
+
+        recordSessionHistory({
+          sessionId: sid,
+          adminUser: ADMIN_ID,
+          event: "Tab/Browser Close",
+          duration: formatDuration(durationSeconds),
+          status: "Logged Out",
+          device: dev
+        });
+
+        clearStoredSessionKeys();
+        return true;
+      }
+      return false;
+    }
+
     function beginAdminSession() {
       logoutDispatched = false;
-      let sid = sessionStorage.getItem(SESSION_ID_KEY);
-      let startMs = Number(sessionStorage.getItem(SESSION_START_KEY) || 0);
-      let loginStr = sessionStorage.getItem(SESSION_LOGIN_STR_KEY) || "";
+      let sid = localStorage.getItem(SESSION_ID_KEY);
+      let startMs = Number(localStorage.getItem(SESSION_START_KEY) || 0);
+      let loginStr = localStorage.getItem(SESSION_LOGIN_STR_KEY) || "";
 
       if (!sid || !startMs) {
         sid = "ADM-" + Date.now();
         startMs = Date.now();
         loginStr = new Date(startMs).toLocaleString("en-GB", { hour12: false });
-        sessionStorage.setItem(SESSION_ID_KEY, sid);
-        sessionStorage.setItem(SESSION_START_KEY, String(startMs));
-        sessionStorage.setItem(SESSION_LOGIN_STR_KEY, loginStr);
+        localStorage.setItem(SESSION_ID_KEY, sid);
+        localStorage.setItem(SESSION_START_KEY, String(startMs));
+        localStorage.setItem(SESSION_LOGIN_STR_KEY, loginStr);
       }
 
       const dev = getDeviceSummary();
@@ -699,8 +424,8 @@
       document.getElementById("sessLoginTime").textContent = loginStr;
       document.getElementById("sessDeviceInfo").textContent = dev;
 
-      if (sessionStorage.getItem(SESSION_LOGIN_SENT_KEY) !== "1") {
-        sessionStorage.setItem(SESSION_LOGIN_SENT_KEY, "1");
+      if (localStorage.getItem(SESSION_LOGIN_SENT_KEY) !== "1") {
+        localStorage.setItem(SESSION_LOGIN_SENT_KEY, "1");
         postToAppsScript({
           action: "logAdminLogin",
           sessionId: sid,
@@ -718,6 +443,8 @@
         appendLocalLog(`Admin logged in (Session ${sid})`);
       }
 
+      startHeartbeatLoop();
+
       const initialElapsed = Math.max(0, Math.round((Date.now() - startMs) / 1000));
       const badgeEl = document.getElementById("sessionTimerBadge");
       if (badgeEl) badgeEl.textContent = `Session: ${formatDuration(initialElapsed)}`;
@@ -734,9 +461,10 @@
       if (logoutDispatched) return;
       logoutDispatched = true;
       clearInterval(sessionTimerInterval);
+      clearInterval(heartbeatInterval);
 
-      const sid = sessionStorage.getItem(SESSION_ID_KEY) || ("ADM-" + Date.now());
-      const startMs = Number(sessionStorage.getItem(SESSION_START_KEY) || Date.now());
+      const sid = localStorage.getItem(SESSION_ID_KEY) || ("ADM-" + Date.now());
+      const startMs = Number(localStorage.getItem(SESSION_START_KEY) || Date.now());
       const durationSeconds = Math.max(1, Math.round((Date.now() - startMs) / 1000));
       const dev = getDeviceSummary();
 
@@ -757,11 +485,7 @@
         device: dev
       });
 
-      sessionStorage.removeItem(AUTH_FLAG);
-      sessionStorage.removeItem(SESSION_ID_KEY);
-      sessionStorage.removeItem(SESSION_START_KEY);
-      sessionStorage.removeItem(SESSION_LOGIN_STR_KEY);
-      sessionStorage.removeItem(SESSION_LOGIN_SENT_KEY);
+      clearStoredSessionKeys();
     }
 
     function scheduleAutoSync(summaryText = "Updated panel data") {
@@ -1261,7 +985,7 @@
       const errEl = document.getElementById("loginError");
       if (u === ADMIN_ID && p === ADMIN_PASSWORD) {
         errEl.classList.add("hidden");
-        sessionStorage.setItem(AUTH_FLAG, "1");
+        localStorage.setItem(AUTH_FLAG, "1");
         enterDashboard();
       } else {
         errEl.textContent = "Invalid Admin ID or Password.";
@@ -1269,19 +993,23 @@
       }
     });
 
-    // Only close/logout when the tab or browser is actually closing (not on refresh or bfcache)
-    window.addEventListener("pagehide", (event) => {
-      if (event.persisted) return;
-      if (sessionStorage.getItem(AUTH_FLAG) === "1") {
-        finishAdminSession("Tab/Browser Close");
+    // Update heartbeat one final time on pagehide/visibilitychange so reloads have a fresh timestamp
+    window.addEventListener("pagehide", () => {
+      touchHeartbeat();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        touchHeartbeat();
+      } else if (document.visibilityState === "visible") {
+        touchHeartbeat();
       }
     });
 
     window.addEventListener("DOMContentLoaded", () => {
-      if (sessionStorage.getItem(AUTH_FLAG) === "1") {
+      closeStaleSessionIfBrowserWasClosed();
+      if (localStorage.getItem(AUTH_FLAG) === "1") {
         enterDashboard();
       }
     });
   </script>
-</body>
-</html>
